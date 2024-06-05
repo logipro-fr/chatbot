@@ -1,0 +1,82 @@
+openapi: 3.1.0
+info:
+  title: ChatBot API
+  version: 1.0.0
+servers:
+  - url: http://172.17.0.1:11080/api/v1
+    description: test
+paths:
+  /conversation/Make:
+    post:
+      summary: Make a conversation
+      operationId: makeConversation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Prompt:
+                  type: string
+                  description: The prompt I want to send to the IA
+                  example: Bonjour
+                lmName:
+                  type: string
+                  description: The model I want to use
+                  example: GPTModel
+                context:
+                  type: string
+                  description: The order to the model so that it answers me as I want
+                  example: You're a helpful assistant
+
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Indicates whether the publication was successful
+                    example: true
+                  statusCode:
+                    type: integer
+                    description: HTTP status code of the response
+                    example: 200
+                  data:
+                    type: object
+                    properties:
+                      postId:
+                        type: string
+                        description: The ID of the conversation
+                        example: con_664c50f9c95cb
+                    description: Data returned by the publication service
+                  message:
+                    type: string
+                    description: Message associated with the response
+                    example: "How can I help you today ?"
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Indicates whether the conversation was created
+                    example: false
+                  statusCode:
+                    type: integer
+                    description: HTTP status code of the response
+                    example: 400
+                  data:
+                    type: object
+                    description: Data returned by the conversation service
+                  message:
+                    type: string
+                    description: Message associated with the response
+                    example: Invalid request

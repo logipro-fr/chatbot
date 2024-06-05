@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="https://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="https://doctrine-project.org/schemas/orm/doctrine-mapping
+                          https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+
+    <entity name="Chatbot\Domain\Model\Conversation\Conversation" table="conversations"
+            repository-class="Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryDoctrine">
+        <id name="id" type="conversation_id" column="conversation_id">
+            <generator strategy="NONE"/>
+        </id>
+        <field name="createdAt" type="datetime_immutable" column="created_at"/>
+        <field name="pairs" type="pairs" column="pairs"/>
+    </entity>
+</doctrine-mapping>
