@@ -29,9 +29,13 @@ class ChatbotGPTApiTest extends BaseTestCase
     {
 
         parent::setUp();
-
-        // Initialiser la variable API_KEY à partir de l'environnement
-        $this->API_KEY = getenv('API_KEY');
+        $apiKey = getenv('API_KEY');
+        if ($apiKey === false) {
+            var_dump(false);
+            throw new \RuntimeException('API_KEY environment variable is not set.');
+        } else {
+            $this->API_KEY = $apiKey;
+        }
 
         $this->content = <<<EOF
         {
@@ -48,7 +52,6 @@ class ChatbotGPTApiTest extends BaseTestCase
             ]
         }
         EOF;
-
     }
 
 
@@ -93,7 +96,7 @@ class ChatbotGPTApiTest extends BaseTestCase
         $response = (new ChatbotGPTApi($client, $this->API_KEY))->paramsHeader($this->content);
         $this->assertEquals(
             ['Content-Type' => 'application/json',
-            'Authorization' => 'Bearer '.$this->API_KEY
+            'Authorization' => 'Bearer ' . $this->API_KEY
             ],
             $response["headers"]
         );

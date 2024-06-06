@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace Chatbot\Tests\Infrastructure\Persistence\Doctrine\Types;
 
@@ -9,9 +9,8 @@ use Chatbot\Infrastructure\Persistence\Doctrine\Types\PairCollectionType;
 use Doctrine\DBAL\Platforms\SqlitePlatform;
 use PHPUnit\Framework\TestCase;
 
-class PairCollectionTypeTest extends TestCase 
+class PairCollectionTypeTest extends TestCase
 {
-
     public function testGetName(): void
     {
         $this->assertEquals('pairs', (new PairCollectionType())->getName());
@@ -21,14 +20,12 @@ class PairCollectionTypeTest extends TestCase
     {
         $type = new PairCollectionType();
         $dbValue = $type->convertToDatabaseValue(
-            $pair = new Pair(new Prompt("Bonjour"), new Answer("Comment aller vous ?",200)),
+            $pair = new Pair(new Prompt("Bonjour"), new Answer("Comment aller vous ?", 200)),
             new SqlitePlatform()
         );
         $this->assertIsString($dbValue);
-        
+
         $phpValue = $type->convertToPHPValue($dbValue, new SqlitePlatform());
         $this->assertEquals($pair, $phpValue);
     }
-    
-
 }

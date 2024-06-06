@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace Chatbot\Tests\integration\Infrastructure;
 
@@ -8,20 +8,23 @@ use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class MakeConversationControllerTest extends WebTestCase{
+use function Safe\json_encode;
+
+class MakeConversationControllerTest extends WebTestCase
+{
     use DoctrineRepositoryTesterTrait;
 
     private KernelBrowser $client;
-    private ConversationRepositoryInterface $repository;
+    //private ConversationRepositoryInterface $repository;
 
     public function setUp(): void
     {
         $this->initDoctrineTester();
-        $this->clearTables(["conversations"]);
-        $this->client = self::createClient(["debug"=>false]);
-        /** @var ConversationRepositoryDoctrine $autoInjectedRepo */
-        $autoInjectedRepo = $this->client->getContainer()->get("conversation.repository");
-        $this->repository = $autoInjectedRepo;
+        //$this->clearTables(["conversations"]);
+        $this->client = self::createClient(["debug" => false]);
+       // /** @var ConversationRepositoryDoctrine $autoInjectedRepo */
+      //  $autoInjectedRepo = $this->client->getContainer()->get("conversation.repository");
+        //$this->repository = $autoInjectedRepo;
     }
 
     public function testControllerRouting(): void
@@ -34,11 +37,12 @@ class MakeConversationControllerTest extends WebTestCase{
             [],
             ['CONTENT_TYPE' => 'application/json'],
             json_encode(
-            [
+                [
                 "Prompt" => "Chien",
                 "lmName" => "GPTModelTranslate",
                 "context" => "english",
-            ])
+                ]
+            )
         );
         /** @var string */
         $responseContent = $this->client->getResponse()->getContent();

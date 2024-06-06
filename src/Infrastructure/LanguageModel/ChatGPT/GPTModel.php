@@ -17,7 +17,7 @@ class GPTModel implements LanguageModelInterface
 
     public function generateTextAnswer(Prompt $prompt): Answer
     {
-        
+
         $chatbot = new ChatbotGPTApi($this->httpClient, $this->API_KEY);
         $response = $chatbot->request(new RequestGPT($prompt, $this->context));
         $message = new Answer($response->message, $response->statusCode);

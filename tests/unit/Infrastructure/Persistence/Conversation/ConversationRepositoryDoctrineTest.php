@@ -7,21 +7,22 @@ use Chatbot\Tests\Infrastructure\Persistence\Conversation\FlushingConversationRe
 use Doctrine\DBAL\Types\Type;
 use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
 
-class ConversationRepositoryDoctrineTest extends ConversationRepositoryTestBase 
+class ConversationRepositoryDoctrineTest extends ConversationRepositoryTestBase
 {
     use DoctrineRepositoryTesterTrait;
+
     protected function initialize(): void
     {
         $this->initDoctrineTester();
-        $this->clearTables(["conversations"]);
+        //$this->clearTables(["conversations"]);
         $this->repository = new ConversationRepositoryDoctrine($this->getEntityManager());
     }
 
     public function testFlush(): void
     {
         $this->initDoctrineTester();
-        $this->clearTables(["conversations"]);
-        
+        //$this->clearTables(["conversations"]);
+
         $repository = new ConversationRepositoryDoctrine($this->getEntityManager());
         //var_dump(Type::getTypesMap());
         $repository->flush();

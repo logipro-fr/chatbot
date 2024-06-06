@@ -28,12 +28,12 @@ class ModelFactory extends LanguageModelAbstractFactory
 
     public function create(string $lmName, string $context): LanguageModelInterface
     {
-       
+
         switch ($lmName) {
             case "GPTModel":
                 return new GPTModel($this->client, new Context($context), $this->API_KEY);
             case "GPTModelTranslate":
-                return new GPTModelTranslate($this->client,$this->API_KEY, $context);
+                return new GPTModelTranslate($this->client, $this->API_KEY, $context);
             case "Parrot":
                 return new Parrot();
             case "ParrotTranslate":

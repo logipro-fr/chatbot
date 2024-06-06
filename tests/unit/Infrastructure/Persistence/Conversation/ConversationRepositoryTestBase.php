@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace Chatbot\Tests\Infrastructure\Persistence\Conversation ;
 
@@ -11,7 +11,8 @@ use PHPUnit\Framework\TestCase;
 abstract class ConversationRepositoryTestBase extends TestCase
 {
     protected ConversationRepositoryInterface $repository;
-    protected function setUp(): void {
+    protected function setUp(): void
+    {
         $this->initialize();
     }
 
@@ -19,9 +20,10 @@ abstract class ConversationRepositoryTestBase extends TestCase
 
     public function testFindById(): void
     {
-        
+
         $id = new ConversationId("unId");
-        $conversation = new Conversation(new PairArray(),$id);
+
+        $conversation = new Conversation(new PairArray(), $id);
         //var_dump($conversation);
         $conversation2 = new Conversation(new PairArray(), new ConversationId("id2"));
 
@@ -30,7 +32,9 @@ abstract class ConversationRepositoryTestBase extends TestCase
         $found = $this->repository->findById($id);
         $this->repository->add($conversation2);
         $found2 = $this->repository->findById(new ConversationId("id2"));
+        /** @var Conversation */
         $found = $this->repository->findById($id);
+        /** @var Conversation */
         $found2 = $this->repository->findById(new ConversationId("id2"));
         $idFound = $found->getId();
 
@@ -38,5 +42,4 @@ abstract class ConversationRepositoryTestBase extends TestCase
         $this->assertInstanceOf(Conversation::class, $found);
         $this->assertFalse($idFound->equals($found2->getId()));
     }
-
 }

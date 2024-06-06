@@ -40,8 +40,14 @@ class translateContext implements Context
         $dotenv->load(__DIR__ . '/../.env.test');
 
         // Récupérer la variable d'environnement
-        $this->apiKey = getenv('API_KEY');
-        var_dump($this->apiKey);
+        $apiKey = getenv('API_KEY');
+
+        if ($apiKey === false) {
+            var_dump(false);
+            throw new \RuntimeException('API_KEY environment variable is not set.');
+        } else {
+            $this->apiKey = $apiKey;
+        }
     }
 
     /**

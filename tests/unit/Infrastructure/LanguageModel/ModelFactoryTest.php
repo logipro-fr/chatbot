@@ -8,24 +8,26 @@ use Chatbot\Infrastructure\LanguageModel\Exception\BadLanguageModelName;
 use Chatbot\Infrastructure\LanguageModel\ModelFactory;
 use Chatbot\Infrastructure\LanguageModel\Parrot;
 use Chatbot\Infrastructure\LanguageModel\ParrotTranslate;
+use Chatbot\Tests\BaseTestCase;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
 
 use function Safe\file_get_contents;
 
-class ModelfactoryTest extends TestCase
+class ModelfactoryTest extends BaseTestCase
 {
     private string $API_KEY;
 
     public function setUp(): void
     {
 
-        parent::setUp();
-
-        // Initialiser la variable API_KEY à partir de l'environnement
-        $this->API_KEY = getenv('API_KEY');
-
+        $apiKey = getenv('API_KEY');
+        if ($apiKey === false) {
+            throw new \RuntimeException('API_KEY environment variable is not set.');
+        } else {
+            $this->API_KEY = $apiKey;
+        }
     }
 
     public function testCreateModelParrot(): void

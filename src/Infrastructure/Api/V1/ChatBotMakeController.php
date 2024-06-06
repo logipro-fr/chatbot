@@ -13,13 +13,15 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+use function Safe\json_decode;
+
 class ChatBotMakeController
 {
     public function __construct(
-        private ConversationRepositoryInterface $repository, 
-        private LanguageModelAbstractFactory $factory, 
-        private EntityManagerInterface $entityManager)
-    {
+        private ConversationRepositoryInterface $repository,
+        private LanguageModelAbstractFactory $factory,
+        private EntityManagerInterface $entityManager
+    ) {
     }
     #[Route('api/v1/conversation/Make', 'makeConversation', methods: ['POST'])]
     public function execute(Request $request): Response
@@ -56,8 +58,9 @@ class ChatBotMakeController
     {
 
         $content = $request->getContent();
+        /** @var array<string> $data */
         $data = json_decode($content, true);
-        
+
 
         /** @var string */
         $prompt = $data['Prompt'];
@@ -65,7 +68,7 @@ class ChatBotMakeController
         $lmName = $data['lmName'];
         /** @var string */
         $context = $data['context'];
-        
+
         ///** @var string */
         //$prompt = $request->get('Prompt');
         ///** @var string */

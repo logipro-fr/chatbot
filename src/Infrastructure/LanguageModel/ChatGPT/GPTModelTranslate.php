@@ -10,7 +10,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class GPTModelTranslate implements LanguageModelInterface
 {
-    public function __construct(private HttpClientInterface $httpClient,private string $API_KEY ,private string $lang)
+    public function __construct(private HttpClientInterface $httpClient, private string $API_KEY, private string $lang)
     {
     }
 

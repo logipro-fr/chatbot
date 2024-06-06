@@ -17,16 +17,19 @@ use function Safe\file_get_contents;
 
 class MakeConversationTest extends BaseTestCase
 {
-
     private string $API_KEY;
 
     public function setUp(): void
     {
 
         parent::setUp();
-
-        // Initialiser la variable API_KEY à partir de l'environnement
-        $this->API_KEY = getenv('API_KEY');
+        $apiKey = getenv('API_KEY');
+        if ($apiKey === false) {
+            var_dump(false);
+            throw new \RuntimeException('API_KEY environment variable is not set.');
+        } else {
+            $this->API_KEY = $apiKey;
+        }
     }
 
     public function testSomeoneEngageAFirstSimpleConverdation(): void
@@ -77,7 +80,7 @@ class MakeConversationTest extends BaseTestCase
     {
         $repository = new ConversationRepositoryInMemory();
         $request = new MakeConversationRequest("Bonjour", "GPTModel", "Your're helpfull assistant", $this->createMockHttpClient("responseGETbonjour.json", 200));
-        
+
         $factory = new ModelFactory($this->API_KEY);
         $service = new MakeConversation($repository, $factory);
 

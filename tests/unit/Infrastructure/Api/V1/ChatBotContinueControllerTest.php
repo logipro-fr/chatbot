@@ -10,25 +10,28 @@ use Chatbot\Infrastructure\Api\V1\ChatBotContinueController;
 use Chatbot\Infrastructure\Api\V1\ChatBotMakeController;
 use Chatbot\Infrastructure\LanguageModel\ModelFactory;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
+use Chatbot\Tests\WebBaseTestCase;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
 
-class ChatBotContinueControllerTest extends TestCase
+class ChatBotContinueControllerTest extends WebBaseTestCase
 {
-
     private string $API_KEY;
 
     public function setUp(): void
     {
 
         parent::setUp();
-
-        // Initialiser la variable API_KEY à partir de l'environnement
-        $this->API_KEY = getenv('API_KEY');
-
+        $apiKey = getenv('API_KEY');
+        if ($apiKey === false) {
+            var_dump(false);
+            throw new \RuntimeException('API_KEY environment variable is not set.');
+        } else {
+            $this->API_KEY = $apiKey;
+        }
     }
-    
+
     public function testChatBotControllerExecute(): void
     {
         $repository = new ConversationRepositoryInMemory();

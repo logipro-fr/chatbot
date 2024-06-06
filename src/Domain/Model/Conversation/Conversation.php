@@ -10,7 +10,6 @@ use Safe\DateTimeImmutable as SafeDateTimeImmutable;
 
 class Conversation
 {
-
     private const DATE_PATTERN = DateTimeImmutable::ATOM;
 
     public function __construct(private PairArray $pairs, private ConversationId $id = new ConversationId(), private readonly DateTimeImmutable $createdAt = new SafeDateTimeImmutable())

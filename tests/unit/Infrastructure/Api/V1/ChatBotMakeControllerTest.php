@@ -6,6 +6,7 @@ use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
 use Chatbot\Infrastructure\Api\V1\ChatBotMakeController;
 use Chatbot\Infrastructure\LanguageModel\ModelFactory;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
+use Chatbot\Tests\WebBaseTestCase;
 use Doctrine\ORM\EntityManagerInterface;
 use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
 use PHPUnit\Framework\TestCase;
@@ -13,26 +14,34 @@ use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
 
-class ChatBotMakeControllerTest extends WebTestCase
-{
+use function Safe\json_encode;
 
+class ChatBotMakeControllerTest extends WebBaseTestCase
+{
     use DoctrineRepositoryTesterTrait;
+
     private KernelBrowser $client;
-    private ConversationRepositoryInterface $repository;
+    //private object $repository;
     private string $API_KEY;
 
-    
-    
+
+
     public function setUp(): void
     {
         parent::setUp();
-        $this->API_KEY = getenv('API_KEY');
+        $apiKey = getenv('API_KEY');
+        if ($apiKey === false) {
+            var_dump(false);
+            throw new \RuntimeException('API_KEY environment variable is not set.');
+        } else {
+            $this->API_KEY = $apiKey;
+        }
         $this->initDoctrineTester();
-        $this->clearTables(['conversations']);
+        //$this->clearTables(['conversations']);
         $this->client = static::createClient(["debug" => false]);
 
-        $autoInjectedRepo = $this->client->getContainer()->get('conversation.repository');
-        $this->repository = $autoInjectedRepo;
+        //$autoInjectedRepo = $this->client->getContainer()->get('conversation.repository');
+        //$this->repository = $autoInjectedRepo;
     }
     public function testControllerRouting(): void
     {
@@ -43,7 +52,7 @@ class ChatBotMakeControllerTest extends WebTestCase
             [],
             ['CONTENT_TYPE' => 'application/json'],
             json_encode([
-            
+
                 "Prompt" => "Chien",
                 "lmName" => "GPTModelTranslate",
                 "context" => "english",
@@ -64,7 +73,7 @@ class ChatBotMakeControllerTest extends WebTestCase
             [],
             ['CONTENT_TYPE' => 'application/json'],
             json_encode([
-            
+
                 "Prompt" => "Chien",
                 "lmName" => "",
                 "context" => "english",

@@ -26,12 +26,15 @@ class ChatBotTest extends BaseTestCase
     {
 
         parent::setUp();
-
-        // Initialiser la variable API_KEY à partir de l'environnement
-        $this->API_KEY = getenv('API_KEY');
-        var_dump($this->API_KEY);
+        $apiKey = getenv('API_KEY');
+        if ($apiKey === false) {
+            var_dump(false);
+            throw new \RuntimeException('API_KEY environment variable is not set.');
+        } else {
+            $this->API_KEY = $apiKey;
+        }
     }
-    
+
     public function testConversation(): void
     {
         $request = new RequestGPT(new Prompt("allo"), new Context("tu es un assistant sympa"));

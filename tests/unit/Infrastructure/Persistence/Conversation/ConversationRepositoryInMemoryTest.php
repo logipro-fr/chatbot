@@ -6,8 +6,8 @@ use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemo
 
 class ConversationRepositoryInMemoryTest extends ConversationRepositoryTestBase
 {
-   protected function initialize(): void 
-   {
-    $this->repository = new ConversationRepositoryInMemory;
-   }
+    protected function initialize(): void
+    {
+        $this->repository = new ConversationRepositoryInMemory();
+    }
 }

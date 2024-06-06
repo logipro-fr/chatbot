@@ -2,10 +2,10 @@
 
 namespace Chatbot\Tests;
 
-use PHPUnit\Framework\TestCase;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Dotenv\Dotenv;
 
-class BaseTestCase extends TestCase
+class WebBaseTestCase extends WebTestCase
 {
     protected function setUp(): void
     {

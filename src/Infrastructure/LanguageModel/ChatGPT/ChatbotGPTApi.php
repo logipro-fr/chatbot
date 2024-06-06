@@ -30,8 +30,8 @@ class ChatbotGPTApi implements ChatbotApiInterface
      */
     public function request(RequestInterface $request): ResponseGPT
     {
-        
-        
+
+
         /**
          * @var string $userprompt */
         $userprompt = "";

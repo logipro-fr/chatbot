@@ -28,6 +28,7 @@ use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
+use function PHPUnit\Framework\throwException;
 use function Safe\file_get_contents;
 
 /**
@@ -51,7 +52,14 @@ class QueryModelContext implements Context
         $dotenv->load(__DIR__ . '/../.env.test');
 
         // Récupérer la variable d'environnement
-        $this->apiKey = getenv('API_KEY');
+        $apiKey = getenv('API_KEY');
+
+        if ($apiKey === false) {
+            var_dump(false);
+            throw new \RuntimeException('API_KEY environment variable is not set.');
+        } else {
+            $this->apiKey = $apiKey;
+        }
     }
 
 
@@ -81,7 +89,9 @@ class QueryModelContext implements Context
      */
     public function iGetAnAnswer(string $answer): void
     {
-        $this->conversation = $this->repository->findById(new ConversationId($this->response->conversationId));
+        /** @var Conversation $conversation */
+        $conversation = $this->repository->findById(new ConversationId($this->response->conversationId));
+        $this->conversation = $conversation;
         $pair = $this->conversation->getpair(0);
         $response = $pair->getAnswer()->getMessage();
         Assert::assertEquals($answer, $response);
@@ -126,6 +136,7 @@ class QueryModelContext implements Context
      */
     public function iHaveAnAnswer(): void
     {
+        /** @var Conversation $conversation */
         $conversation = $this->repository->findById(new ConversationId($this->response->conversationId));
         $pair = $conversation->getpair(1);
         $response = $pair->getAnswer()->getMessage();
@@ -137,6 +148,7 @@ class QueryModelContext implements Context
      */
     public function theNumberOfTokenHasIncreased(): void
     {
+        /** @var Conversation $conversation */
         $conversation = $this->repository->findById(new ConversationId($this->response->conversationId));
         Assert::assertGreaterThan($this->tokencount1, $conversation->getTotalToken());
     }
@@ -161,10 +173,11 @@ class QueryModelContext implements Context
      */
     public function iGetAnAnswerOk(string $arg1): void
     {
+        /** @var Conversation $conversation */
         $conversation = $this->repository->findById(new ConversationId($this->response->conversationId));
-        $pair = $conversation->getpair(0);
-        $response = $pair->getAnswer()->getCodeStatus();
-        Assert::assertEquals(200, $response);
+            $pair = $conversation->getpair(0);
+            $response = $pair->getAnswer()->getCodeStatus();
+            Assert::assertEquals(200, $response);
     }
 
 
@@ -173,10 +186,12 @@ class QueryModelContext implements Context
      */
     public function theResponseBodyContainsAResponseGeneratedByTheModel(): void
     {
+        /** @var Conversation $conversation */
         $conversation = $this->repository->findById(new ConversationId($this->response->conversationId));
-        $pair = $conversation->getpair(0);
-        $response = $pair->getAnswer()->getMessage();
-        Assert::assertNotEmpty($response);
+
+            $pair = $conversation->getpair(0);
+            $response = $pair->getAnswer()->getMessage();
+            Assert::assertNotEmpty($response);
     }
 
 
@@ -201,8 +216,9 @@ class QueryModelContext implements Context
      */
     public function iGetTwoAnswersOk(string $arg1): void
     {
-        $this->conversation = $this->repository->findById(new ConversationId($this->response->conversationId));
-
+        /** @var Conversation $conversation */
+        $conversation = $this->repository->findById(new ConversationId($this->response->conversationId));
+        $this->conversation = $conversation;
         Assert::assertNotEmpty($this->conversation->getPair(0)->getAnswer()->getCodeStatus());
         Assert::assertNotEmpty($this->conversation->getPair(1)->getAnswer()->getCodeStatus());
     }

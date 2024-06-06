@@ -4,10 +4,11 @@ namespace Chatbot\Infrastructure\Persistence\Doctrine\Types;
 
 use Chatbot\Domain\Model\Conversation\Pair;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Types\ConversionException;
 use Doctrine\DBAL\Types\Type;
 
-class PairCollectionType extends Type {
-
+class PairCollectionType extends Type
+{
     public const TYPE_NAME = 'pairs';
 
     public function getName(): string
@@ -16,7 +17,7 @@ class PairCollectionType extends Type {
     }
 
     /**
-     * @param array<Pair> $value
+     * @param Pair $value
      * @throws ConversionException
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform): mixed
@@ -24,6 +25,10 @@ class PairCollectionType extends Type {
         return serialize($value);
     }
 
+    /**
+     * @param string $value
+     * @throws ConversionException
+     */
     public function convertToPHPValue($value, AbstractPlatform $platform): Pair
     {
         /** @var Pair*/
@@ -33,7 +38,6 @@ class PairCollectionType extends Type {
 
     public function getSQLDeclaration(array $column, AbstractPlatform $platform)
     {
-        return "text";
+        return $platform->getBlobTypeDeclarationSQL($column); // Utilise la méthode de la plateforme pour obtenir la déclaration SQL pour un champ BLOB
     }
-
 }

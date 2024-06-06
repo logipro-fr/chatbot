@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace Chatbot\Infrastructure\Persistence\Conversation;
 
@@ -8,10 +8,7 @@ use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 
-
-/**
- * @extends EntityRepository<Map>
- */
+/** @extends EntityRepository<Conversation>*/
 
 class ConversationRepositoryDoctrine extends EntityRepository implements ConversationRepositoryInterface
 {
