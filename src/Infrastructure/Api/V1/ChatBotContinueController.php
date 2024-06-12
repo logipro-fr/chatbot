@@ -44,11 +44,6 @@ class ChatBotContinueController
             );
         }
         $response = $conversation->getResponse();
-        /** @var Conversation $conversation */
-        $conversation = $this->repository->findById(new ConversationId($response->conversationId));
-        $pair = $conversation->getPair(0);
-        $responseMessage = $pair->getAnswer()->getMessage();
-        $responseCode = $pair->getAnswer()->getCodeStatus();
         return new JsonResponse(
             [
                 'success' => true,
