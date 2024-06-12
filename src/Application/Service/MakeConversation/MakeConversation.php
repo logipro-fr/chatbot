@@ -14,8 +14,10 @@ class MakeConversation
     private MakeConversationResponse $response;
 
 
-    public function __construct(private ConversationRepositoryInterface $repository, private LanguageModelAbstractFactory $factory)
-    {
+    public function __construct(
+        private ConversationRepositoryInterface $repository,
+        private LanguageModelAbstractFactory $factory
+    ) {
     }
     public function execute(MakeConversationRequest $request): void
     {
@@ -25,9 +27,8 @@ class MakeConversation
         $message = (new Ask())->execute(new Prompt($request->prompt), $lm);
         $conversation->addPair(new Prompt($request->prompt), $message);
         $this->addToRepository($conversation);
-        var_dump($conversation->getPair($conversation->getNbPair()-1));
-        $this->response = new MakeConversationResponse($conversation->getId(), $conversation->getPair($conversation->getNbPair()-1),$conversation->getNbPair());
-     
+        $pair = $conversation->getPair($conversation->getNbPair() - 1);
+        $this->response = new MakeConversationResponse($conversation->getId(), $pair, $conversation->getNbPair());
     }
     private function addToRepository(Conversation $conversation): void
     {

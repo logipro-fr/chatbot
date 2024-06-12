@@ -21,17 +21,13 @@ class ChatBotMakeControllerTest extends WebBaseTestCase
     use DoctrineRepositoryTesterTrait;
 
     private KernelBrowser $client;
-    //private object $repository;
     private string $API_KEY;
-
-
 
     public function setUp(): void
     {
         parent::setUp();
         $apiKey = getenv('API_KEY');
         if ($apiKey === false) {
-            var_dump(false);
             throw new \RuntimeException('API_KEY environment variable is not set.');
         } else {
             $this->API_KEY = $apiKey;
@@ -43,6 +39,31 @@ class ChatBotMakeControllerTest extends WebBaseTestCase
         //$autoInjectedRepo = $this->client->getContainer()->get('conversation.repository');
         //$this->repository = $autoInjectedRepo;
     }
+
+    public function testChatBotControllerExecute(): void
+    {
+        $repository = new ConversationRepositoryInMemory();
+        $factory = new ModelFactory($this->API_KEY);
+        $controller = new ChatBotMakeController($repository, $factory, $this->getEntityManager());
+        $request = Request::create(
+            "/api/v1/conversation/make",
+            "POST",
+            [],
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode([
+                "Prompt" => "Chien",
+                "lmName" => "GPTModelTranslate",
+                "context" => "english",
+            ])
+        );
+        $response = $controller->execute($request);
+        /** @var string */
+        $responseContent = $response->getContent();
+        $this->assertJson($responseContent);
+    }
+
     public function testControllerRouting(): void
     {
         $this->client->request(
@@ -60,7 +81,14 @@ class ChatBotMakeControllerTest extends WebBaseTestCase
         );
         /** @var string */
         $responseContent = $this->client->getResponse()->getContent();
-        $this->assertResponseIsSuccessful();
+        $responseCode = $this->client->getResponse()->getStatusCode();
+
+        $this->assertStringContainsString('"success":true', $responseContent);
+        $this->assertEquals(200, $responseCode);
+        $this->assertStringContainsString('"id":"con_', $responseContent);
+        $this->assertStringContainsString('"nbPair":', $responseContent);
+        $this->assertStringContainsString('"lastPair":', $responseContent);
+        $this->assertStringContainsString('"message":"', $responseContent);
     }
 
 
@@ -81,42 +109,12 @@ class ChatBotMakeControllerTest extends WebBaseTestCase
         );
         /** @var string */
         $responseContent = $this->client->getResponse()->getContent();
+        $responseCode = $this->client->getResponse()->getStatusCode();
         $this->assertResponseIsSuccessful();
 
         $this->assertStringContainsString('"success":false', $responseContent);
-        $this->assertStringContainsString('"statusCode":', $responseContent);
+        $this->assertEquals(200, $responseCode);
         $this->assertStringContainsString('"data":"', $responseContent);
-        $this->assertStringContainsString('"message":"', $responseContent);
-    }
-
-
-    public function testChatBotControllerExecute(): void
-    {
-        $repository = new ConversationRepositoryInMemory();
-        $factory = new ModelFactory($this->API_KEY);
-        $controller = new ChatBotMakeController($repository, $factory, $this->getEntityManager());
-        $request = Request::create(
-            "/api/v1/conversation/make",
-            "POST",
-            [],
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            json_encode([
-                "Prompt" => "Chien",
-                "lmName" => "GPTModelTranslate",
-                "context" => "english",
-            ])
-        );
-
-
-        $response = $controller->execute($request);
-        /** @var string */
-        $responseContent = $response->getContent();
-
-        $this->assertStringContainsString('"success":true', $responseContent);
-        $this->assertStringContainsString('"statusCode":200', $responseContent);
-        $this->assertStringContainsString('"data":"con_', $responseContent);
         $this->assertStringContainsString('"message":"', $responseContent);
     }
 }

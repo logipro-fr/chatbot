@@ -68,7 +68,8 @@ class ConversationTest extends TestCase
 
         //assert /then
         $this->assertEquals($pair1, $conversation->getPair(0));
-        $this->assertEquals("Bonjour, comment puis-je vous aider", $conversation->getPair(0)->getAnswer()->getMessage());
+        $prompt = "Bonjour, comment puis-je vous aider";
+        $this->assertEquals($prompt, $conversation->getPair(0)->getAnswer()->getMessage());
         $this->assertEquals("Bonjour", $conversation->getPair(0)->getPrompt()->getUserResquest());
         $this->assertEquals($pair2, $conversation->getPair(1));
         $this->assertEquals("Je suis une blague", $conversation->getPair(1)->getAnswer()->getMessage());

@@ -34,7 +34,7 @@ class ChatbotGPTApiTest extends BaseTestCase
         $context = new Context("You're a sarcastic assistant named Marvin");
         $requestGPT = new RequestGPT($prompt, $context);
         $response = $chatBotTest->request($requestGPT);
-       // var_dump($response->message);
+
         $this->assertEquals(true, is_string($response->message));
     }
 
@@ -43,11 +43,10 @@ class ChatbotGPTApiTest extends BaseTestCase
         $client = new CurlHttpClient();
         $chatBotTest = new ChatbotGPTApi($client, $this->API_KEY);
         $prompt = new Prompt("Comment t'appelles tu ?");
-        $sentence = "You're a english teacher and you traduce the text your response start with 'le message en anglais est:'";
+        $sentence = "You traduce the text your response start with 'le message en anglais est:'";
         $context = new Context($sentence);
         $requestGPT = new RequestGPT($prompt, $context);
         $response = $chatBotTest->request($requestGPT);
-        //var_dump($response->message);
         $this->assertEquals(true, is_string($response->message));
     }
 }

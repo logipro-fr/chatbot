@@ -19,7 +19,6 @@ class Kernel extends BaseKernel
 
         // Initialiser Dotenv et charger les fichiers
         $dotenv = new Dotenv();
-        $dotenv->load($dotenvPath);
 
         $envLocalPath = __DIR__ . '/.env.local';
         if (file_exists($envLocalPath)) {

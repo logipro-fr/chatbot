@@ -24,7 +24,7 @@ class ConversationRepositoryDoctrineTest extends ConversationRepositoryTestBase
         //$this->clearTables(["conversations"]);
 
         $repository = new ConversationRepositoryDoctrine($this->getEntityManager());
-        //var_dump(Type::getTypesMap());
+
         $repository->flush();
         $this->assertTrue(true);
     }

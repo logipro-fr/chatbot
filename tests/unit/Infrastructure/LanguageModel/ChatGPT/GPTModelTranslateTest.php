@@ -26,7 +26,8 @@ class GPTModelTranslateTest extends TestCase
 
     public function testGPTModelTranslate(): void
     {
-        $service = new GPTModelTranslate($this->createMockHttpClient('responseGETHello.json', 200), $this->API_KEY, "english");
+        $client = $this->createMockHttpClient('responseGETHello.json', 200);
+        $service = new GPTModelTranslate($client, $this->API_KEY, "english");
         $message = $service->generateTextAnswer(new Prompt("Bonjour"));
         $this->assertEquals("Hello", $message->getMessage());
     }

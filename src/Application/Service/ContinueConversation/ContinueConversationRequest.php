@@ -7,7 +7,11 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class ContinueConversationRequest
 {
-    public function __construct(public readonly string $prompt, public readonly ConversationId $convId, public readonly string $lmName, public readonly ?HttpClientInterface $client = null)
-    {
+    public function __construct(
+        public readonly string $prompt,
+        public readonly ConversationId $convId,
+        public readonly string $lmName,
+        public readonly ?HttpClientInterface $client = null
+    ) {
     }
 }

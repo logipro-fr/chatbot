@@ -30,7 +30,7 @@ class PairCollectionType extends Type
      * @param string $value
      * @throws ConversionException
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform): PairArray
+    public function convertToPHPValue($value, AbstractPlatform $platform): PairArray|Pair
     {
         /** @var PairArray*/
         $pair = unserialize($value);
@@ -40,7 +40,7 @@ class PairCollectionType extends Type
 
     public function getSQLDeclaration(array $column, AbstractPlatform $platform)
     {
-    
-        return $platform->getBlobTypeDeclarationSQL($column); // Utilise la méthode de la plateforme pour obtenir la déclaration SQL pour un champ BLOB
+
+        return $platform->getBlobTypeDeclarationSQL($column);
     }
 }

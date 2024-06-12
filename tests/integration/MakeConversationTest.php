@@ -34,8 +34,8 @@ class MakeConversationTest extends BaseTestCase
         $repository = new ConversationRepositoryInMemory();
         $client = new CurlHttpClient();
         $factory = new ModelFactory($this->API_KEY);
-
-        $request = new MakeConversationRequest("Bonjour, comment va tu ?", "GPTModel", "You're a helpfull assistant assistant ");
+        $context = "You're a helpfull assistant assistant ";
+        $request = new MakeConversationRequest("Bonjour, comment va tu ?", "GPTModel", $context);
         $service = new MakeConversation($repository, $factory);
         $service->execute($request);
 
@@ -45,15 +45,16 @@ class MakeConversationTest extends BaseTestCase
         $conversation = $repository->findById(new ConversationId($response->conversationId));
         $pair = $conversation->getPair(0);
         $responseMessage = $pair->getAnswer()->getMessage();
-        //var_dump($responseMessage);
-        $this->assertEquals(true, is_string($responseMessage));
 
-        $request = new ContinueConversationRequest("Ca va super ! Quel temps fait il chez toi ?", new ConversationId($response->conversationId), "GPTModel", $client);
+        $this->assertEquals(true, is_string($responseMessage));
+        $prompt = "Ca va super ! Quel temps fait il chez toi ?";
+        $id = new ConversationId($response->conversationId) ;
+        $request = new ContinueConversationRequest($prompt, $id, "GPTModel", $client);
         $service = new ContinueConversation($repository, $factory);
         $service->execute($request);
         $pair = $conversation->getPair(1);
         $responseMessage = $pair->getAnswer()->getMessage();
-        //var_dump($responseMessage);
+
         $this->assertEquals(true, is_string($responseMessage));
     }
 }

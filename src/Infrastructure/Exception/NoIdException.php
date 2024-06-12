@@ -2,6 +2,6 @@
 
 namespace Chatbot\Infrastructure\Exception;
 
-class noIdException extends \Exception
+class NoIdException extends \Exception
 {
 }

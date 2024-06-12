@@ -6,5 +6,5 @@ use Chatbot\Domain\Model\Conversation\Conversation;
 
 interface ApiInterface
 {
-    public function ConversationApiRequest(Conversation $conversation): Response;
+    public function conversationApiRequest(Conversation $conversation): Response;
 }

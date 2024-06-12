@@ -126,7 +126,8 @@ class QueryModelContext implements Context
     public function iAsk(string $prompt): void
     {
         $factory = new ModelFactory($this->apiKey);
-        $request = new ContinueConversationRequest($prompt, new ConversationId($this->response->conversationId), "Parrot");
+        $id = new ConversationId($this->response->conversationId);
+        $request = new ContinueConversationRequest($prompt, $id, "Parrot");
         $service = new ContinueConversation($this->repository, $factory);
         $service->execute($request);
     }
@@ -198,7 +199,7 @@ class QueryModelContext implements Context
     /**
      * @When I submit two POST requests to :arg1 with the payload {:arg2: :prompt1 } and {:arg4: :prompt2}
      */
-    public function iSubmitTwoPostRequestsToWithThePayloadAnd(string $arg1, string $arg2, string $prompt1, string $arg4, string $prompt2): void
+    public function submitTwoRequests(string $arg1, string $arg2, string $prompt1, string $arg4, string $prompt2): void
     {
         $request = new MakeConversationRequest($prompt1, "Parrot", "you're helpfull assitant");
         $this->repository = new ConversationRepositoryInMemory();
@@ -206,7 +207,8 @@ class QueryModelContext implements Context
         $service = new MakeConversation($this->repository, $factory);
         $service->execute($request);
         $this->response = $service->getResponse();
-        $request = new ContinueConversationRequest($prompt2, new ConversationId($this->response->conversationId), "Parrot");
+        $id = new ConversationId($this->response->conversationId);
+        $request = new ContinueConversationRequest($prompt2, $id, "Parrot");
         $service = new ContinueConversation($this->repository, $factory);
         $service->execute($request);
     }
@@ -250,15 +252,16 @@ class QueryModelContext implements Context
         $this->conversation = $this->repository->findById(new ConversationId($response->conversationId));
         $pair = $this->conversation->getPair(0);
         $responseMessage = $pair->getAnswer()->getMessage();
-        //var_dump($responseMessage);
+
         $this->nbPair = $this->conversation->getNbPair();
     }
 
     private function createMockHttpClient(string $filename, int $code): MockHttpClient
     {
+        $code = ['http_code' => $code];
         $responses = [
-            new MockResponse(file_get_contents(__DIR__ . '/ressources/responseGETbonjour.json'), ['http_code' => $code]),
-            new MockResponse(file_get_contents(__DIR__ . '/ressources/' . $filename), ['http_code' => $code]),
+            new MockResponse(file_get_contents(__DIR__ . '/ressources/responseGETbonjour.json'), $code),
+            new MockResponse(file_get_contents(__DIR__ . '/ressources/' . $filename), $code),
         ];
 
         return new MockHttpClient($responses, 'https://api.openai.com/v1/chat/completion');

@@ -27,7 +27,6 @@ class ChatBotContinueController
     public function execute(Request $request): Response
     {
         $request = $this->buildContinueconversationRequest($request);
-
         $conversation = new ContinueConversation($this->repository, $this->factory);
 
         try {
@@ -47,7 +46,7 @@ class ChatBotContinueController
         return new JsonResponse(
             [
                 'success' => true,
-                'errorCode' =>"",
+                'errorCode' => "",
                 'data' => [
                     'id' => $response->conversationId->__toString(),
                     'nbPair' => $response->nbPair,
@@ -57,7 +56,6 @@ class ChatBotContinueController
             ],
             200
         );
-
     }
 
     private function buildContinueconversationRequest(Request $request): ContinueConversationRequest

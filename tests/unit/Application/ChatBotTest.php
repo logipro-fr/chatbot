@@ -28,7 +28,6 @@ class ChatBotTest extends BaseTestCase
         parent::setUp();
         $apiKey = getenv('API_KEY');
         if ($apiKey === false) {
-            var_dump(false);
             throw new \RuntimeException('API_KEY environment variable is not set.');
         } else {
             $this->API_KEY = $apiKey;
@@ -41,7 +40,8 @@ class ChatBotTest extends BaseTestCase
         $engine = new LanguageModelFake();
         $engine->add("\n\nBonjour ! Je vais bien merci ! comment puis-je vous aidez aujourd'hui");
         $conversation = new Conversation(new PairArray());
-        $chatBot = (new ChatBot($this->createMockHttpClient('responseGETbonjour.json', 200), $this->API_KEY))->conversation($request);
+        $client = $this->createMockHttpClient('responseGETbonjour.json', 200);
+        $chatBot = (new ChatBot($client, $this->API_KEY))->conversation($request);
 
         $this->assertEquals(ResponseGPT::class, $chatBot::class);
         $this->assertEquals(

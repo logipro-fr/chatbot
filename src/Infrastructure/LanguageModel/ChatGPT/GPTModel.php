@@ -11,8 +11,11 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class GPTModel implements LanguageModelInterface
 {
-    public function __construct(private HttpClientInterface $httpClient, private Context $context, private string $API_KEY)
-    {
+    public function __construct(
+        private HttpClientInterface $httpClient,
+        private Context $context,
+        private string $API_KEY
+    ) {
     }
 
     public function generateTextAnswer(Prompt $prompt): Answer

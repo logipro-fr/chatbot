@@ -24,7 +24,7 @@ abstract class ConversationRepositoryTestBase extends TestCase
         $id = new ConversationId("unId");
 
         $conversation = new Conversation(new PairArray(), $id);
-        //var_dump($conversation);
+
         $conversation2 = new Conversation(new PairArray(), new ConversationId("id2"));
 
 

@@ -18,7 +18,7 @@ class ModelFactory extends LanguageModelAbstractFactory
     private HttpClientInterface $client;
     public function __construct(private string $API_KEY, ?HttpClientInterface $client = null)
     {
-        //var_dump($this->API_KEY);
+
         if ($client == null) {
             $this->client = new CurlHttpClient();
         } else {

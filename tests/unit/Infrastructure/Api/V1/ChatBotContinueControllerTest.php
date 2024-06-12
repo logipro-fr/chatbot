@@ -12,6 +12,10 @@ use Chatbot\Tests\WebBaseTestCase;
 use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\VarDumper\Cloner\Data;
+
+use function Safe\json_decode;
+use function Safe\json_encode;
 
 class ChatBotContinueControllerTest extends WebBaseTestCase
 {
@@ -23,11 +27,9 @@ class ChatBotContinueControllerTest extends WebBaseTestCase
 
     public function setUp(): void
     {
-
         parent::setUp();
         $apiKey = getenv('API_KEY');
         if ($apiKey === false) {
-            var_dump(false);
             throw new \RuntimeException('API_KEY environment variable is not set.');
         } else {
             $this->API_KEY = $apiKey;
@@ -35,6 +37,9 @@ class ChatBotContinueControllerTest extends WebBaseTestCase
         $this->initDoctrineTester();
         //$this->clearTables(['conversations']);
         $this->client = static::createClient(["debug" => false]);
+
+        //$autoInjectedRepo = $this->client->getContainer()->get('conversation.repository');
+        //$this->repository = $autoInjectedRepo;
     }
 
     public function testChatBotControllerExecute(): void
@@ -60,19 +65,61 @@ class ChatBotContinueControllerTest extends WebBaseTestCase
                 "lmName" => "GPTModelTranslate",
             ])
         );
-
-
         $response = $controller->execute($request);
         /** @var string */
         $responseContent = $response->getContent();
-
-        $this->assertStringContainsString('"success":true', $responseContent);
-        $this->assertStringContainsString('"statusCode":200', $responseContent);
-        $this->assertStringContainsString('"data":"con_', $responseContent);
-        $this->assertStringContainsString('"message":"', $responseContent);
+        $this->assertJson($responseContent);
     }
 
     public function testControllerRouting(): void
+    {
+        $this->client->request(
+            "POST",
+            "/api/v1/conversation/Make",
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode([
+
+                "Prompt" => "Bonjour",
+                "lmName" => "GPTModelTranslate",
+                "context" => "youre helpfull assistant",
+            ])
+        );
+
+        /** @var string */
+        $data = $this->client->getResponse()->getContent();
+        /** @var array<mixed,array<mixed>> */
+        $responseContent = json_decode($data, true);
+        /** @var string */
+        $id = $responseContent['data']['id'];
+
+        $this->client->request(
+            "POST",
+            "/api/v1/conversation/Continue",
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode([
+
+                "Prompt" => "Bonjour",
+                "convId" => "$id",
+                "lmName" => "GPTModelTranslate",
+            ])
+        );
+        /** @var string */
+        $responseContent = $this->client->getResponse()->getContent();
+        $responseCode = $this->client->getResponse()->getStatusCode();
+
+        $this->assertStringContainsString('"success":true', $responseContent);
+        $this->assertEquals(200, $responseCode);
+        $this->assertStringContainsString('"id":"con_', $responseContent);
+        $this->assertStringContainsString('"nbPair":', $responseContent);
+        $this->assertStringContainsString('"lastPair":', $responseContent);
+        $this->assertStringContainsString('"message":"', $responseContent);
+    }
+
+    public function testControllerException(): void
     {
         $this->client->request(
             "POST",
@@ -83,12 +130,18 @@ class ChatBotContinueControllerTest extends WebBaseTestCase
             json_encode([
 
                 "Prompt" => "Bonjour",
-                "convId" => "con_6661821d0f85a",
+                "convId" => "con_5aez1gf4rz3251vf",
                 "lmName" => "GPTModelTranslate",
             ])
         );
         /** @var string */
         $responseContent = $this->client->getResponse()->getContent();
+        $responseCode = $this->client->getResponse()->getStatusCode();
         $this->assertResponseIsSuccessful();
+
+        $this->assertStringContainsString('"success":false', $responseContent);
+        $this->assertEquals(200, $responseCode);
+        $this->assertStringContainsString('"data":"', $responseContent);
+        $this->assertStringContainsString('"message":"', $responseContent);
     }
 }

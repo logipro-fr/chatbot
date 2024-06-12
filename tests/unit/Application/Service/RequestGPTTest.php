@@ -7,7 +7,7 @@ use Chatbot\Domain\Model\Conversation\Prompt;
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\RequestGPT;
 use PHPUnit\Framework\TestCase;
 
-class requestGPTTest extends TestCase
+class RequestGPTTest extends TestCase
 {
     public function testRequestGPT(): void
     {

@@ -11,6 +11,7 @@ class ContextFactorytTest extends TestCase
     public function testContextFactory(): void
     {
         $this->assertInstanceOf(Context::class, (new ContextFactory())->create("english"));
-        $this->assertEquals("respond only with the prompt translated into english", (new ContextFactory())->create("english")->context);
+        $context = "respond only with the prompt translated into english";
+        $this->assertEquals($context, (new ContextFactory())->create("english")->context);
     }
 }

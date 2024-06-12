@@ -23,7 +23,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 /**
  * Defines applaication features from the specific context.
  */
-class translateContext implements Context
+class TranslateContext implements Context
 {
     private ConversationRepositoryInMemory $repository;
     private MakeConversationResponse $response;
@@ -43,7 +43,6 @@ class translateContext implements Context
         $apiKey = getenv('API_KEY');
 
         if ($apiKey === false) {
-            var_dump(false);
             throw new \RuntimeException('API_KEY environment variable is not set.');
         } else {
             $this->apiKey = $apiKey;
@@ -82,7 +81,7 @@ class translateContext implements Context
         $conversation = $this->repository->findById(new ConversationId($this->response->conversationId));
         $pair = $conversation->getPair(0);
         $answer = $pair->getAnswer()->getMessage();
-       // var_dump($answer);
+
         Assert::assertEquals($answerExpected, $answer) ;
     }
 }

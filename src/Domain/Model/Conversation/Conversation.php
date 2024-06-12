@@ -12,8 +12,11 @@ class Conversation
 {
     private const DATE_PATTERN = DateTimeImmutable::ATOM;
 
-    public function __construct(private PairArray $pairs, private ConversationId $id = new ConversationId(), private readonly DateTimeImmutable $createdAt = new SafeDateTimeImmutable())
-    {
+    public function __construct(
+        private PairArray $pairs,
+        private ConversationId $id = new ConversationId(),
+        private readonly DateTimeImmutable $createdAt = new SafeDateTimeImmutable()
+    ) {
         (new EventFacade())->dispatch(new ConversationCreated($this->id));
     }
 

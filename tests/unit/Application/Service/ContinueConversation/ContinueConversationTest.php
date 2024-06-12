@@ -28,7 +28,6 @@ class ContinueConversationtest extends BaseTestCase
         parent::setUp();
         $apiKey = getenv('API_KEY');
         if ($apiKey === false) {
-            var_dump(false);
             throw new \RuntimeException('API_KEY environment variable is not set.');
         } else {
             $this->API_KEY = $apiKey;

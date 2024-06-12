@@ -25,7 +25,6 @@ class MakeConversationTest extends BaseTestCase
         parent::setUp();
         $apiKey = getenv('API_KEY');
         if ($apiKey === false) {
-            var_dump(false);
             throw new \RuntimeException('API_KEY environment variable is not set.');
         } else {
             $this->API_KEY = $apiKey;
@@ -79,7 +78,8 @@ class MakeConversationTest extends BaseTestCase
     public function testWithChatGPTModel(): void
     {
         $repository = new ConversationRepositoryInMemory();
-        $request = new MakeConversationRequest("Bonjour", "GPTModel", "Your're helpfull assistant", $this->createMockHttpClient("responseGETbonjour.json", 200));
+        $client = $this->createMockHttpClient("responseGETbonjour.json", 200);
+        $request = new MakeConversationRequest("Bonjour", "GPTModel", "Your're helpfull assistant", $client);
 
         $factory = new ModelFactory($this->API_KEY);
         $service = new MakeConversation($repository, $factory);
@@ -108,7 +108,8 @@ class MakeConversationTest extends BaseTestCase
     public function testWithChatGPTModelTranslate(): void
     {
         $repository = new ConversationRepositoryInMemory();
-        $request = new MakeConversationRequest("Bonjour", "GPTModelTranslate", "english", $this->createMockHttpClient("responseGETbonjour.json", 200));
+        $client = $this->createMockHttpClient("responseGETbonjour.json", 200);
+        $request = new MakeConversationRequest("Bonjour", "GPTModelTranslate", "english", $client);
         $factory = new ModelFactory($this->API_KEY);
         $service = new MakeConversation($repository, $factory);
 

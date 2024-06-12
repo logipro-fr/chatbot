@@ -44,7 +44,6 @@ class ChatBotGPTTranslateTest extends BaseTestCase
         $conversation = $repository->findById(new ConversationId($response->conversationId));
         $pair = $conversation->getPair(0);
         $answer = $pair->getAnswer()->getMessage();
-        //var_dump($answer);
         $this->assertEquals("Hello, how are you?", $answer) ;
     }
 }

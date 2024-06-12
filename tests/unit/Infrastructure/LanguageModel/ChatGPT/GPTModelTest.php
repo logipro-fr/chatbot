@@ -22,7 +22,6 @@ class GPTModelTest extends BaseTestCase
         parent::setUp();
         $apiKey = getenv('API_KEY');
         if ($apiKey === false) {
-            var_dump(false);
             throw new \RuntimeException('API_KEY environment variable is not set.');
         } else {
             $this->API_KEY = $apiKey;
@@ -31,9 +30,11 @@ class GPTModelTest extends BaseTestCase
 
     public function testGPTModel(): void
     {
-        $service = new GPTModel($this->createMockHttpClient('responseGETbonjour.json', 200), new Context("Your're helpfull assistant"), $this->API_KEY);
+        $client = $this->createMockHttpClient('responseGETbonjour.json', 200);
+        $service = new GPTModel($client, new Context("Your're helpfull assistant"), $this->API_KEY);
         $message = $service->generateTextAnswer(new Prompt("Bonjour"));
-        $this->assertEquals("\n\nBonjour ! Je vais bien merci ! comment puis-je vous aidez aujourd'hui", $message->getMessage());
+        $response = "\n\nBonjour ! Je vais bien merci ! comment puis-je vous aidez aujourd'hui";
+        $this->assertEquals($response, $message->getMessage());
     }
 
     private function createMockHttpClient(string $filename, int $code): MockHttpClient
