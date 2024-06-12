@@ -1,6 +1,6 @@
 <?php
 
-namespace chatbot\Infrastructure\Shared;
+namespace Chatbot\Infrastructure\Shared;
 
 class CurrentWorkDirPath
 {

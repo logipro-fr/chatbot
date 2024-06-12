@@ -10,7 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 use function Safe\json_encode;
 
-class MakeConversationControllerTest extends WebTestCase
+class ContinueConversationControllerTest extends WebTestCase
 {
     use DoctrineRepositoryTesterTrait;
 
@@ -32,15 +32,15 @@ class MakeConversationControllerTest extends WebTestCase
         //$client = static::createClient();
         $this->client->request(
             "POST",
-            "/api/v1/conversation/Make",
+            "/api/v1/conversation/Continue",
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
             json_encode(
                 [
-                "Prompt" => "Chien",
-                "lmName" => "GPTModelTranslate",
-                "context" => "english",
+                "Prompt" => "Tu peux me repeter ce que tu as dit avant ?",
+                "convId" => "con_66680a4a5ee25",
+                "lmName" => "GPTModel",
                 ]
             )
         );

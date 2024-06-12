@@ -97,7 +97,7 @@ class ChatBotMakeControllerTest extends WebBaseTestCase
         $controller = new ChatBotMakeController($repository, $factory, $this->getEntityManager());
         $request = Request::create(
             "/api/v1/conversation/make",
-            "GET",
+            "POST",
             [],
             [],
             [],

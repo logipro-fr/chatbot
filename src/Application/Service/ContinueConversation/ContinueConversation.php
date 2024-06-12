@@ -7,6 +7,7 @@ use Chatbot\Domain\Model\Conversation\Conversation;
 use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
 use Chatbot\Domain\Model\Conversation\Prompt;
 use Chatbot\Domain\Service\Ask\Ask;
+use Chatbot\Infrastructure\Exception\noIdException;
 
 class ContinueConversation
 {
@@ -21,10 +22,13 @@ class ContinueConversation
         /** @var Conversation*/
 
         $conversation = $this->repository->findById($request->convId);
+        if ($conversation == null) {
+            throw new noIdException();
+        }
         $lm = $this->factory->create($request->lmName, $request->prompt);
         $message = (new Ask())->execute(new Prompt($request->prompt), $lm);
         $conversation->addPair(new Prompt($request->prompt), $message);
-        $this->response = new ContinueConversationResponse($conversation->getId());
+        $this->response = new ContinueConversationResponse($conversation->getId(), $conversation->getPair($conversation->getNbPair()-1),$conversation->getNbPair());
     }
 
     public function getResponse(): ContinueConversationResponse

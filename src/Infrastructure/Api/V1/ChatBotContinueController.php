@@ -8,6 +8,7 @@ use Chatbot\Application\Service\MakeConversation\LanguageModelAbstractFactory;
 use Chatbot\Domain\Model\Conversation\Conversation;
 use Chatbot\Domain\Model\Conversation\ConversationId;
 use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
+use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,7 +19,8 @@ class ChatBotContinueController
 {
     public function __construct(
         private ConversationRepositoryInterface $repository,
-        private LanguageModelAbstractFactory $factory
+        private LanguageModelAbstractFactory $factory,
+        private EntityManagerInterface $entityManager
     ) {
     }
     #[Route('api/v1/conversation/Continue', 'continueConversation', methods: ['POST'])]
@@ -30,13 +32,14 @@ class ChatBotContinueController
 
         try {
             $conversation->execute($request);
+            $this->entityManager->flush();
         } catch (Exception $e) {
             return new JsonResponse(
                 [
                     'success' => false,
                     'statusCode' => '',
                     'data' => '',
-                    'message' => '',
+                    'message' => "$e",
                 ]
             );
         }
@@ -49,23 +52,34 @@ class ChatBotContinueController
         return new JsonResponse(
             [
                 'success' => true,
-                'statusCode' => $responseCode,
-                'data' => "$response->conversationId",
-                'message' => "$responseMessage",
-            ]
+                'errorCode' =>"",
+                'data' => [
+                    'id' => $response->conversationId->__toString(),
+                    'nbPair' => $response->nbPair,
+                    'lastPair' => $response->pair,
+                ],
+                    'message' => "",
+            ],
+            200
         );
+
     }
 
     private function buildContinueconversationRequest(Request $request): ContinueConversationRequest
     {
+
+        $content = $request->getContent();
+        /** @var array<string> $data */
+        $data = json_decode($content, true);
+
         /** @var string */
-        $prompt = $request->get('Prompt');
+        $prompt = $data['Prompt'];
         /** @var string */
-        $id = $request->get('convId');
+        $id = $data["convId"];
         /** @var ConversationId */
         $convId = new ConversationId($id);
         /** @var string */
-        $lmName = $request->get('lmName');
+        $lmName = $data['lmName'];
 
 
         return new ContinueConversationRequest($prompt, $convId, $lmName);

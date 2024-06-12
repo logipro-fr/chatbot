@@ -46,11 +46,16 @@ class ChatBotMakeController
         $response = $conversation->getResponse();
         return new JsonResponse(
             [
-                'success' => $response ->success,
-                'statusCode' => $response->statusCode,
-                'data' => $response->conversationId->__toString(),
-                'message' => $response->message,
-            ]
+                'success' => true,
+                'errorCode' =>"",
+                'data' => [
+                    'id' => $response->conversationId->__toString(),
+                    'nbPair' => $response->nbPair,
+                    'lastPair' => $response->pair,
+                ],
+                    'message' => "",
+            ],
+            200
         );
     }
 

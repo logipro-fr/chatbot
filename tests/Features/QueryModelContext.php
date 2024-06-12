@@ -49,13 +49,13 @@ class QueryModelContext implements Context
     {
         // Chargez le fichier .env.test
         $dotenv = new Dotenv();
+        $dotenv->usePutenv(); // Assurez-vous que putenv est utilisé
         $dotenv->load(__DIR__ . '/../.env.test');
 
-        // Récupérer la variable d'environnement
+        // Définir dynamiquement l'API_KEY à partir des variables d'environnement
         $apiKey = getenv('API_KEY');
 
         if ($apiKey === false) {
-            var_dump(false);
             throw new \RuntimeException('API_KEY environment variable is not set.');
         } else {
             $this->apiKey = $apiKey;

@@ -4,20 +4,22 @@ namespace Chatbot\Tests\Infrastructure\Api\V1;
 
 use Chatbot\Application\Service\MakeConversation\MakeConversation;
 use Chatbot\Application\Service\MakeConversation\MakeConversationRequest;
-use Chatbot\Domain\Model\Conversation\Conversation;
 use Chatbot\Domain\Model\Conversation\ConversationId;
 use Chatbot\Infrastructure\Api\V1\ChatBotContinueController;
-use Chatbot\Infrastructure\Api\V1\ChatBotMakeController;
 use Chatbot\Infrastructure\LanguageModel\ModelFactory;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
 use Chatbot\Tests\WebBaseTestCase;
-use PHPUnit\Framework\TestCase;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Component\HttpFoundation\Request;
 
 class ChatBotContinueControllerTest extends WebBaseTestCase
 {
+    use DoctrineRepositoryTesterTrait;
+
     private string $API_KEY;
+    private KernelBrowser $client;
+    private ConversationId $convId;
 
     public function setUp(): void
     {
@@ -30,6 +32,9 @@ class ChatBotContinueControllerTest extends WebBaseTestCase
         } else {
             $this->API_KEY = $apiKey;
         }
+        $this->initDoctrineTester();
+        //$this->clearTables(['conversations']);
+        $this->client = static::createClient(["debug" => false]);
     }
 
     public function testChatBotControllerExecute(): void
@@ -40,16 +45,20 @@ class ChatBotContinueControllerTest extends WebBaseTestCase
         $service = new MakeConversation($repository, $factory);
         $service->execute($request);
         $response = $service->getResponse();
-        $convid = new ConversationId($response->conversationId);
-        $controller = new ChatBotContinueController($repository, $factory);
+        $this->convId = new ConversationId($response->conversationId);
+        $controller = new ChatBotContinueController($repository, $factory, $this->getEntityManager());
         $request = Request::create(
             "/api/v1/conversation/Continue",
             "POST",
-            [
+            [],
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode([
                 "Prompt" => "Bonjour",
-                "convId" => "$convid",
+                "convId" => "$this->convId",
                 "lmName" => "GPTModelTranslate",
-            ]
+            ])
         );
 
 
@@ -61,5 +70,25 @@ class ChatBotContinueControllerTest extends WebBaseTestCase
         $this->assertStringContainsString('"statusCode":200', $responseContent);
         $this->assertStringContainsString('"data":"con_', $responseContent);
         $this->assertStringContainsString('"message":"', $responseContent);
+    }
+
+    public function testControllerRouting(): void
+    {
+        $this->client->request(
+            "POST",
+            "/api/v1/conversation/Continue",
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode([
+
+                "Prompt" => "Bonjour",
+                "convId" => "con_6661821d0f85a",
+                "lmName" => "GPTModelTranslate",
+            ])
+        );
+        /** @var string */
+        $responseContent = $this->client->getResponse()->getContent();
+        $this->assertResponseIsSuccessful();
     }
 }
