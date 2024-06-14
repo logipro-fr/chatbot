@@ -14,26 +14,17 @@ use Chatbot\Tests\BaseTestCase;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\CurlHttpClient;
 
-class MakeConversationTest extends BaseTestCase
+class MakeConversationTest extends TestCase
 {
-    private string $API_KEY;
+    
 
-    public function setUp(): void
-    {
-        parent::setUp();
-        $apiKey = getenv('API_KEY');
-        if ($apiKey === false) {
-            throw new \RuntimeException('API_KEY environment variable is not set.');
-        } else {
-            $this->API_KEY = $apiKey;
-        }
-    }
+    
 
     public function testMakeOneConversation(): void
     {
         $repository = new ConversationRepositoryInMemory();
         $client = new CurlHttpClient();
-        $factory = new ModelFactory($this->API_KEY);
+        $factory = new ModelFactory();
         $context = "You're a helpfull assistant assistant ";
         $request = new MakeConversationRequest("Bonjour, comment va tu ?", "GPTModel", $context);
         $service = new MakeConversation($repository, $factory);

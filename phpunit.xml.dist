@@ -17,7 +17,7 @@
     <env name="KERNEL_CLASS" value="Chatbot\Infrastructure\Shared\Symfony\Kernel"/>
     <env name="DATABASE_URL" value="sqlite:///var/sqlite-unit-test.db"/>
     <env name="APP_DEBUG" value="0"/>
-    <env name="SYMFONY_DOTENV_PATH" value="Chatbot\tests\unit\.env.test"/>
+    <env name="CHATBOT_API_KEY" value="FakeChatbotKeyUnitTestPurpose"/>
   </php>
   <source>
     <include>

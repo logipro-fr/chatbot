@@ -12,22 +12,14 @@ use function Safe\file_get_contents;
 
 class GPTModelTranslateTest extends TestCase
 {
-    private string $API_KEY ;
+   
 
-    public function setUp(): void
-    {
-        $apiKey = getenv('API_KEY');
-        if ($apiKey === false) {
-            throw new \RuntimeException('API_KEY environment variable is not set.');
-        } else {
-            $this->API_KEY = $apiKey;
-        }
-    }
+   
 
     public function testGPTModelTranslate(): void
     {
         $client = $this->createMockHttpClient('responseGETHello.json', 200);
-        $service = new GPTModelTranslate($client, $this->API_KEY, "english");
+        $service = new GPTModelTranslate($client, "english");
         $message = $service->generateTextAnswer(new Prompt("Bonjour"));
         $this->assertEquals("Hello", $message->getMessage());
     }

@@ -11,30 +11,23 @@ use Chatbot\Domain\Model\Conversation\Context;
 use Chatbot\Domain\Model\Conversation\Prompt;
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\ChatbotGPTApi;
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\RequestGPT;
-use Chatbot\Tests\BaseTestCase;
 use Chatbot\Tests\RequestGPTFake;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
 
 use function Safe\file_get_contents;
 
-class ChatbotGPTApiTest extends BaseTestCase
+class ChatbotGPTApiTest extends TestCase
 {
     //private string $apiKey;
     private string $content;
     private const CONTEXT = "You're helpfull asistant";
-    private string $API_KEY ;
+
 
     public function setUp(): void
     {
 
-        parent::setUp();
-        $apiKey = getenv('API_KEY');
-        if ($apiKey === false) {
-            throw new \RuntimeException('API_KEY environment variable is not set.');
-        } else {
-            $this->API_KEY = $apiKey;
-        }
 
         $this->content = <<<EOF
         {
@@ -59,7 +52,7 @@ class ChatbotGPTApiTest extends BaseTestCase
         $client = $this->createMockHttpClient('responseGETblague.json', 200);
         $prompt = new Prompt("raconte moi une blague stp");
         $context = new Context(self::CONTEXT);
-        $chatBotTest = new ChatbotGPTApi($client, $this->API_KEY);
+        $chatBotTest = new ChatbotGPTApi($client);
         $requestGPT = new RequestGPT($prompt, $context);
         $response = $chatBotTest->request($requestGPT);
         $this->assertEquals("\n\nchats contre internet: souris gagnantes", $response->message);
@@ -78,7 +71,7 @@ class ChatbotGPTApiTest extends BaseTestCase
     {
 
         $client = $this->createMockHttpClient('responseGETbonjour.json', 200);
-        $chatBotTest = new ChatbotGPTApi($client, $this->API_KEY);
+        $chatBotTest = new ChatbotGPTApi($client);
         $prompt = new Prompt("bonjour comment vas tu");
         $context = new Context(self::CONTEXT);
         $requestGPT = new RequestGPT($prompt, $context);
@@ -92,10 +85,10 @@ class ChatbotGPTApiTest extends BaseTestCase
     public function testHeader(): void
     {
         $client = $this->createMockHttpClient('responseGETblague.json', 200);
-        $response = (new ChatbotGPTApi($client, $this->API_KEY))->paramsHeader($this->content);
+        $response = (new ChatbotGPTApi($client))->paramsHeader($this->content);
         $this->assertEquals(
             ['Content-Type' => 'application/json',
-            'Authorization' => 'Bearer ' . $this->API_KEY
+            'Authorization' => 'Bearer ' . getenv("CHATBOT_API_KEY")
             ],
             $response["headers"]
         );
@@ -104,7 +97,7 @@ class ChatbotGPTApiTest extends BaseTestCase
     public function testBody(): void
     {
         $client = $this->createMockHttpClient('responseGETblague.json', 200);
-        $response = (new ChatbotGPTApi($client, $this->API_KEY))->paramsHeader($this->content);
+        $response = (new ChatbotGPTApi($client))->paramsHeader($this->content);
         $this->assertEquals($this->content, $response['body']);
     }
 
@@ -117,7 +110,7 @@ class ChatbotGPTApiTest extends BaseTestCase
         $context = new Context(self::CONTEXT);
         /** @var RequestGPT $requestGPT */
         $requestGPT = new RequestGPT($prompt, $context);
-        (new ChatbotGPTApi($client, $this->API_KEY))->request($requestGPT);
+        (new ChatbotGPTApi($client))->request($requestGPT);
     }
 
     public function testBadRequest(): void
@@ -128,7 +121,7 @@ class ChatbotGPTApiTest extends BaseTestCase
         $prompt = new Prompt("bonjour comment vas tu");
         $context = new Context(self::CONTEXT);
         $requestGPT = new RequestGPT($prompt, $context);
-        (new ChatbotGPTApi($client, $this->API_KEY))->request($requestGPT);
+        (new ChatbotGPTApi($client))->request($requestGPT);
     }
 
     public function testExcesRequest(): void
@@ -139,7 +132,7 @@ class ChatbotGPTApiTest extends BaseTestCase
         $prompt = new Prompt("bonjour comment vas tu");
         $context = new Context(self::CONTEXT);
         $requestGPT = new RequestGPT($prompt, $context);
-        (new ChatbotGPTApi($client, $this->API_KEY))->request($requestGPT);
+        (new ChatbotGPTApi($client))->request($requestGPT);
     }
 
     public function testOther(): void
@@ -150,7 +143,7 @@ class ChatbotGPTApiTest extends BaseTestCase
         $prompt = new Prompt("bonjour comment vas tu");
         $context = new Context(self::CONTEXT);
         $requestGPT = new RequestGPT($prompt, $context);
-        (new ChatbotGPTApi($client, $this->API_KEY))->request($requestGPT);
+        (new ChatbotGPTApi($client))->request($requestGPT);
     }
 
     public function testBadInstance(): void
@@ -159,6 +152,6 @@ class ChatbotGPTApiTest extends BaseTestCase
         $this->expectExceptionMessage("BadInstance");
         $client = $this->createMockHttpClient('responseGETblague.json', 200);
         $requestGPT = new RequestGPTFake('bonjour comment va tu');
-        (new ChatbotGPTApi($client, $this->API_KEY))->request($requestGPT);
+        (new ChatbotGPTApi($client))->request($requestGPT);
     }
 }

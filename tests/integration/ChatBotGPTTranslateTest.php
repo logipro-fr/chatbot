@@ -12,28 +12,24 @@ use Chatbot\Infrastructure\LanguageModel\ModelFactory;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
 use Chatbot\Tests\BaseTestCase;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\HttpClient\CurlHttpClient;
 
-class ChatBotGPTTranslateTest extends BaseTestCase
+class ChatBotGPTTranslateTest extends TestCase
 {
-    private string $API_KEY;
-
     public function setUp(): void
     {
-        parent::setUp();
-        $apiKey = getenv('API_KEY');
-        if ($apiKey === false) {
-            throw new \RuntimeException('API_KEY environment variable is not set.');
-        } else {
-            $this->API_KEY = $apiKey;
-        }
+        $dotenv = new Dotenv();
+        $dotenv->loadEnv(getcwd().'/src/Infrastructure/Shared/Symfony/.env.local');
     }
+
+
 
     public function testTranslate(): void
     {
         $repository = new ConversationRepositoryInMemory();
         $client = new CurlHttpClient();
-        $factory = new ModelFactory($this->API_KEY);
+        $factory = new ModelFactory();
         $request = new MakeConversationRequest("Bonjour, comment ça va?", "GPTModelTranslate", "englis", $client);
         $service = new MakeConversation($repository, $factory);
         $service->execute($request);

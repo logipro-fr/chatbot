@@ -16,22 +16,16 @@ use Symfony\Component\HttpFoundation\Request;
 
 use function Safe\json_encode;
 
-class ChatBotMakeControllerTest extends WebBaseTestCase
+class ChatBotMakeControllerTest extends WebTestCase
 {
     use DoctrineRepositoryTesterTrait;
 
     private KernelBrowser $client;
-    private string $API_KEY;
+   
 
     public function setUp(): void
     {
-        parent::setUp();
-        $apiKey = getenv('API_KEY');
-        if ($apiKey === false) {
-            throw new \RuntimeException('API_KEY environment variable is not set.');
-        } else {
-            $this->API_KEY = $apiKey;
-        }
+        
         $this->initDoctrineTester();
         //$this->clearTables(['conversations']);
         $this->client = static::createClient(["debug" => false]);
@@ -43,7 +37,7 @@ class ChatBotMakeControllerTest extends WebBaseTestCase
     public function testChatBotControllerExecute(): void
     {
         $repository = new ConversationRepositoryInMemory();
-        $factory = new ModelFactory($this->API_KEY);
+        $factory = new ModelFactory();
         $controller = new ChatBotMakeController($repository, $factory, $this->getEntityManager());
         $request = Request::create(
             "/api/v1/conversation/make",
@@ -54,7 +48,7 @@ class ChatBotMakeControllerTest extends WebBaseTestCase
             ['CONTENT_TYPE' => 'application/json'],
             json_encode([
                 "Prompt" => "Chien",
-                "lmName" => "GPTModelTranslate",
+                "lmName" => "ParrotTranslate",
                 "context" => "english",
             ])
         );
@@ -75,7 +69,7 @@ class ChatBotMakeControllerTest extends WebBaseTestCase
             json_encode([
 
                 "Prompt" => "Chien",
-                "lmName" => "GPTModelTranslate",
+                "lmName" => "ParrotTranslate",
                 "context" => "english",
             ])
         );

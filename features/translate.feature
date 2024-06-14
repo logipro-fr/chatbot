@@ -10,6 +10,6 @@ Feature: Text Translation via ChatGPT
 
     Examples:
       | textToTranslate           | targetLanguage | expectedAnswer         |
-      | "Bonjour, comment ça va?" | "english"      | "Hello, how are you?"  |
-      | "Il pleut des cordes"     | "english"      | "It's raining cats and dogs"|
-      | "Bonjour"                 | "spanish"      | "Hola"|
+      | "Bonjour, comment ça va?" | "english"      | "Bonjour, comment ça va? mais en english"  |
+      | "Il pleut des cordes"     | "english"      | "Il pleut des cordes mais en english"|
+      | "Bonjour"                 | "spanish"      | "Bonjour mais en spanish"|

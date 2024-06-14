@@ -32,22 +32,6 @@ class TranslateContext implements Context
     private HttpClientInterface $client;
     private string $apiKey;
 
-    public function __construct()
-    {
-        // Chargez le fichier .env.test
-        $dotenv = new Dotenv();
-        $dotenv->usePutenv();
-        $dotenv->load(__DIR__ . '/../.env.test');
-
-        // Récupérer la variable d'environnement
-        $apiKey = getenv('API_KEY');
-
-        if ($apiKey === false) {
-            throw new \RuntimeException('API_KEY environment variable is not set.');
-        } else {
-            $this->apiKey = $apiKey;
-        }
-    }
 
     /**
      * @Given I want to translate in language :lang with the language model :arg2
@@ -56,7 +40,7 @@ class TranslateContext implements Context
     {
         $this->repository = new ConversationRepositoryInMemory();
         $this->client = new CurlHttpClient();
-        $this->factory = new ModelFactory($this->apiKey);
+        $this->factory = new ModelFactory();
         $this->lang = $lang;
     }
 
@@ -67,7 +51,7 @@ class TranslateContext implements Context
      */
     public function iPrompt(string $prompt): void
     {
-        $request = new MakeConversationRequest($prompt, "GPTModelTranslate", $this->lang, $this->client);
+        $request = new MakeConversationRequest($prompt, "ParrotTranslate", $this->lang, $this->client);
         $service = new MakeConversation($this->repository, $this->factory);
         $service->execute($request);
         $this->response = $service->getResponse();

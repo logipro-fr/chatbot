@@ -9,8 +9,7 @@ class MakeConversationRequest
     public function __construct(
         public readonly string $prompt,
         public readonly string $lmname,
-        public readonly string $context,
-        public readonly ?HttpClientInterface $client = null
+        public readonly string $context
     ) {
     }
 }

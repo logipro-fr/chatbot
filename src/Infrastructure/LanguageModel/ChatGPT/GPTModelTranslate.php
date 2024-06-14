@@ -10,13 +10,13 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class GPTModelTranslate implements LanguageModelInterface
 {
-    public function __construct(private HttpClientInterface $httpClient, private string $API_KEY, private string $lang)
+    public function __construct(private HttpClientInterface $httpClient, private string $lang)
     {
     }
 
     public function generateTextAnswer(Prompt $prompt): Answer
     {
-        $chatbot = new ChatbotGPTApi($this->httpClient, $this->API_KEY);
+        $chatbot = new ChatbotGPTApi($this->httpClient);
         $context = (new ContextFactory())->create($this->lang);
         $response = $chatbot->request(new RequestGPT($prompt, $context));
         $message = new Answer($response->message, $response->statusCode);

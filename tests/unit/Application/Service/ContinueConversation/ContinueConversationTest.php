@@ -10,31 +10,19 @@ use Chatbot\Application\Service\MakeConversation\MakeConversation;
 use Chatbot\Application\Service\MakeConversation\MakeConversationRequest;
 use Chatbot\Domain\Model\Conversation\ConversationId;
 use Chatbot\Infrastructure\LanguageModel\ModelFactory;
-use Chatbot\Infrastructure\LanguageModel\Parrot;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
-use Chatbot\Tests\BaseTestCase;
 use PHPUnit\Framework\TestCase;
 
-class ContinueConversationtest extends BaseTestCase
+class ContinueConversationtest extends TestCase
 {
-    private string $API_KEY;
-
     private ConversationRepositoryInMemory $repository;
     private ConversationId $convid;
     private LanguageModelAbstractFactory $factory;
     public function setUp(): void
     {
 
-        parent::setUp();
-        $apiKey = getenv('API_KEY');
-        if ($apiKey === false) {
-            throw new \RuntimeException('API_KEY environment variable is not set.');
-        } else {
-            $this->API_KEY = $apiKey;
-        }
-
         $this->repository = new ConversationRepositoryInMemory();
-        $this->factory = new ModelFactory($this->API_KEY);
+        $this->factory = new ModelFactory();
         $request = new MakeConversationRequest("Bonjour", "Parrot", "You're helpfull assistant");
         $service = new MakeConversation($this->repository, $this->factory);
         $service->execute($request);

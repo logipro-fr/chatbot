@@ -5,33 +5,20 @@ namespace Chatbot\Tests\Infrastructure\languageModel\ChatGPT;
 use Chatbot\Domain\Model\Conversation\Context;
 use Chatbot\Domain\Model\Conversation\Prompt;
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\GPTModel;
-use Chatbot\Tests\BaseTestCase;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
 
 use function Safe\file_get_contents;
 
-class GPTModelTest extends BaseTestCase
+class GPTModelTest extends  TestCase
 {
-    private string $API_KEY;
-
-    public function setUp(): void
-    {
-
-        parent::setUp();
-        $apiKey = getenv('API_KEY');
-        if ($apiKey === false) {
-            throw new \RuntimeException('API_KEY environment variable is not set.');
-        } else {
-            $this->API_KEY = $apiKey;
-        }
-    }
-
+   
+    
     public function testGPTModel(): void
     {
         $client = $this->createMockHttpClient('responseGETbonjour.json', 200);
-        $service = new GPTModel($client, new Context("Your're helpfull assistant"), $this->API_KEY);
+        $service = new GPTModel($client, new Context("Your're helpfull assistant"));
         $message = $service->generateTextAnswer(new Prompt("Bonjour"));
         $response = "\n\nBonjour ! Je vais bien merci ! comment puis-je vous aidez aujourd'hui";
         $this->assertEquals($response, $message->getMessage());

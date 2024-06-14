@@ -10,7 +10,7 @@ function create_var_directory() {
 
 function build_docker_images() {
     (
-        cd docker 
+        cd docker || exit;
         docker compose build
     )
 }

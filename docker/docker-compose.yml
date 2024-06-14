@@ -1,5 +1,6 @@
 services:
   chatbot-nginx:
+    image: "chatbot-nginx"
     container_name: "chatbot-nginx"
     build:
       context: ../.
@@ -16,6 +17,7 @@ services:
       - chatbot-networks
 
   chatbot-php:
+    image: "chatbot-php"
     container_name: "chatbot-php"
     build:
       context: ../.

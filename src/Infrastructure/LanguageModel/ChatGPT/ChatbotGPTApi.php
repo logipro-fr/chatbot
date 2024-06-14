@@ -15,13 +15,16 @@ use function Safe\json_decode;
 
 class ChatbotGPTApi implements ChatbotApiInterface
 {
-    private string $KEY_API;
+    private string $CHATBOT_KEY_API;
 
     public function __construct(
         private HttpClientInterface $client,
-        string $apiKey
+        ?string $apiKey = null
     ) {
-        $this->KEY_API = $apiKey;
+        if ($apiKey == null ) {
+            $apiKey = $_ENV["CHATBOT_API_KEY"];
+        }
+        $this->CHATBOT_KEY_API = $apiKey;
     }
 
 
@@ -30,7 +33,6 @@ class ChatbotGPTApi implements ChatbotApiInterface
      */
     public function request(RequestInterface $request): ResponseGPT
     {
-
 
         /**
          * @var string $userprompt */
@@ -90,7 +92,7 @@ class ChatbotGPTApi implements ChatbotApiInterface
         $paramHeader = [
         'headers' =>
         ['Content-Type' => 'application/json',
-        'Authorization' => 'Bearer ' . $this->KEY_API
+        'Authorization' => 'Bearer ' . $this->CHATBOT_KEY_API
 
         ],
         'body' => $content

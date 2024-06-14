@@ -16,7 +16,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class ModelFactory extends LanguageModelAbstractFactory
 {
     private HttpClientInterface $client;
-    public function __construct(private string $API_KEY, ?HttpClientInterface $client = null)
+    public function __construct( ?HttpClientInterface $client = null)
     {
 
         if ($client == null) {
@@ -31,9 +31,9 @@ class ModelFactory extends LanguageModelAbstractFactory
 
         switch ($lmName) {
             case "GPTModel":
-                return new GPTModel($this->client, new Context($context), $this->API_KEY);
+                return new GPTModel($this->client, new Context($context));
             case "GPTModelTranslate":
-                return new GPTModelTranslate($this->client, $this->API_KEY, $context);
+                return new GPTModelTranslate($this->client, $context);
             case "Parrot":
                 return new Parrot();
             case "ParrotTranslate":

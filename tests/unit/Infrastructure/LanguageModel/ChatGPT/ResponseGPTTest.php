@@ -14,24 +14,14 @@ use function Safe\file_get_contents;
 
 class ResponseGPTTest extends TestCase
 {
-    private string $API_KEY ;
-
-    public function setUp(): void
-    {
-
-        $apiKey = getenv('API_KEY');
-        if ($apiKey === false) {
-            throw new \RuntimeException('API_KEY environment variable is not set.');
-        } else {
-            $this->API_KEY = $apiKey;
-        }
-    }
+ 
+    
     public function testGetStatusCode(): void
     {
         $client = $this->createMockHttpClient('responseGETblague.json', 200);
         $prompt = new Prompt("raconte moi une blague stp");
         $context = new Context("You're helpfull assistant");
-        $chatBotTest = new ChatbotGPTApi($client, $this->API_KEY);
+        $chatBotTest = new ChatbotGPTApi($client);
         $requestGPT = new RequestGPT($prompt, $context);
         $response = $chatBotTest->request($requestGPT);
         $this->assertEquals(true, is_int($response->statusCode));

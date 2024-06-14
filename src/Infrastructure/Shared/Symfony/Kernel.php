@@ -13,16 +13,5 @@ class Kernel extends BaseKernel
     public function __construct(string $environment, bool $debug)
     {
         parent::__construct($environment, $debug);
-
-        // Chemin personnalisé pour les fichiers .env et .env.local
-        $dotenvPath = __DIR__ . '/.env';
-
-        // Initialiser Dotenv et charger les fichiers
-        $dotenv = new Dotenv();
-
-        $envLocalPath = __DIR__ . '/.env.local';
-        if (file_exists($envLocalPath)) {
-            $dotenv->load($envLocalPath);
-        }
     }
 }

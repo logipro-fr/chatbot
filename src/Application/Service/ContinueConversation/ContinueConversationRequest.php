@@ -10,8 +10,7 @@ class ContinueConversationRequest
     public function __construct(
         public readonly string $prompt,
         public readonly ConversationId $convId,
-        public readonly string $lmName,
-        public readonly ?HttpClientInterface $client = null
+        public readonly string $lmName
     ) {
     }
 }

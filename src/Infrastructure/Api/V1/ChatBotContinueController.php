@@ -15,6 +15,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+use function Safe\json_decode;
+
 class ChatBotContinueController
 {
     public function __construct(
@@ -28,7 +30,6 @@ class ChatBotContinueController
     {
         $request = $this->buildContinueconversationRequest($request);
         $conversation = new ContinueConversation($this->repository, $this->factory);
-
         try {
             $conversation->execute($request);
             $this->entityManager->flush();
@@ -64,11 +65,11 @@ class ChatBotContinueController
         $content = $request->getContent();
         /** @var array<string> $data */
         $data = json_decode($content, true);
-
         /** @var string */
         $prompt = $data['Prompt'];
         /** @var string */
         $id = $data["convId"];
+        var_dump($id);
         /** @var ConversationId */
         $convId = new ConversationId($id);
         /** @var string */

@@ -47,19 +47,7 @@ class QueryModelContext implements Context
 
     public function __construct()
     {
-        // Chargez le fichier .env.test
-        $dotenv = new Dotenv();
-        $dotenv->usePutenv(); // Assurez-vous que putenv est utilisé
-        $dotenv->load(__DIR__ . '/../.env.test');
-
-        // Définir dynamiquement l'API_KEY à partir des variables d'environnement
-        $apiKey = getenv('API_KEY');
-
-        if ($apiKey === false) {
-            throw new \RuntimeException('API_KEY environment variable is not set.');
-        } else {
-            $this->apiKey = $apiKey;
-        }
+        
     }
 
 
@@ -78,7 +66,7 @@ class QueryModelContext implements Context
     {
         $request = new MakeConversationRequest($prompt, $this->lmName, "you're helpfull assitant");
         $this->repository = new ConversationRepositoryInMemory();
-        $factory = new ModelFactory($this->apiKey);
+        $factory = new ModelFactory();
         $service = new MakeConversation($this->repository, $factory);
         $service->execute($request);
         $this->response = $service->getResponse();
@@ -112,7 +100,7 @@ class QueryModelContext implements Context
     {
         $request = new MakeConversationRequest("Bonjour", "Parrot", "you're helpfull assitant");
         $this->repository = new ConversationRepositoryInMemory();
-        $factory = new ModelFactory($this->apiKey);
+        $factory = new ModelFactory();
         $service = new MakeConversation($this->repository, $factory);
         $service->execute($request);
         $this->response = $service->getResponse();
@@ -125,7 +113,7 @@ class QueryModelContext implements Context
      */
     public function iAsk(string $prompt): void
     {
-        $factory = new ModelFactory($this->apiKey);
+        $factory = new ModelFactory();
         $id = new ConversationId($this->response->conversationId);
         $request = new ContinueConversationRequest($prompt, $id, "Parrot");
         $service = new ContinueConversation($this->repository, $factory);
@@ -162,7 +150,7 @@ class QueryModelContext implements Context
     {
         $request = new MakeConversationRequest($prompt, "Parrot", "you're helpfull assitant");
         $this->repository = new ConversationRepositoryInMemory();
-        $factory = new ModelFactory($this->apiKey);
+        $factory = new ModelFactory();
         $service = new MakeConversation($this->repository, $factory);
         $service->execute($request);
         $this->response = $service->getResponse();
@@ -203,7 +191,7 @@ class QueryModelContext implements Context
     {
         $request = new MakeConversationRequest($prompt1, "Parrot", "you're helpfull assitant");
         $this->repository = new ConversationRepositoryInMemory();
-        $factory = new ModelFactory($this->apiKey);
+        $factory = new ModelFactory();
         $service = new MakeConversation($this->repository, $factory);
         $service->execute($request);
         $this->response = $service->getResponse();
@@ -244,7 +232,7 @@ class QueryModelContext implements Context
         $context = "You're a helpfull assistant ";
 
         $request = new MakeConversationRequest("Bonjour", "GPTModel", $context, $this->client);
-        $factory = new ModelFactory($this->apiKey);
+        $factory = new ModelFactory();
         $service = new MakeConversation($this->repository, $factory);
         $service->execute($request);
         $response = $service->getResponse();
@@ -272,7 +260,7 @@ class QueryModelContext implements Context
      */
     public function iRequest(string $prompt): void
     {
-        $factory = new ModelFactory($this->apiKey);
+        $factory = new ModelFactory();
         $service = new ContinueConversation($this->repository, $factory);
         $request = new ContinueConversationRequest($prompt, $this->conversation->getId(), "GPTModel", $this->client);
         $service->execute($request);

@@ -8,32 +8,24 @@ use Chatbot\Domain\Model\Conversation\ConversationId;
 use Chatbot\Infrastructure\Api\V1\ChatBotContinueController;
 use Chatbot\Infrastructure\LanguageModel\ModelFactory;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
-use Chatbot\Tests\WebBaseTestCase;
 use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\VarDumper\Cloner\Data;
+
 
 use function Safe\json_decode;
 use function Safe\json_encode;
 
-class ChatBotContinueControllerTest extends WebBaseTestCase
+class ChatBotContinueControllerTest extends WebTestCase
 {
     use DoctrineRepositoryTesterTrait;
 
-    private string $API_KEY;
     private KernelBrowser $client;
     private ConversationId $convId;
 
     public function setUp(): void
     {
-        parent::setUp();
-        $apiKey = getenv('API_KEY');
-        if ($apiKey === false) {
-            throw new \RuntimeException('API_KEY environment variable is not set.');
-        } else {
-            $this->API_KEY = $apiKey;
-        }
         $this->initDoctrineTester();
         //$this->clearTables(['conversations']);
         $this->client = static::createClient(["debug" => false]);
@@ -45,7 +37,7 @@ class ChatBotContinueControllerTest extends WebBaseTestCase
     public function testChatBotControllerExecute(): void
     {
         $repository = new ConversationRepositoryInMemory();
-        $factory = new ModelFactory($this->API_KEY);
+        $factory = new ModelFactory();
         $request = new MakeConversationRequest("Bonjour", "Parrot", "You're helpfull assistant");
         $service = new MakeConversation($repository, $factory);
         $service->execute($request);
@@ -62,7 +54,7 @@ class ChatBotContinueControllerTest extends WebBaseTestCase
             json_encode([
                 "Prompt" => "Bonjour",
                 "convId" => "$this->convId",
-                "lmName" => "GPTModelTranslate",
+                "lmName" => "Parrot",
             ])
         );
         $response = $controller->execute($request);
@@ -81,17 +73,16 @@ class ChatBotContinueControllerTest extends WebBaseTestCase
             ['CONTENT_TYPE' => 'application/json'],
             json_encode([
 
-                "Prompt" => "Bonjour",
-                "lmName" => "GPTModelTranslate",
-                "context" => "youre helpfull assistant",
+                "Prompt" => "Chien",
+                "lmName" => "ParrotTranslate",
+                "context" => "english",
             ])
         );
-
         /** @var string */
         $data = $this->client->getResponse()->getContent();
         /** @var array<mixed,array<mixed>> */
         $responseContent = json_decode($data, true);
-        /** @var string */
+       
         $id = $responseContent['data']['id'];
 
         $this->client->request(
@@ -104,7 +95,7 @@ class ChatBotContinueControllerTest extends WebBaseTestCase
 
                 "Prompt" => "Bonjour",
                 "convId" => "$id",
-                "lmName" => "GPTModelTranslate",
+                "lmName" => "Parrot",
             ])
         );
         /** @var string */
@@ -131,7 +122,7 @@ class ChatBotContinueControllerTest extends WebBaseTestCase
 
                 "Prompt" => "Bonjour",
                 "convId" => "con_5aez1gf4rz3251vf",
-                "lmName" => "GPTModelTranslate",
+                "lmName" => "Parrot",
             ])
         );
         /** @var string */

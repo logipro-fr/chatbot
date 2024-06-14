@@ -4,11 +4,14 @@ namespace Chatbot\Tests\integration\Infrastructure;
 
 use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryDoctrine;
+use Chatbot\Infrastructure\Shared\Symfony\Kernel;
 use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Dotenv\Dotenv;
 
 use function Safe\json_encode;
+use function Symfony\Component\DependencyInjection\Loader\Configurator\env;
 
 class MakeConversationControllerTest extends WebTestCase
 {
@@ -20,8 +23,14 @@ class MakeConversationControllerTest extends WebTestCase
     public function setUp(): void
     {
         $this->initDoctrineTester();
+        $dotenv = new Dotenv();
+        $dotenv->loadEnv(getcwd().'/src/Infrastructure/Shared/Symfony/.env.local');
         //$this->clearTables(["conversations"]);
         $this->client = self::createClient(["debug" => false]);
+        
+
+
+        //$kernel = new Kernel('test');
        // /** @var ConversationRepositoryDoctrine $autoInjectedRepo */
       //  $autoInjectedRepo = $this->client->getContainer()->get("conversation.repository");
         //$this->repository = $autoInjectedRepo;

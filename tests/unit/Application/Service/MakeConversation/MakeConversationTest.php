@@ -8,28 +8,15 @@ use Chatbot\Application\Service\MakeConversation\MakeConversationResponse;
 use Chatbot\Domain\Model\Conversation\ConversationId;
 use Chatbot\Infrastructure\LanguageModel\ModelFactory;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
-use Chatbot\Tests\BaseTestCase;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
 
 use function Safe\file_get_contents;
 
-class MakeConversationTest extends BaseTestCase
+class MakeConversationTest extends TestCase
 {
-    private string $API_KEY;
 
-    public function setUp(): void
-    {
-
-        parent::setUp();
-        $apiKey = getenv('API_KEY');
-        if ($apiKey === false) {
-            throw new \RuntimeException('API_KEY environment variable is not set.');
-        } else {
-            $this->API_KEY = $apiKey;
-        }
-    }
 
     public function testSomeoneEngageAFirstSimpleConverdation(): void
     {
@@ -37,7 +24,7 @@ class MakeConversationTest extends BaseTestCase
 
         $repository = new ConversationRepositoryInMemory();
         $request = new MakeConversationRequest("Bonjour", "Parrot", "You're helpfull assistant");
-        $factory = new ModelFactory($this->API_KEY);
+        $factory = new ModelFactory();
         $service = new MakeConversation($repository, $factory);
         //act / When
         $service->execute($request);
@@ -56,7 +43,7 @@ class MakeConversationTest extends BaseTestCase
         //arrange/ given
         $repository = new ConversationRepositoryInMemory();
         $request = new MakeConversationRequest("Bonjour", "Parrot", "You're helpfull assistant");
-        $factory = new ModelFactory($this->API_KEY);
+        $factory = new ModelFactory();
         $service = new MakeConversation($repository, $factory);
 
         //act / When
@@ -79,9 +66,9 @@ class MakeConversationTest extends BaseTestCase
     {
         $repository = new ConversationRepositoryInMemory();
         $client = $this->createMockHttpClient("responseGETbonjour.json", 200);
-        $request = new MakeConversationRequest("Bonjour", "GPTModel", "Your're helpfull assistant", $client);
+        $request = new MakeConversationRequest("Bonjour", "GPTModel", "Your're helpfull assistant");
 
-        $factory = new ModelFactory($this->API_KEY);
+        $factory = new ModelFactory($client);
         $service = new MakeConversation($repository, $factory);
 
         //act / When
@@ -110,7 +97,7 @@ class MakeConversationTest extends BaseTestCase
         $repository = new ConversationRepositoryInMemory();
         $client = $this->createMockHttpClient("responseGETbonjour.json", 200);
         $request = new MakeConversationRequest("Bonjour", "GPTModelTranslate", "english", $client);
-        $factory = new ModelFactory($this->API_KEY);
+        $factory = new ModelFactory($client);
         $service = new MakeConversation($repository, $factory);
 
         //act / When

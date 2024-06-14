@@ -18,21 +18,10 @@ use Symfony\Component\HttpClient\Response\MockResponse;
 
 use function Safe\file_get_contents;
 
-class ChatBotTest extends BaseTestCase
+class ChatBotTest extends TestCase
 {
-    private string $API_KEY;
+ 
 
-    public function setUp(): void
-    {
-
-        parent::setUp();
-        $apiKey = getenv('API_KEY');
-        if ($apiKey === false) {
-            throw new \RuntimeException('API_KEY environment variable is not set.');
-        } else {
-            $this->API_KEY = $apiKey;
-        }
-    }
 
     public function testConversation(): void
     {
@@ -41,7 +30,7 @@ class ChatBotTest extends BaseTestCase
         $engine->add("\n\nBonjour ! Je vais bien merci ! comment puis-je vous aidez aujourd'hui");
         $conversation = new Conversation(new PairArray());
         $client = $this->createMockHttpClient('responseGETbonjour.json', 200);
-        $chatBot = (new ChatBot($client, $this->API_KEY))->conversation($request);
+        $chatBot = (new ChatBot($client))->conversation($request);
 
         $this->assertEquals(ResponseGPT::class, $chatBot::class);
         $this->assertEquals(

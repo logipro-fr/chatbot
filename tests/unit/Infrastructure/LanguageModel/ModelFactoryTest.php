@@ -8,31 +8,20 @@ use Chatbot\Infrastructure\LanguageModel\Exception\BadLanguageModelName;
 use Chatbot\Infrastructure\LanguageModel\ModelFactory;
 use Chatbot\Infrastructure\LanguageModel\Parrot;
 use Chatbot\Infrastructure\LanguageModel\ParrotTranslate;
-use Chatbot\Tests\BaseTestCase;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
 
 use function Safe\file_get_contents;
 
-class ModelfactoryTest extends BaseTestCase
+class ModelfactoryTest extends TestCase
 {
-    private string $API_KEY;
-
-    public function setUp(): void
-    {
-
-        $apiKey = getenv('API_KEY');
-        if ($apiKey === false) {
-            throw new \RuntimeException('API_KEY environment variable is not set.');
-        } else {
-            $this->API_KEY = $apiKey;
-        }
-    }
+   
+    
 
     public function testCreateModelParrot(): void
     {
-        $factory = new ModelFactory($this->API_KEY);
+        $factory = new ModelFactory();
         $model = $factory->create("Parrot", "oui oui baguette");
         $this->assertInstanceOf(Parrot::class, $model);
     }
@@ -40,7 +29,7 @@ class ModelfactoryTest extends BaseTestCase
     public function testCreateModelGPT(): void
     {
         $client = $this->createMockHttpClient("responseGETbonjour.json", 200);
-        $factory = new ModelFactory($this->API_KEY);
+        $factory = new ModelFactory();
 
         $model = $factory->create("GPTModel", "oui oui baguette");
         $this->assertInstanceOf(GPTModel::class, $model);
@@ -60,7 +49,7 @@ class ModelfactoryTest extends BaseTestCase
     {
 
         $client = $this->createMockHttpClient("responseGETbonjour.json", 200);
-        $factory = new ModelFactory($this->API_KEY);
+        $factory = new ModelFactory();
         $model = $factory->create("GPTModelTranslate", "anglais");
         $this->assertInstanceOf(GPTModelTranslate::class, $model);
     }
@@ -68,7 +57,7 @@ class ModelfactoryTest extends BaseTestCase
     public function testCreateModelParotranslate(): void
     {
         $client = $this->createMockHttpClient("responseGETbonjour.json", 200);
-        $factory = new ModelFactory($this->API_KEY);
+        $factory = new ModelFactory();
         $model = $factory->create("ParrotTranslate", "anglais");
         $this->assertInstanceOf(ParrotTranslate::class, $model);
     }
@@ -78,7 +67,7 @@ class ModelfactoryTest extends BaseTestCase
 
         $this->expectException(BadLanguageModelName::class);
         $client = $this->createMockHttpClient("responseGETbonjour.json", 200);
-        $factory = new ModelFactory($this->API_KEY);
+        $factory = new ModelFactory();
         $model = $factory->create("AModel", "anglais");
     }
 }

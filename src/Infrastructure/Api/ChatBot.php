@@ -11,12 +11,11 @@ class ChatBot
 {
     public function __construct(
         private HttpClientInterface $client,
-        private string $API_KEY
     ) {
     }
     public function conversation(RequestGPT $request): ResponseGPT
     {
-        $response = (new ChatbotGPTApi($this->client, $this->API_KEY))->request($request);
+        $response = (new ChatbotGPTApi($this->client))->request($request);
 
         return $response;
     }

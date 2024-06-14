@@ -74,14 +74,6 @@ class ChatBotMakeController
         /** @var string */
         $context = $data['context'];
 
-        ///** @var string */
-        //$prompt = $request->get('Prompt');
-        ///** @var string */
-        //$lmName = $request->get('lmName');
-        ///** @var string */
-        //$context = $request->get('context');
-
-
         return new MakeConversationRequest($prompt, $lmName, $context);
     }
 }

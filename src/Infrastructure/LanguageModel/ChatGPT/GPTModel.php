@@ -14,14 +14,13 @@ class GPTModel implements LanguageModelInterface
     public function __construct(
         private HttpClientInterface $httpClient,
         private Context $context,
-        private string $API_KEY
     ) {
     }
 
     public function generateTextAnswer(Prompt $prompt): Answer
     {
 
-        $chatbot = new ChatbotGPTApi($this->httpClient, $this->API_KEY);
+        $chatbot = new ChatbotGPTApi($this->httpClient);
         $response = $chatbot->request(new RequestGPT($prompt, $this->context));
         $message = new Answer($response->message, $response->statusCode);
         return $message;

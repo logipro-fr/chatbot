@@ -7,6 +7,7 @@ use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryDoctri
 use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Dotenv\Dotenv;
 
 use function Safe\json_encode;
 
@@ -20,6 +21,8 @@ class ContinueConversationControllerTest extends WebTestCase
     public function setUp(): void
     {
         $this->initDoctrineTester();
+        $dotenv = new Dotenv();
+        $dotenv->loadEnv(getcwd().'/src/Infrastructure/Shared/Symfony/.env.local');
         //$this->clearTables(["conversations"]);
         $this->client = self::createClient(["debug" => false]);
        // /** @var ConversationRepositoryDoctrine $autoInjectedRepo */
