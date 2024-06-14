@@ -20,7 +20,7 @@ class ChatBotGPTTranslateTest extends TestCase
     public function setUp(): void
     {
         $dotenv = new Dotenv();
-        $dotenv->loadEnv(getcwd().'/src/Infrastructure/Shared/Symfony/.env.local');
+        $dotenv->loadEnv(getcwd() . '/src/Infrastructure/Shared/Symfony/.env.local');
     }
 
 
@@ -28,9 +28,8 @@ class ChatBotGPTTranslateTest extends TestCase
     public function testTranslate(): void
     {
         $repository = new ConversationRepositoryInMemory();
-        $client = new CurlHttpClient();
         $factory = new ModelFactory();
-        $request = new MakeConversationRequest("Bonjour, comment ça va?", "GPTModelTranslate", "englis", $client);
+        $request = new MakeConversationRequest("Bonjour, comment ça va?", "GPTModelTranslate", "englis");
         $service = new MakeConversation($repository, $factory);
         $service->execute($request);
 

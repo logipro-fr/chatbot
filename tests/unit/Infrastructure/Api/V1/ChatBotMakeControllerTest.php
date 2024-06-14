@@ -21,11 +21,11 @@ class ChatBotMakeControllerTest extends WebTestCase
     use DoctrineRepositoryTesterTrait;
 
     private KernelBrowser $client;
-   
+
 
     public function setUp(): void
     {
-        
+
         $this->initDoctrineTester();
         //$this->clearTables(['conversations']);
         $this->client = static::createClient(["debug" => false]);

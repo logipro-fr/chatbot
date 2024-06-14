@@ -16,9 +16,6 @@ use function Safe\file_get_contents;
 
 class ModelfactoryTest extends TestCase
 {
-   
-    
-
     public function testCreateModelParrot(): void
     {
         $factory = new ModelFactory();

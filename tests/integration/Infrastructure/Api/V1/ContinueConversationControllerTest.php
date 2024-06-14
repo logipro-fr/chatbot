@@ -22,7 +22,7 @@ class ContinueConversationControllerTest extends WebTestCase
     {
         $this->initDoctrineTester();
         $dotenv = new Dotenv();
-        $dotenv->loadEnv(getcwd().'/src/Infrastructure/Shared/Symfony/.env.local');
+        $dotenv->loadEnv(getcwd() . '/src/Infrastructure/Shared/Symfony/.env.local');
         //$this->clearTables(["conversations"]);
         $this->client = self::createClient(["debug" => false]);
        // /** @var ConversationRepositoryDoctrine $autoInjectedRepo */

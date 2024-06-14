@@ -11,7 +11,6 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Dotenv\Dotenv;
 
 use function Safe\json_encode;
-use function Symfony\Component\DependencyInjection\Loader\Configurator\env;
 
 class MakeConversationControllerTest extends WebTestCase
 {
@@ -24,10 +23,10 @@ class MakeConversationControllerTest extends WebTestCase
     {
         $this->initDoctrineTester();
         $dotenv = new Dotenv();
-        $dotenv->loadEnv(getcwd().'/src/Infrastructure/Shared/Symfony/.env.local');
+        $dotenv->loadEnv(getcwd() . '/src/Infrastructure/Shared/Symfony/.env.local');
         //$this->clearTables(["conversations"]);
         $this->client = self::createClient(["debug" => false]);
-        
+
 
 
         //$kernel = new Kernel('test');

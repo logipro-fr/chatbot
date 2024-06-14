@@ -41,13 +41,10 @@ class QueryModelContext implements Context
     private ConversationRepositoryInterface $repository;
     private int $nbPair;
     private string $lmName;
-    private HttpClientInterface $client;
     private int $tokencount1;
-    private string $apiKey;
 
     public function __construct()
     {
-        
     }
 
 
@@ -228,10 +225,9 @@ class QueryModelContext implements Context
     public function iHaveAnExistingConversation(): void
     {
         $this->repository = new ConversationRepositoryInMemory();
-        $this->client = $this->createMockHttpClient("responseGETSignature.json", 200) ;
         $context = "You're a helpfull assistant ";
 
-        $request = new MakeConversationRequest("Bonjour", "GPTModel", $context, $this->client);
+        $request = new MakeConversationRequest("Bonjour", "GPTModel", $context);
         $factory = new ModelFactory();
         $service = new MakeConversation($this->repository, $factory);
         $service->execute($request);
@@ -244,16 +240,6 @@ class QueryModelContext implements Context
         $this->nbPair = $this->conversation->getNbPair();
     }
 
-    private function createMockHttpClient(string $filename, int $code): MockHttpClient
-    {
-        $code = ['http_code' => $code];
-        $responses = [
-            new MockResponse(file_get_contents(__DIR__ . '/ressources/responseGETbonjour.json'), $code),
-            new MockResponse(file_get_contents(__DIR__ . '/ressources/' . $filename), $code),
-        ];
-
-        return new MockHttpClient($responses, 'https://api.openai.com/v1/chat/completion');
-    }
 
     /**
      * @When I request :prompt
@@ -262,7 +248,7 @@ class QueryModelContext implements Context
     {
         $factory = new ModelFactory();
         $service = new ContinueConversation($this->repository, $factory);
-        $request = new ContinueConversationRequest($prompt, $this->conversation->getId(), "GPTModel", $this->client);
+        $request = new ContinueConversationRequest($prompt, $this->conversation->getId(), "GPTModel");
         $service->execute($request);
     }
 

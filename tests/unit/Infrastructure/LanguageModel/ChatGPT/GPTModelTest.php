@@ -11,10 +11,8 @@ use Symfony\Component\HttpClient\Response\MockResponse;
 
 use function Safe\file_get_contents;
 
-class GPTModelTest extends  TestCase
+class GPTModelTest extends TestCase
 {
-   
-    
     public function testGPTModel(): void
     {
         $client = $this->createMockHttpClient('responseGETbonjour.json', 200);

@@ -16,8 +16,6 @@ use function Safe\file_get_contents;
 
 class MakeConversationTest extends TestCase
 {
-
-
     public function testSomeoneEngageAFirstSimpleConverdation(): void
     {
         // arrange / Given
@@ -96,7 +94,7 @@ class MakeConversationTest extends TestCase
     {
         $repository = new ConversationRepositoryInMemory();
         $client = $this->createMockHttpClient("responseGETbonjour.json", 200);
-        $request = new MakeConversationRequest("Bonjour", "GPTModelTranslate", "english", $client);
+        $request = new MakeConversationRequest("Bonjour", "GPTModelTranslate", "english");
         $factory = new ModelFactory($client);
         $service = new MakeConversation($repository, $factory);
 

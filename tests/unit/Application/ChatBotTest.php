@@ -20,9 +20,6 @@ use function Safe\file_get_contents;
 
 class ChatBotTest extends TestCase
 {
- 
-
-
     public function testConversation(): void
     {
         $request = new RequestGPT(new Prompt("allo"), new Context("tu es un assistant sympa"));

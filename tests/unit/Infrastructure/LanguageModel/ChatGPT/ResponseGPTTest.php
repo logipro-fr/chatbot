@@ -14,8 +14,6 @@ use function Safe\file_get_contents;
 
 class ResponseGPTTest extends TestCase
 {
- 
-    
     public function testGetStatusCode(): void
     {
         $client = $this->createMockHttpClient('responseGETblague.json', 200);

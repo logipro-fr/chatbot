@@ -3,20 +3,14 @@
 namespace Features;
 
 use Behat\Behat\Context\Context;
-use Behat\Behat\Tester\Exception\PendingException;
 use Chatbot\Application\Service\MakeConversation\LanguageModelAbstractFactory;
 use Chatbot\Application\Service\MakeConversation\MakeConversation;
 use Chatbot\Application\Service\MakeConversation\MakeConversationRequest;
 use Chatbot\Application\Service\MakeConversation\MakeConversationResponse;
-use Chatbot\Application\Service\MakeTranslate\MakeTranslate;
-use Chatbot\Application\Service\MakeTranslate\MakeTranslateRequest;
-use Chatbot\Application\Service\MakeTranslate\MakeTranslateResponse;
 use Chatbot\Domain\Model\Conversation\ConversationId;
-use Chatbot\Infrastructure\LanguageModel\ChatGPT\GPTModelTranslate;
 use Chatbot\Infrastructure\LanguageModel\ModelFactory;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
 use PHPUnit\Framework\Assert;
-use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\HttpClient\CurlHttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -29,8 +23,8 @@ class TranslateContext implements Context
     private MakeConversationResponse $response;
     private string $lang;
     private LanguageModelAbstractFactory $factory;
-    private HttpClientInterface $client;
-    private string $apiKey;
+
+
 
 
     /**
@@ -39,7 +33,6 @@ class TranslateContext implements Context
     public function iWantToTranslateInLanguageWithTheLanguageModel(string $lang, string $arg2): void
     {
         $this->repository = new ConversationRepositoryInMemory();
-        $this->client = new CurlHttpClient();
         $this->factory = new ModelFactory();
         $this->lang = $lang;
     }
@@ -51,7 +44,7 @@ class TranslateContext implements Context
      */
     public function iPrompt(string $prompt): void
     {
-        $request = new MakeConversationRequest($prompt, "ParrotTranslate", $this->lang, $this->client);
+        $request = new MakeConversationRequest($prompt, "ParrotTranslate", $this->lang);
         $service = new MakeConversation($this->repository, $this->factory);
         $service->execute($request);
         $this->response = $service->getResponse();

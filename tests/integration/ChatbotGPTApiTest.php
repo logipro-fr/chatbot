@@ -14,11 +14,10 @@ use Symfony\Component\HttpClient\HttpClient;
 
 class ChatbotGPTApiTest extends TestCase
 {
-    
     public function setUp(): void
     {
         $dotenv = new Dotenv();
-        $dotenv->loadEnv(getcwd().'/src/Infrastructure/Shared/Symfony/.env.local');
+        $dotenv->loadEnv(getcwd() . '/src/Infrastructure/Shared/Symfony/.env.local');
     }
 
     public function testRequest(): void

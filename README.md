@@ -8,7 +8,7 @@ Chatbot is a project to answer the user question
 git clone git@github.com:logipro-fr/chatbot.git
 ```
 
-# To Contribute to Datamaps
+# To Contribute to Chatbot
 
 ## Requirements
 
@@ -29,7 +29,7 @@ Using Test-Driven Development (TDD) principles (thanks to Kent Beck and others),
 ```console
 ./start
 ```
-have a local look at http://172.17.0.1:10180/ in your navigator
+have a local look at http://172.17.0.1:11080/ in your navigator
 
 ```console
 ./stop

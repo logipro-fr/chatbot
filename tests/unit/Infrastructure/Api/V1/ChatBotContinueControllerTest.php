@@ -13,7 +13,6 @@ use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
 
-
 use function Safe\json_decode;
 use function Safe\json_encode;
 
@@ -22,7 +21,8 @@ class ChatBotContinueControllerTest extends WebTestCase
     use DoctrineRepositoryTesterTrait;
 
     private KernelBrowser $client;
-    private ConversationId $convId;
+    /** @var string */
+    private string $convId;
 
     public function setUp(): void
     {
@@ -42,7 +42,7 @@ class ChatBotContinueControllerTest extends WebTestCase
         $service = new MakeConversation($repository, $factory);
         $service->execute($request);
         $response = $service->getResponse();
-        $this->convId = new ConversationId($response->conversationId);
+        $this->convId = $response->conversationId;
         $controller = new ChatBotContinueController($repository, $factory, $this->getEntityManager());
         $request = Request::create(
             "/api/v1/conversation/Continue",
@@ -53,7 +53,7 @@ class ChatBotContinueControllerTest extends WebTestCase
             ['CONTENT_TYPE' => 'application/json'],
             json_encode([
                 "Prompt" => "Bonjour",
-                "convId" => "$this->convId",
+                "convId" => $this->convId,
                 "lmName" => "Parrot",
             ])
         );
@@ -82,7 +82,7 @@ class ChatBotContinueControllerTest extends WebTestCase
         $data = $this->client->getResponse()->getContent();
         /** @var array<mixed,array<mixed>> */
         $responseContent = json_decode($data, true);
-       
+
         $id = $responseContent['data']['id'];
 
         $this->client->request(
@@ -94,7 +94,7 @@ class ChatBotContinueControllerTest extends WebTestCase
             json_encode([
 
                 "Prompt" => "Bonjour",
-                "convId" => "$id",
+                "convId" => $id,
                 "lmName" => "Parrot",
             ])
         );

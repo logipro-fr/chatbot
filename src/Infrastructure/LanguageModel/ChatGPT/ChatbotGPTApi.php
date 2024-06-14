@@ -21,7 +21,7 @@ class ChatbotGPTApi implements ChatbotApiInterface
         private HttpClientInterface $client,
         ?string $apiKey = null
     ) {
-        if ($apiKey == null ) {
+        if ($apiKey == null) {
             $apiKey = $_ENV["CHATBOT_API_KEY"];
         }
         $this->CHATBOT_KEY_API = $apiKey;

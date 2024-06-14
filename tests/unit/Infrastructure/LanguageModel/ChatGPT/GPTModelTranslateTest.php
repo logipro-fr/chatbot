@@ -12,10 +12,6 @@ use function Safe\file_get_contents;
 
 class GPTModelTranslateTest extends TestCase
 {
-   
-
-   
-
     public function testGPTModelTranslate(): void
     {
         $client = $this->createMockHttpClient('responseGETHello.json', 200);

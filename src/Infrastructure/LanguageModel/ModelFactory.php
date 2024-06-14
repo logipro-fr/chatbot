@@ -16,7 +16,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class ModelFactory extends LanguageModelAbstractFactory
 {
     private HttpClientInterface $client;
-    public function __construct( ?HttpClientInterface $client = null)
+    public function __construct(?HttpClientInterface $client = null)
     {
 
         if ($client == null) {

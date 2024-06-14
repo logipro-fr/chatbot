@@ -16,10 +16,6 @@ use Symfony\Component\HttpClient\CurlHttpClient;
 
 class MakeConversationTest extends TestCase
 {
-    
-
-    
-
     public function testMakeOneConversation(): void
     {
         $repository = new ConversationRepositoryInMemory();
@@ -40,7 +36,7 @@ class MakeConversationTest extends TestCase
         $this->assertEquals(true, is_string($responseMessage));
         $prompt = "Ca va super ! Quel temps fait il chez toi ?";
         $id = new ConversationId($response->conversationId) ;
-        $request = new ContinueConversationRequest($prompt, $id, "GPTModel", $client);
+        $request = new ContinueConversationRequest($prompt, $id, "GPTModel");
         $service = new ContinueConversation($repository, $factory);
         $service->execute($request);
         $pair = $conversation->getPair(1);
