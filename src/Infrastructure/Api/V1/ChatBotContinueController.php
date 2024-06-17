@@ -69,7 +69,6 @@ class ChatBotContinueController
         $prompt = $data['Prompt'];
         /** @var string */
         $id = $data["convId"];
-        var_dump($id);
         /** @var ConversationId */
         $convId = new ConversationId($id);
         /** @var string */

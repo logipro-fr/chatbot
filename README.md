@@ -39,8 +39,8 @@ have a local look at http://172.17.0.1:11080/ in your navigator
 
 * phpcs PSR12
 * phpstan level 9
-* coverage 80%
-* infection MSI >96%
+* 100% coverage obtained naturally thanks to the “classic school” TDD approach
+* we hunt mutants with “Infection”. We aim for an MSI score of 100% for “panache”
 
 Quick check with:
 ```console
