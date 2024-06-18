@@ -2,6 +2,6 @@
 
 namespace Chatbot\Application\Service\Exception;
 
-class ExcesRequest extends \Exception
+class ExcesRequestException extends \Exception
 {
 }

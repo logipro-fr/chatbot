@@ -2,6 +2,6 @@
 
 namespace Chatbot\Application\Service\Exception;
 
-class EmptyString extends \Exception
+class BadRequestException extends \Exception
 {
 }

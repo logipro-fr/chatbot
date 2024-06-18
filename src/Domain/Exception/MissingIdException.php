@@ -2,6 +2,6 @@
 
 namespace Chatbot\Domain\Exception;
 
-class BadKeywords extends \Exception
+class MissingIdException extends \Exception
 {
 }

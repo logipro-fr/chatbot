@@ -26,7 +26,7 @@ class ChatBotContinueController
     ) {
     }
     #[Route('api/v1/conversation/Continue', 'continueConversation', methods: ['POST'])]
-    public function execute(Request $request): Response
+    public function continueConversation(Request $request): Response
     {
         $request = $this->buildContinueconversationRequest($request);
         $conversation = new ContinueConversation($this->repository, $this->factory);

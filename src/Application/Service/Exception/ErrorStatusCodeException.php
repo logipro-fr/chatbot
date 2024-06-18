@@ -2,6 +2,6 @@
 
 namespace Chatbot\Application\Service\Exception;
 
-class UnhautorizeKey extends \Exception
+class ErrorStatusCodeException extends \Exception
 {
 }

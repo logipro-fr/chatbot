@@ -8,10 +8,10 @@ class TokenCount
 {
     public function countToken(string $prompt): int
     {
-        $keywords = preg_split("/[\s,.;:!?'-]+/", $prompt, -1, PREG_SPLIT_NO_EMPTY);
+        $KEYWORDS_SEPARATORS = preg_split("/[\s,.;:!?'-]+/", $prompt, -1, PREG_SPLIT_NO_EMPTY);
 
 
-            $result = count($keywords);
+            $result = count($KEYWORDS_SEPARATORS);
             return $result;
     }
 }

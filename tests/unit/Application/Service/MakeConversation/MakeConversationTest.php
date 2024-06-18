@@ -31,9 +31,6 @@ class MakeConversationTest extends TestCase
 
         //assert / Then
         $this->assertInstanceOf(MakeConversationResponse::class, $response);
-
-
-     //   $this->assertInstanceOf(Response::class,$response->execute(new Request($prompt)));
     }
 
     public function testTwoConversation(): void

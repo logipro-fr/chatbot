@@ -5,6 +5,7 @@ namespace Chatbot\Infrastructure\Persistence\Conversation;
 use Chatbot\Domain\Model\Conversation\Conversation;
 use Chatbot\Domain\Model\Conversation\ConversationId;
 use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
+use Chatbot\Infrastructure\Exception\NoIdException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 
@@ -27,7 +28,7 @@ class ConversationRepositoryDoctrine extends EntityRepository implements Convers
     {
         $conversation = $this->getEntityManager()->find(Conversation::class, $conversationId);
         if ($conversation === null) {
-            return false;
+            throw new NoIdException("No id find in database");
         }
         return $conversation;
     }

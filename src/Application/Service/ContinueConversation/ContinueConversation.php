@@ -21,7 +21,6 @@ class ContinueConversation
 
     public function execute(ContinueConversationRequest $request): void
     {
-        /** @var Conversation*/
 
         $conversation = $this->repository->findById($request->convId);
         if ($conversation == null) {

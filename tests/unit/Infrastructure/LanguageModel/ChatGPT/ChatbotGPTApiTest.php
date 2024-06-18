@@ -3,10 +3,10 @@
 namespace Chatbot\Tests\Infrastructure\LanguageModel\ChatGPT;
 
 use Chatbot\Application\Service\Exception\BadInstanceException;
-use Chatbot\Application\Service\Exception\BadRequest;
-use Chatbot\Application\Service\Exception\ExcesRequest;
-use Chatbot\Application\Service\Exception\Other;
-use Chatbot\Application\Service\Exception\UnhautorizeKey;
+use Chatbot\Application\Service\Exception\BadRequestException;
+use Chatbot\Application\Service\Exception\ExcesRequestException;
+use Chatbot\Application\Service\Exception\OtherException;
+use Chatbot\Application\Service\Exception\UnhautorizeKeyException;
 use Chatbot\Domain\Model\Conversation\Context;
 use Chatbot\Domain\Model\Conversation\Prompt;
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\ChatbotGPTApi;
@@ -20,7 +20,6 @@ use function Safe\file_get_contents;
 
 class ChatbotGPTApiTest extends TestCase
 {
-    //private string $apiKey;
     private string $content;
     private const CONTEXT = "You're helpfull asistant";
 
@@ -103,7 +102,7 @@ class ChatbotGPTApiTest extends TestCase
 
     public function testBadKey(): void
     {
-        $this->expectException(UnhautorizeKey::class);
+        $this->expectException(UnhautorizeKeyException::class);
         $this->expectExceptionMessage("Bad Key");
         $client = $this->createMockHttpClient('responseGETblague.json', 401);
         $prompt = new Prompt("bonjour comment vas tu");
@@ -115,7 +114,7 @@ class ChatbotGPTApiTest extends TestCase
 
     public function testBadRequest(): void
     {
-        $this->expectException(BadRequest::class);
+        $this->expectException(BadRequestException::class);
         $this->expectExceptionMessage("Bad Request");
         $client = $this->createMockHttpClient('responseGETblague.json', 400);
         $prompt = new Prompt("bonjour comment vas tu");
@@ -126,7 +125,7 @@ class ChatbotGPTApiTest extends TestCase
 
     public function testExcesRequest(): void
     {
-        $this->expectException(ExcesRequest::class);
+        $this->expectException(ExcesRequestException::class);
         $this->expectExceptionMessage("Exceeded quota");
         $client = $this->createMockHttpClient('responseGETblague.json', 429);
         $prompt = new Prompt("bonjour comment vas tu");
@@ -137,7 +136,7 @@ class ChatbotGPTApiTest extends TestCase
 
     public function testOther(): void
     {
-        $this->expectException(Other::class);
+        $this->expectException(OtherException::class);
         $this->expectExceptionMessage("Other error");
         $client = $this->createMockHttpClient('responseGETblague.json', 404);
         $prompt = new Prompt("bonjour comment vas tu");

@@ -29,9 +29,6 @@ class ChatBotContinueControllerTest extends WebTestCase
         $this->initDoctrineTester();
         $this->clearTables(['conversations']);
         $this->client = static::createClient(["debug" => false]);
-
-        //$autoInjectedRepo = $this->client->getContainer()->get('conversation.repository');
-        //$this->repository = $autoInjectedRepo;
     }
 
     public function testChatBotControllerExecute(): void
@@ -57,7 +54,7 @@ class ChatBotContinueControllerTest extends WebTestCase
                 "lmName" => "Parrot",
             ])
         );
-        $response = $controller->execute($request);
+        $response = $controller->continueConversation($request);
         /** @var string */
         $responseContent = $response->getContent();
         $this->assertJson($responseContent);

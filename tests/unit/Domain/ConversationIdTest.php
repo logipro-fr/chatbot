@@ -2,7 +2,7 @@
 
 namespace Chatbot\Tests\Domain;
 
-use Chatbot\Domain\Exception\MissingId;
+use Chatbot\Domain\Exception\MissingIdException;
 use Chatbot\Domain\Model\Conversation\ConversationId;
 use PHPUnit\Framework\TestCase;
 

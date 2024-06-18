@@ -17,27 +17,17 @@ class MakeConversationControllerTest extends WebTestCase
     use DoctrineRepositoryTesterTrait;
 
     private KernelBrowser $client;
-    //private ConversationRepositoryInterface $repository;
 
     public function setUp(): void
     {
         $this->initDoctrineTester();
         $dotenv = new Dotenv();
         $dotenv->loadEnv(getcwd() . '/src/Infrastructure/Shared/Symfony/.env.local');
-        //$this->clearTables(["conversations"]);
         $this->client = self::createClient(["debug" => false]);
-
-
-
-        //$kernel = new Kernel('test');
-       // /** @var ConversationRepositoryDoctrine $autoInjectedRepo */
-      //  $autoInjectedRepo = $this->client->getContainer()->get("conversation.repository");
-        //$this->repository = $autoInjectedRepo;
     }
 
     public function testControllerRouting(): void
     {
-        //$client = static::createClient();
         $this->client->request(
             "POST",
             "/api/v1/conversation/Make",

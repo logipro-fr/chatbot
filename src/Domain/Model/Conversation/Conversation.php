@@ -10,8 +10,6 @@ use Safe\DateTimeImmutable as SafeDateTimeImmutable;
 
 class Conversation
 {
-    private const DATE_PATTERN = DateTimeImmutable::ATOM;
-
     public function __construct(
         private PairArray $pairs,
         private ConversationId $id = new ConversationId(),
@@ -49,10 +47,5 @@ class Conversation
     public function getCreatedAt(): DateTimeImmutable
     {
         return $this->createdAt;
-    }
-
-    public function getCreationDate(): string
-    {
-        return $this->getCreatedAt()->format(self::DATE_PATTERN);
     }
 }

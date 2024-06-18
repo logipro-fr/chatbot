@@ -1,4 +1,3 @@
 /var/
 /vendor/
-/tests/.env.test
 /src/Infrastructure/Shared/Symfony/.env.local

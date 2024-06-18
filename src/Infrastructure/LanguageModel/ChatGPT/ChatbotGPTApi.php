@@ -4,10 +4,10 @@ namespace Chatbot\Infrastructure\LanguageModel\ChatGPT;
 
 use Chatbot\Application\Service\ChatbotApiInterface;
 use Chatbot\Application\Service\Exception\BadInstanceException;
-use Chatbot\Application\Service\Exception\BadRequest;
-use Chatbot\Application\Service\Exception\ExcesRequest;
-use Chatbot\Application\Service\Exception\Other;
-use Chatbot\Application\Service\Exception\UnhautorizeKey;
+use Chatbot\Application\Service\Exception\BadRequestException;
+use Chatbot\Application\Service\Exception\ExcesRequestException;
+use Chatbot\Application\Service\Exception\OtherException;
+use Chatbot\Application\Service\Exception\UnhautorizeKeyException;
 use Chatbot\Application\Service\RequestInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -40,7 +40,7 @@ class ChatbotGPTApi implements ChatbotApiInterface
 
         if ($request instanceof RequestGPT) {
             $userprompt = $request->prompt->prompt;
-            $context = $request->context->context;
+            $context = $request->context->getContext();
 
             $content = <<<EOF
             {
@@ -70,17 +70,16 @@ class ChatbotGPTApi implements ChatbotApiInterface
                 $content = json_decode($contentJson);
                 $choices = $content->choices;
                 $messageContent = $choices[0]->message->content ;
-                //$content['choices'][0]['message']['content'];
                 $contentModel = strval($messageContent);
                 return new ResponseGPT($contentModel, $code);
             } elseif ($code == 401) {
-                throw new UnhautorizeKey("Bad Key");
+                throw new UnhautorizeKeyException("Bad Key");
             } elseif ($code == 400) {
-                throw new BadRequest("Bad Request");
+                throw new BadRequestException("Bad Request");
             } elseif ($code == 429) {
-                throw new ExcesRequest("Exceeded quota");
+                throw new ExcesRequestException("Exceeded quota");
             }
-                throw new Other("Other error");
+                throw new OtherException("Other error");
         } else {
             throw new BadInstanceException("BadInstance");
         }

@@ -4,7 +4,7 @@ namespace Chatbot\Infrastructure\LanguageModel;
 
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\GPTModel;
 use Chatbot\Application\Service\MakeConversation\LanguageModelAbstractFactory;
-use Chatbot\Domain\Exception\BadKeywords;
+use Chatbot\Domain\Exception\BadKeywordsException;
 use Chatbot\Domain\Model\Conversation\Context;
 use Chatbot\Domain\Model\Conversation\LanguageModelInterface;
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\GPTModelTranslate;
@@ -15,15 +15,8 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class ModelFactory extends LanguageModelAbstractFactory
 {
-    private HttpClientInterface $client;
-    public function __construct(?HttpClientInterface $client = null)
+    public function __construct(private HttpClientInterface $client = new CurlHttpClient())
     {
-
-        if ($client == null) {
-            $this->client = new CurlHttpClient();
-        } else {
-            $this->client = $client;
-        }
     }
 
     public function create(string $lmName, string $context): LanguageModelInterface
