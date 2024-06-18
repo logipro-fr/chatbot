@@ -2,8 +2,6 @@
 
 namespace Chatbot\Application\Service\MakeConversation;
 
-use Symfony\Contracts\HttpClient\HttpClientInterface;
-
 class MakeConversationRequest
 {
     public function __construct(

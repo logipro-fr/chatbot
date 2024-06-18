@@ -2,7 +2,7 @@
 
 namespace Chatbot\Tests\Application;
 
-use Chatbot\Application\Service\Request;
+
 use Chatbot\Domain\Model\Conversation\Context;
 use Chatbot\Domain\Model\Conversation\Conversation;
 use Chatbot\Domain\Model\Conversation\PairArray;
@@ -10,7 +10,6 @@ use Chatbot\Domain\Model\Conversation\Prompt;
 use Chatbot\Infrastructure\Api\ChatBot;
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\RequestGPT;
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\ResponseGPT;
-use Chatbot\Tests\BaseTestCase;
 use Chatbot\Tests\Domain\LanguageModelFake;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\MockHttpClient;

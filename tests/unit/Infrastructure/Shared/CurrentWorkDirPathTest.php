@@ -1,6 +1,6 @@
 <?php
 
-namespace Chatbot\Tests\Infrastructure;
+namespace Chatbot\Tests\Infrastructure\Shared;
 
 use Chatbot\Infrastructure\Exception\NoPWDException;
 use Chatbot\Infrastructure\Shared\CurrentWorkDirPath;
@@ -59,6 +59,8 @@ class CurrentWorkDirPathTest extends TestCase
     public function testNoPWDException(): void
     {
         $this->expectException(NoPWDException::class);
+        $this->expectExceptionMessage("No path found");
+        unset($_ENV['PWD']);
         putenv('PWD');
         CurrentWorkDirPath::getPath();
     }

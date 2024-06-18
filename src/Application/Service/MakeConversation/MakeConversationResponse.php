@@ -4,7 +4,6 @@ namespace Chatbot\Application\Service\MakeConversation;
 
 use Chatbot\Domain\Model\Conversation\ConversationId;
 use Chatbot\Domain\Model\Conversation\Pair;
-use Chatbot\Domain\Model\Conversation\PairArray;
 
 class MakeConversationResponse
 {

@@ -3,8 +3,6 @@
 namespace Chatbot\Tests\Infrastructure\Persistence\Conversation ;
 
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryDoctrine;
-use Chatbot\Tests\Infrastructure\Persistence\Conversation\FlushingConversationRepositoryDoctrine;
-use Doctrine\DBAL\Types\Type;
 use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
 
 class ConversationRepositoryDoctrineTest extends ConversationRepositoryTestBase

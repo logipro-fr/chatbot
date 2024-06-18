@@ -3,7 +3,6 @@
 namespace Chatbot\Application\Service\ContinueConversation;
 
 use Chatbot\Application\Service\MakeConversation\LanguageModelAbstractFactory;
-use Chatbot\Domain\Model\Conversation\Conversation;
 use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
 use Chatbot\Domain\Model\Conversation\Prompt;
 use Chatbot\Domain\Service\Ask\Ask;

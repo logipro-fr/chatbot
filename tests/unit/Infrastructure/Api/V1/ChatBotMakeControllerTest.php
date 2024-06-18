@@ -2,14 +2,10 @@
 
 namespace Chatbot\Tests\Infrastructure\Api\V1;
 
-use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
 use Chatbot\Infrastructure\Api\V1\ChatBotMakeController;
 use Chatbot\Infrastructure\LanguageModel\ModelFactory;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
-use Chatbot\Tests\WebBaseTestCase;
-use Doctrine\ORM\EntityManagerInterface;
 use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
-use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;

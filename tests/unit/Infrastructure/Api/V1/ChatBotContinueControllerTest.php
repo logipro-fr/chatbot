@@ -4,7 +4,6 @@ namespace Chatbot\Tests\Infrastructure\Api\V1;
 
 use Chatbot\Application\Service\MakeConversation\MakeConversation;
 use Chatbot\Application\Service\MakeConversation\MakeConversationRequest;
-use Chatbot\Domain\Model\Conversation\ConversationId;
 use Chatbot\Infrastructure\Api\V1\ChatBotContinueController;
 use Chatbot\Infrastructure\LanguageModel\ModelFactory;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;

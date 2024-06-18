@@ -5,7 +5,6 @@ namespace Chatbot\Infrastructure\Api\V1;
 use Chatbot\Application\Service\ContinueConversation\ContinueConversation;
 use Chatbot\Application\Service\ContinueConversation\ContinueConversationRequest;
 use Chatbot\Application\Service\MakeConversation\LanguageModelAbstractFactory;
-use Chatbot\Domain\Model\Conversation\Conversation;
 use Chatbot\Domain\Model\Conversation\ConversationId;
 use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;

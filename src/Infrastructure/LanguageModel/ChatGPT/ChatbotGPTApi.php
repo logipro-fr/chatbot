@@ -45,7 +45,7 @@ class ChatbotGPTApi implements ChatbotApiInterface
             $content = <<<EOF
             {
                 "model": "gpt-3.5-turbo",
-                "messages": [
+                "messages": [use Chatbot\Domain\Model\Conversation\Conversation;
                     {
                         "role": "system",
                         "content": "$context"

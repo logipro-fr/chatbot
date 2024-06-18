@@ -3,7 +3,6 @@
 namespace Chatbot\Application\Service\ContinueConversation;
 
 use Chatbot\Domain\Model\Conversation\ConversationId;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class ContinueConversationRequest
 {

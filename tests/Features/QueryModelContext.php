@@ -3,33 +3,17 @@
 namespace Features;
 
 use Behat\Behat\Context\Context;
-use Behat\Gherkin\Node\PyStringNode;
-use Behat\Gherkin\Node\TableNode;
-use Behat\Behat\Tester\Exception\PendingException;
 use Chatbot\Application\Service\ContinueConversation\ContinueConversation;
 use Chatbot\Application\Service\ContinueConversation\ContinueConversationRequest;
-use Chatbot\Application\Service\Exception\EmptyStringExecption;
-use Chatbot\Application\Service\Exception\ErrorStatusCodeExecption;
 use Chatbot\Application\Service\MakeConversation\MakeConversation;
 use Chatbot\Application\Service\MakeConversation\MakeConversationRequest;
 use Chatbot\Application\Service\MakeConversation\MakeConversationResponse;
 use Chatbot\Domain\Model\Conversation\Conversation;
 use Chatbot\Domain\Model\Conversation\ConversationId;
 use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
-use Chatbot\Infrastructure\LanguageModel\ChatGPT\GPTModel;
 use Chatbot\Infrastructure\LanguageModel\ModelFactory;
-use Chatbot\Infrastructure\LanguageModel\Parrot;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
-use Chatbot\Tests\Domain\LanguageModelFake;
 use PHPUnit\Framework\Assert;
-use Symfony\Component\Dotenv\Dotenv;
-use Symfony\Component\HttpClient\CurlHttpClient;
-use Symfony\Component\HttpClient\MockHttpClient;
-use Symfony\Component\HttpClient\Response\MockResponse;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
-
-use function PHPUnit\Framework\throwException;
-use function Safe\file_get_contents;
 
 /**
  * Defines applaication features from the specific context.

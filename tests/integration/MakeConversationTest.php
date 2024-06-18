@@ -7,10 +7,8 @@ use Chatbot\Application\Service\ContinueConversation\ContinueConversationRequest
 use Chatbot\Application\Service\MakeConversation\MakeConversation;
 use Chatbot\Application\Service\MakeConversation\MakeConversationRequest;
 use Chatbot\Domain\Model\Conversation\ConversationId;
-use Chatbot\Infrastructure\LanguageModel\ChatGPT\GPTModel;
 use Chatbot\Infrastructure\LanguageModel\ModelFactory;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
-use Chatbot\Tests\BaseTestCase;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\CurlHttpClient;
 

@@ -2,7 +2,6 @@
 
 namespace Chatbot\Infrastructure\LanguageModel\ChatGPT;
 
-use Chatbot\Application\Service\MakeConversation\LanguageModelAbstractFactory;
 use Chatbot\Domain\Model\Conversation\Answer;
 use Chatbot\Domain\Model\Conversation\Context;
 use Chatbot\Domain\Model\Conversation\LanguageModelInterface;

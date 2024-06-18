@@ -4,7 +4,7 @@ namespace Chatbot\Tests\Infrastructure\Shared\Symfony;
 
 use PHPUnit\Framework\TestCase;
 use Chatbot\Infrastructure\Shared\Symfony\Kernel;
-use Symfony\Component\Dotenv\Dotenv;
+
 
 class KernelTest extends TestCase
 {

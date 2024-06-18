@@ -6,11 +6,9 @@ use Chatbot\Domain\Model\Conversation\Context;
 use Chatbot\Domain\Model\Conversation\Prompt;
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\ChatbotGPTApi;
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\RequestGPT;
-use Chatbot\Tests\BaseTestCase;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\HttpClient\CurlHttpClient;
-use Symfony\Component\HttpClient\HttpClient;
 
 class ChatbotGPTApiTest extends TestCase
 {

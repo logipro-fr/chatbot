@@ -11,8 +11,6 @@ use Chatbot\Domain\Model\Conversation\ConversationId;
 use Chatbot\Infrastructure\LanguageModel\ModelFactory;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
 use PHPUnit\Framework\Assert;
-use Symfony\Component\HttpClient\CurlHttpClient;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * Defines applaication features from the specific context.

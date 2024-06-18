@@ -2,7 +2,7 @@
 
 namespace Chatbot\Tests\Infrastructure\Persistence\Doctrine\Types;
 
-use Chatbot\Domain\Model\Conversation\Conversation;
+
 use Chatbot\Domain\Model\Conversation\ConversationId;
 use Chatbot\Infrastructure\Persistence\Doctrine\Types\ConversationIdType;
 use Doctrine\DBAL\Platforms\SqlitePlatform;

@@ -4,12 +4,10 @@ namespace Chatbot\Infrastructure\LanguageModel;
 
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\GPTModel;
 use Chatbot\Application\Service\MakeConversation\LanguageModelAbstractFactory;
-use Chatbot\Domain\Exception\BadKeywordsException;
 use Chatbot\Domain\Model\Conversation\Context;
 use Chatbot\Domain\Model\Conversation\LanguageModelInterface;
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\GPTModelTranslate;
 use Chatbot\Infrastructure\LanguageModel\Exception\BadLanguageModelName;
-use Chatbot\Infrastructure\LanguageModel\Exception\MissingContext;
 use Symfony\Component\HttpClient\CurlHttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 

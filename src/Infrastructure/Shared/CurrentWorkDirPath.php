@@ -4,8 +4,6 @@ namespace Chatbot\Infrastructure\Shared;
 
 use Chatbot\Infrastructure\Exception\NoPWDException;
 
-use function PHPUnit\Framework\throwException;
-
 class CurrentWorkDirPath
 {
     public static function getPath(): string
@@ -17,6 +15,6 @@ class CurrentWorkDirPath
         if (getenv('PWD') !== false) {
             return getenv('PWD');
         }
-        throw new NoPWDException();
+        throw new NoPWDException("No path found");
     }
 }
