@@ -81,7 +81,7 @@ class ChatbotGPTApi implements ChatbotApiInterface
             }
                 throw new OtherException("Other error");
         } else {
-            throw new BadInstanceException("BadInstance");
+            throw new BadInstanceException("Bad Instance");
         }
     }
 

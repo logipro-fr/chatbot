@@ -15,6 +15,6 @@ class CurrentWorkDirPath
         if (getenv('PWD') !== false) {
             return getenv('PWD');
         }
-        throw new NoPWDException("No path found");
+        throw new NoPWDException("Env var PWD no found");
     }
 }

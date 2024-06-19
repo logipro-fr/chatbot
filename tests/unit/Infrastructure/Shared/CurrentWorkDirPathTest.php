@@ -59,7 +59,7 @@ class CurrentWorkDirPathTest extends TestCase
     public function testNoPWDException(): void
     {
         $this->expectException(NoPWDException::class);
-        $this->expectExceptionMessage("No path found");
+        $this->expectExceptionMessage("Env var PWD no found");
         unset($_ENV['PWD']);
         putenv('PWD');
         CurrentWorkDirPath::getPath();

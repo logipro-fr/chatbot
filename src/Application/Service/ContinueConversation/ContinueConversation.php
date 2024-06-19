@@ -23,7 +23,7 @@ class ContinueConversation
 
         $conversation = $this->repository->findById($request->convId);
         if ($conversation == null) {
-            throw new NoIdException();
+            throw new NoIdException("Id no exist in DataBase");
         }
         $lm = $this->factory->create($request->lmName, $request->prompt);
         $message = (new Ask())->execute(new Prompt($request->prompt), $lm);

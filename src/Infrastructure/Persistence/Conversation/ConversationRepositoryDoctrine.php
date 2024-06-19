@@ -28,7 +28,7 @@ class ConversationRepositoryDoctrine extends EntityRepository implements Convers
     {
         $conversation = $this->getEntityManager()->find(Conversation::class, $conversationId);
         if ($conversation === null) {
-            throw new NoIdException("No id find in database");
+            throw new NoIdException("Id no exist in DataBase");
         }
         return $conversation;
     }
