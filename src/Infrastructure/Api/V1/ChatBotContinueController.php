@@ -4,6 +4,7 @@ namespace Chatbot\Infrastructure\Api\V1;
 
 use Chatbot\Application\Service\ContinueConversation\ContinueConversation;
 use Chatbot\Application\Service\ContinueConversation\ContinueConversationRequest;
+use Chatbot\Application\Service\ContinueConversation\ContinueConversationResponse;
 use Chatbot\Application\Service\MakeConversation\LanguageModelAbstractFactory;
 use Chatbot\Domain\Model\Conversation\ConversationId;
 use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
@@ -13,6 +14,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Throwable;
 
 use function Safe\json_decode;
 
@@ -33,28 +35,39 @@ class ChatBotContinueController
             $conversation->execute($request);
             $this->entityManager->flush();
         } catch (Exception $e) {
-            return new JsonResponse(
-                [
-                    'success' => false,
-                    'statusCode' => '',
-                    'data' => '',
-                    'message' => "$e",
-                ]
-            );
+            return $this->writeUnSuccessFulResponse($e);
         }
         $response = $conversation->getResponse();
+        return $this->writeSuccessfulResponse($response);
+    }
+
+    private function writeSuccessfulResponse(ContinueConversationResponse $conversationResponse): JsonResponse
+    {
         return new JsonResponse(
             [
                 'success' => true,
                 'errorCode' => "",
                 'data' => [
-                    'id' => $response->conversationId->__toString(),
-                    'nbPair' => $response->nbPair,
-                    'lastPair' => $response->pair,
+                    'id' => $conversationResponse->conversationId->__toString(),
+                    'nbPair' => $conversationResponse->nbPair,
+                    'lastPair' => $conversationResponse->pair,
                 ],
                     'message' => "",
             ],
             200
+        );
+    }
+
+    private function writeUnSuccessFulResponse(Throwable $e): JsonResponse
+    {
+        $className = (new \ReflectionClass($e))->getShortName();
+        return new JsonResponse(
+            [
+                'success' => false,
+                'ErrorCode' => $className,
+                'data' => '',
+                'message' => $e->getMessage(),
+            ],
         );
     }
 

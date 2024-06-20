@@ -148,7 +148,7 @@ class ChatbotGPTApiTest extends TestCase
     public function testBadInstance(): void
     {
         $this->expectException(BadInstanceException::class);
-        $this->expectExceptionMessage("BadInstance");
+        $this->expectExceptionMessage("Bad Instance");
         $client = $this->createMockHttpClient('responseGETblague.json', 200);
         $requestGPT = new RequestGPTFake('bonjour comment va tu');
         (new ChatbotGPTApi($client))->request($requestGPT);

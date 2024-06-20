@@ -5,6 +5,7 @@ namespace Chatbot\Infrastructure\Api\V1;
 use Chatbot\Application\Service\MakeConversation\LanguageModelAbstractFactory;
 use Chatbot\Application\Service\MakeConversation\MakeConversation;
 use Chatbot\Application\Service\MakeConversation\MakeConversationRequest;
+use Chatbot\Application\Service\MakeConversation\MakeConversationResponse;
 use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
@@ -12,6 +13,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Throwable;
 
 use function Safe\json_decode;
 
@@ -34,29 +36,11 @@ class ChatBotMakeController
             $conversation->execute($request);
             $this->entityManager->flush();
         } catch (Exception $e) {
-            return new JsonResponse(
-                [
-                    'success' => false,
-                    'statusCode' => '',
-                    'data' => '',
-                    'message' => "$e",
-                ]
-            );
+            return $this->writeUnSuccessFulResponse($e);
         }
         $response = $conversation->getResponse();
-        return new JsonResponse(
-            [
-                'success' => true,
-                'errorCode' => "",
-                'data' => [
-                    'id' => $response->conversationId->__toString(),
-                    'nbPair' => $response->nbPair,
-                    'lastPair' => $response->pair,
-                ],
-                    'message' => "",
-            ],
-            200
-        );
+        return $this->writeSuccessfulResponse($response);
+        
     }
 
     private function buildMakeconversationRequest(Request $request): MakeConversationRequest
@@ -75,5 +59,35 @@ class ChatBotMakeController
         $context = $data['context'];
 
         return new MakeConversationRequest($prompt, $lmName, $context);
+    }
+
+    private function writeSuccessfulResponse(MakeConversationResponse $conversationResponse): JsonResponse
+    {
+        return new JsonResponse(
+            [
+                'success' => true,
+                'errorCode' => "",
+                'data' => [
+                    'id' => $conversationResponse->conversationId->__toString(),
+                    'nbPair' => $conversationResponse->nbPair,
+                    'lastPair' => $conversationResponse->pair,
+                ],
+                    'message' => "",
+            ],
+            200
+        );
+    }
+
+    private function writeUnSuccessFulResponse(Throwable $e): JsonResponse
+    {
+        $className = (new \ReflectionClass($e))->getShortName();
+        return new JsonResponse(
+            [
+                'success' => false,
+                'ErrorCode' => $className,
+                'data' => '',
+                'message' => $e->getMessage(),
+            ],
+        );
     }
 }
