@@ -15,7 +15,7 @@ jobs:
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '8.2' # ou la version de votre choix
+        php-version: '8.3' # ou la version de votre choix
         extensions: pcov, zip, exif, pdo_mysql, mysqli
         coverage: pcov
 
