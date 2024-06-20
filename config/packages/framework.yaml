@@ -1,0 +1,7 @@
+when@test:
+    framework:
+        test: true
+
+when@dev:
+    framework:
+        test: true
