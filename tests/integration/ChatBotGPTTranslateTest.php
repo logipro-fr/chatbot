@@ -10,7 +10,6 @@ use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemo
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Dotenv\Dotenv;
 
-
 class ChatBotGPTTranslateTest extends TestCase
 {
     public function setUp(): void

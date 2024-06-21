@@ -40,7 +40,6 @@ class ChatBotMakeController
         }
         $response = $conversation->getResponse();
         return $this->writeSuccessfulResponse($response);
-        
     }
 
     private function buildMakeconversationRequest(Request $request): MakeConversationRequest
