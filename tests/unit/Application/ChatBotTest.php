@@ -2,7 +2,6 @@
 
 namespace Chatbot\Tests\Application;
 
-
 use Chatbot\Domain\Model\Conversation\Context;
 use Chatbot\Domain\Model\Conversation\Conversation;
 use Chatbot\Domain\Model\Conversation\PairArray;
