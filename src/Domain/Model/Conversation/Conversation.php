@@ -15,7 +15,7 @@ class Conversation
         private ConversationId $id = new ConversationId(),
         private readonly DateTimeImmutable $createdAt = new SafeDateTimeImmutable()
     ) {
-        (new EventFacade())->dispatch(new ConversationCreated($this->id));
+        (new EventFacade())->dispatch(new ConversationCreated($this->id->__toString()));
     }
 
     public function getTotalToken(): int
@@ -41,7 +41,7 @@ class Conversation
     public function addPair(Prompt $prompt, Answer $message): void
     {
         $this->pairs->add(new Pair($prompt, $message));
-        (new EventFacade())->dispatch(new PairAdded($this->id));
+        (new EventFacade())->dispatch(new PairAdded($this->id->__toString()));
     }
 
     public function getCreatedAt(): DateTimeImmutable
