@@ -8,7 +8,9 @@ use Chatbot\Application\Service\ContinueConversation\ContinueConversationRespons
 use Chatbot\Application\Service\MakeConversation\LanguageModelAbstractFactory;
 use Chatbot\Application\Service\MakeConversation\MakeConversation;
 use Chatbot\Application\Service\MakeConversation\MakeConversationRequest;
+use Chatbot\Domain\Model\Conversation\Context;
 use Chatbot\Domain\Model\Conversation\ConversationId;
+use Chatbot\Domain\Model\Conversation\Prompt;
 use Chatbot\Infrastructure\LanguageModel\ModelFactory;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
 use PHPUnit\Framework\TestCase;
@@ -23,7 +25,7 @@ class ContinueConversationtest extends TestCase
 
         $this->repository = new ConversationRepositoryInMemory();
         $this->factory = new ModelFactory();
-        $request = new MakeConversationRequest("Bonjour", "Parrot", "You're helpfull assistant");
+        $request = new MakeConversationRequest(new Prompt("Bonjour"), "Parrot", new Context("You're helpfull assistant"));
         $service = new MakeConversation($this->repository, $this->factory);
         $service->execute($request);
         $response = $service->getResponse();
@@ -34,7 +36,7 @@ class ContinueConversationtest extends TestCase
     {
 
         //arrange / Given
-        $prompt = new ContinueConversationRequest("Bonjour", $this->convid, "Parrot");
+        $prompt = new ContinueConversationRequest(new Prompt("Bonjour"), $this->convid, "Parrot");
         $service = new ContinueConversation($this->repository, $this->factory);
         //act / When
         $token1 = $this->repository->findById($this->convid)->getTotalToken();

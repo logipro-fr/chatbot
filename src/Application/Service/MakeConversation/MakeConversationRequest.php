@@ -2,12 +2,15 @@
 
 namespace Chatbot\Application\Service\MakeConversation;
 
+use Chatbot\Domain\Model\Conversation\Context;
+use Chatbot\Domain\Model\Conversation\Prompt;
+
 class MakeConversationRequest
 {
     public function __construct(
-        public readonly string $prompt,
+        public readonly Prompt $prompt,
         public readonly string $lmname,
-        public readonly string $context
+        public readonly Context $context
     ) {
     }
 }
