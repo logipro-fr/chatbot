@@ -1,10 +1,14 @@
 openapi: 3.1.0
 info:
-  title: ChatBot API
+  title: ChatBot API Documentation
   version: 1.0.0
+  description: >-
+    Documentation for ChatBot API
 servers:
+  - url: /api/v1
+    description: API routes
   - url: http://172.17.0.1:11080/api/v1
-    description: test
+    description: Local Development usage API routes 
 paths:
   /conversation/Make:
     post:
