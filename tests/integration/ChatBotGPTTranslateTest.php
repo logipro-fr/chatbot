@@ -26,7 +26,11 @@ class ChatBotGPTTranslateTest extends TestCase
     {
         $repository = new ConversationRepositoryInMemory();
         $factory = new ModelFactory();
-        $request = new MakeConversationRequest(new Prompt("Bonjour, comment ça va?"), "GPTModelTranslate", new Context("english"));
+        $request = new MakeConversationRequest(
+            new Prompt("Bonjour, comment ça va?"),
+            "GPTModelTranslate",
+            new Context("english")
+        );
         $service = new MakeConversation($repository, $factory);
         $service->execute($request);
 

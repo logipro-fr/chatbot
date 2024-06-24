@@ -36,7 +36,11 @@ class ChatBotContinueControllerTest extends WebTestCase
     {
         $repository = new ConversationRepositoryInMemory();
         $factory = new ModelFactory();
-        $request = new MakeConversationRequest(new Prompt("Bonjour"), "Parrot", new Context("You're helpfull assistant"));
+        $request = new MakeConversationRequest(
+            new Prompt("Bonjour"),
+            "Parrot",
+            new Context("You're helpfull assistant")
+        );
         $service = new MakeConversation($repository, $factory);
         $service->execute($request);
         $response = $service->getResponse();

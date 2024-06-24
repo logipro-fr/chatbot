@@ -25,7 +25,11 @@ class ContinueConversationtest extends TestCase
 
         $this->repository = new ConversationRepositoryInMemory();
         $this->factory = new ModelFactory();
-        $request = new MakeConversationRequest(new Prompt("Bonjour"), "Parrot", new Context("You're helpfull assistant"));
+        $request = new MakeConversationRequest(
+            new Prompt("Bonjour"),
+            "Parrot",
+            new Context("You're helpfull assistant")
+        );
         $service = new MakeConversation($this->repository, $this->factory);
         $service->execute($request);
         $response = $service->getResponse();

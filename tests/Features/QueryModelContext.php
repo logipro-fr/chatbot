@@ -8,9 +8,11 @@ use Chatbot\Application\Service\ContinueConversation\ContinueConversationRequest
 use Chatbot\Application\Service\MakeConversation\MakeConversation;
 use Chatbot\Application\Service\MakeConversation\MakeConversationRequest;
 use Chatbot\Application\Service\MakeConversation\MakeConversationResponse;
+use Chatbot\Domain\Model\Conversation\Context as ConversationContext;
 use Chatbot\Domain\Model\Conversation\Conversation;
 use Chatbot\Domain\Model\Conversation\ConversationId;
 use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
+use Chatbot\Domain\Model\Conversation\Prompt;
 use Chatbot\Infrastructure\LanguageModel\ModelFactory;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
 use PHPUnit\Framework\Assert;
@@ -45,7 +47,11 @@ class QueryModelContext implements Context
      */
     public function iStartAConversationPromptingWith(string $prompt): void
     {
-        $request = new MakeConversationRequest($prompt, $this->lmName, "you're helpfull assitant");
+        $request = new MakeConversationRequest(
+            new Prompt($prompt),
+            $this->lmName,
+            new ConversationContext("you're helpfull assitant")
+        );
         $this->repository = new ConversationRepositoryInMemory();
         $factory = new ModelFactory();
         $service = new MakeConversation($this->repository, $factory);
@@ -79,7 +85,11 @@ class QueryModelContext implements Context
      */
     public function iStartedAConversation(): void
     {
-        $request = new MakeConversationRequest("Bonjour", "Parrot", "you're helpfull assitant");
+        $request = new MakeConversationRequest(
+            new Prompt("Bonjour"),
+            "Parrot",
+            new ConversationContext("you're helpfull assitant")
+        );
         $this->repository = new ConversationRepositoryInMemory();
         $factory = new ModelFactory();
         $service = new MakeConversation($this->repository, $factory);
@@ -96,7 +106,7 @@ class QueryModelContext implements Context
     {
         $factory = new ModelFactory();
         $id = new ConversationId($this->response->conversationId);
-        $request = new ContinueConversationRequest($prompt, $id, "Parrot");
+        $request = new ContinueConversationRequest(new Prompt($prompt), $id, "Parrot");
         $service = new ContinueConversation($this->repository, $factory);
         $service->execute($request);
     }
@@ -131,7 +141,7 @@ class QueryModelContext implements Context
         $this->repository = new ConversationRepositoryInMemory();
         $context = "You're a helpfull assistant ";
 
-        $request = new MakeConversationRequest("Bonjour", "GPTModel", $context);
+        $request = new MakeConversationRequest(new Prompt("Bonjour"), "GPTModel", new ConversationContext($context));
         $factory = new ModelFactory();
         $service = new MakeConversation($this->repository, $factory);
         $service->execute($request);
@@ -152,7 +162,7 @@ class QueryModelContext implements Context
     {
         $factory = new ModelFactory();
         $service = new ContinueConversation($this->repository, $factory);
-        $request = new ContinueConversationRequest($prompt, $this->conversation->getId(), "GPTModel");
+        $request = new ContinueConversationRequest(new Prompt($prompt), $this->conversation->getId(), "GPTModel");
         $service->execute($request);
     }
 

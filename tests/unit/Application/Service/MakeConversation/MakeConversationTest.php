@@ -23,7 +23,11 @@ class MakeConversationTest extends TestCase
         // arrange / Given
 
         $repository = new ConversationRepositoryInMemory();
-        $request = new MakeConversationRequest(new Prompt("Bonjour"), "Parrot", new Context("You're helpfull assistant"));
+        $request = new MakeConversationRequest(
+            new Prompt("Bonjour"),
+            "Parrot",
+            new Context("You're helpfull assistant")
+        );
         $factory = new ModelFactory();
         $service = new MakeConversation($repository, $factory);
         //act / When
@@ -39,7 +43,11 @@ class MakeConversationTest extends TestCase
     {
         //arrange/ given
         $repository = new ConversationRepositoryInMemory();
-        $request = new MakeConversationRequest(new Prompt("Bonjour"), "Parrot", new Context("You're helpfull assistant"));
+        $request = new MakeConversationRequest(
+            new Prompt("Bonjour"),
+            "Parrot",
+            new Context("You're helpfull assistant")
+        );
         $factory = new ModelFactory();
         $service = new MakeConversation($repository, $factory);
 
@@ -63,7 +71,11 @@ class MakeConversationTest extends TestCase
     {
         $repository = new ConversationRepositoryInMemory();
         $client = $this->createMockHttpClient("responseGETbonjour.json", 200);
-        $request = new MakeConversationRequest(new Prompt("Bonjour"), "GPTModel", new Context("Your're helpfull assistant"));
+        $request = new MakeConversationRequest(
+            new Prompt("Bonjour"),
+            "GPTModel",
+            new Context("Your're helpfull assistant")
+        );
 
         $factory = new ModelFactory($client);
         $service = new MakeConversation($repository, $factory);
