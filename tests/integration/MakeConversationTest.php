@@ -6,7 +6,9 @@ use Chatbot\Application\Service\ContinueConversation\ContinueConversation;
 use Chatbot\Application\Service\ContinueConversation\ContinueConversationRequest;
 use Chatbot\Application\Service\MakeConversation\MakeConversation;
 use Chatbot\Application\Service\MakeConversation\MakeConversationRequest;
+use Chatbot\Domain\Model\Conversation\Context;
 use Chatbot\Domain\Model\Conversation\ConversationId;
+use Chatbot\Domain\Model\Conversation\Prompt;
 use Chatbot\Infrastructure\LanguageModel\ModelFactory;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
 use PHPUnit\Framework\TestCase;
@@ -19,8 +21,8 @@ class MakeConversationTest extends TestCase
         $repository = new ConversationRepositoryInMemory();
         $client = new CurlHttpClient();
         $factory = new ModelFactory();
-        $context = "You're a helpfull assistant assistant ";
-        $request = new MakeConversationRequest("Bonjour, comment va tu ?", "GPTModel", $context);
+        $context = new Context("You're a helpfull assistant assistant");
+        $request = new MakeConversationRequest(new Prompt("Bonjour, comment vas tu ?"), "GPTModel", $context);
         $service = new MakeConversation($repository, $factory);
         $service->execute($request);
 
@@ -32,7 +34,7 @@ class MakeConversationTest extends TestCase
         $responseMessage = $pair->getAnswer()->getMessage();
 
         $this->assertEquals(true, is_string($responseMessage));
-        $prompt = "Ca va super ! Quel temps fait il chez toi ?";
+        $prompt = new Prompt("Ca va super ! Quel temps fait il chez toi ?");
         $id = new ConversationId($response->conversationId) ;
         $request = new ContinueConversationRequest($prompt, $id, "GPTModel");
         $service = new ContinueConversation($repository, $factory);

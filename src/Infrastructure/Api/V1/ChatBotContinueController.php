@@ -8,6 +8,7 @@ use Chatbot\Application\Service\ContinueConversation\ContinueConversationRespons
 use Chatbot\Application\Service\MakeConversation\LanguageModelAbstractFactory;
 use Chatbot\Domain\Model\Conversation\ConversationId;
 use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
+use Chatbot\Domain\Model\Conversation\Prompt;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -77,8 +78,8 @@ class ChatBotContinueController
         $content = $request->getContent();
         /** @var array<string> $data */
         $data = json_decode($content, true);
-        /** @var string */
-        $prompt = $data['Prompt'];
+        /** @var Prompt */
+        $prompt = new Prompt($data['Prompt']);
         /** @var string */
         $id = $data["convId"];
         /** @var ConversationId */

@@ -21,10 +21,10 @@ class MakeConversation
     public function execute(MakeConversationRequest $request): void
     {
 
-        $lm = $this->factory->create($request->lmname, $request->context);
+        $lm = $this->factory->create($request->lmname, $request->context->getContext());
         $conversation = new Conversation(new PairArray());
-        $message = (new Ask())->execute(new Prompt($request->prompt), $lm);
-        $conversation->addPair(new Prompt($request->prompt), $message);
+        $message = (new Ask())->execute($request->prompt, $lm);
+        $conversation->addPair($request->prompt, $message);
         $this->addToRepository($conversation);
         $pair = $conversation->getPair($conversation->getNbPair() - 1);
         $this->response = new MakeConversationResponse($conversation->getId(), $pair, $conversation->getNbPair());

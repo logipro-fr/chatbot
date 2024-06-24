@@ -25,9 +25,9 @@ class ContinueConversation
         if ($conversation == null) {
             throw new NoIdException("Id no exist in DataBase");
         }
-        $lm = $this->factory->create($request->lmName, $request->prompt);
-        $message = (new Ask())->execute(new Prompt($request->prompt), $lm);
-        $conversation->addPair(new Prompt($request->prompt), $message);
+        $lm = $this->factory->create($request->lmName, $request->prompt->getUserResquest());
+        $message = (new Ask())->execute(new Prompt($request->prompt->getUserResquest()), $lm);
+        $conversation->addPair(new Prompt($request->prompt->getUserResquest()), $message);
         $pair = $conversation->getPair($conversation->getNbPair() - 1);
         $this->response = new ContinueConversationResponse($conversation->getId(), $pair, $conversation->getNbPair());
     }

@@ -7,7 +7,9 @@ use Chatbot\Application\Service\MakeConversation\LanguageModelAbstractFactory;
 use Chatbot\Application\Service\MakeConversation\MakeConversation;
 use Chatbot\Application\Service\MakeConversation\MakeConversationRequest;
 use Chatbot\Application\Service\MakeConversation\MakeConversationResponse;
+use Chatbot\Domain\Model\Conversation\Context as ConversationContext;
 use Chatbot\Domain\Model\Conversation\ConversationId;
+use Chatbot\Domain\Model\Conversation\Prompt;
 use Chatbot\Infrastructure\LanguageModel\ModelFactory;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
 use PHPUnit\Framework\Assert;
@@ -42,7 +44,11 @@ class TranslateContext implements Context
      */
     public function iPrompt(string $prompt): void
     {
-        $request = new MakeConversationRequest($prompt, "ParrotTranslate", $this->lang);
+        $request = new MakeConversationRequest(
+            new Prompt($prompt),
+            "ParrotTranslate",
+            new ConversationContext($this->lang)
+        );
         $service = new MakeConversation($this->repository, $this->factory);
         $service->execute($request);
         $this->response = $service->getResponse();

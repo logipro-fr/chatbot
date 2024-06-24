@@ -39,13 +39,13 @@ class ChatbotGPTApi implements ChatbotApiInterface
         $userprompt = "";
 
         if ($request instanceof RequestGPT) {
-            $userprompt = $request->prompt->prompt;
+            $userprompt = $request->prompt->getUserResquest();
             $context = $request->context->getContext();
 
             $content = <<<EOF
             {
                 "model": "gpt-3.5-turbo",
-                "messages": [use Chatbot\Domain\Model\Conversation\Conversation;
+                "messages": [
                     {
                         "role": "system",
                         "content": "$context"

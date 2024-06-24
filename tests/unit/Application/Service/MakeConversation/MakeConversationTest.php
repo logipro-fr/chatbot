@@ -5,7 +5,9 @@ namespace Chatbot\Tests\Application\Service\MakeConversation;
 use Chatbot\Application\Service\MakeConversation\MakeConversation;
 use Chatbot\Application\Service\MakeConversation\MakeConversationRequest;
 use Chatbot\Application\Service\MakeConversation\MakeConversationResponse;
+use Chatbot\Domain\Model\Conversation\Context;
 use Chatbot\Domain\Model\Conversation\ConversationId;
+use Chatbot\Domain\Model\Conversation\Prompt;
 use Chatbot\Infrastructure\LanguageModel\ModelFactory;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
 use PHPUnit\Framework\TestCase;
@@ -21,7 +23,11 @@ class MakeConversationTest extends TestCase
         // arrange / Given
 
         $repository = new ConversationRepositoryInMemory();
-        $request = new MakeConversationRequest("Bonjour", "Parrot", "You're helpfull assistant");
+        $request = new MakeConversationRequest(
+            new Prompt("Bonjour"),
+            "Parrot",
+            new Context("You're helpfull assistant")
+        );
         $factory = new ModelFactory();
         $service = new MakeConversation($repository, $factory);
         //act / When
@@ -37,7 +43,11 @@ class MakeConversationTest extends TestCase
     {
         //arrange/ given
         $repository = new ConversationRepositoryInMemory();
-        $request = new MakeConversationRequest("Bonjour", "Parrot", "You're helpfull assistant");
+        $request = new MakeConversationRequest(
+            new Prompt("Bonjour"),
+            "Parrot",
+            new Context("You're helpfull assistant")
+        );
         $factory = new ModelFactory();
         $service = new MakeConversation($repository, $factory);
 
@@ -61,7 +71,11 @@ class MakeConversationTest extends TestCase
     {
         $repository = new ConversationRepositoryInMemory();
         $client = $this->createMockHttpClient("responseGETbonjour.json", 200);
-        $request = new MakeConversationRequest("Bonjour", "GPTModel", "Your're helpfull assistant");
+        $request = new MakeConversationRequest(
+            new Prompt("Bonjour"),
+            "GPTModel",
+            new Context("Your're helpfull assistant")
+        );
 
         $factory = new ModelFactory($client);
         $service = new MakeConversation($repository, $factory);
@@ -91,7 +105,7 @@ class MakeConversationTest extends TestCase
     {
         $repository = new ConversationRepositoryInMemory();
         $client = $this->createMockHttpClient("responseGETbonjour.json", 200);
-        $request = new MakeConversationRequest("Bonjour", "GPTModelTranslate", "english");
+        $request = new MakeConversationRequest(new Prompt("Bonjour"), "GPTModelTranslate", new Context("english"));
         $factory = new ModelFactory($client);
         $service = new MakeConversation($repository, $factory);
 
