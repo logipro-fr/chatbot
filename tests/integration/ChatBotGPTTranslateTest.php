@@ -4,7 +4,9 @@ namespace Chatbot\Tests\integration;
 
 use Chatbot\Application\Service\MakeConversation\MakeConversation;
 use Chatbot\Application\Service\MakeConversation\MakeConversationRequest;
+use Chatbot\Domain\Model\Conversation\Context;
 use Chatbot\Domain\Model\Conversation\ConversationId;
+use Chatbot\Domain\Model\Conversation\Prompt;
 use Chatbot\Infrastructure\LanguageModel\ModelFactory;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
 use PHPUnit\Framework\TestCase;
@@ -24,7 +26,7 @@ class ChatBotGPTTranslateTest extends TestCase
     {
         $repository = new ConversationRepositoryInMemory();
         $factory = new ModelFactory();
-        $request = new MakeConversationRequest("Bonjour, comment ça va?", "GPTModelTranslate", "englis");
+        $request = new MakeConversationRequest(new Prompt("Bonjour, comment ça va?"), "GPTModelTranslate", new Context("english"));
         $service = new MakeConversation($repository, $factory);
         $service->execute($request);
 
