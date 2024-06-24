@@ -6,7 +6,9 @@ info:
     Documentation for ChatBot API
 servers:
   - url: /api/v1
-    description: test
+    description: API routes
+  - url: http://localhost:11080/api/v1
+    description: Local Development usage API routes 
 paths:
   /conversation/Make:
     post:
