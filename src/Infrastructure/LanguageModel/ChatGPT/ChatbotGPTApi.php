@@ -75,7 +75,7 @@ class ChatbotGPTApi implements ChatbotApiInterface
             } elseif ($code == 401) {
                 throw new UnhautorizeKeyException("Bad Key");
             } elseif ($code == 400) {
-                throw new BadRequestException("Bad Request $response");
+                throw new BadRequestException("Bad Request");
             } elseif ($code == 429) {
                 throw new ExcesRequestException("Exceeded quota");
             }
