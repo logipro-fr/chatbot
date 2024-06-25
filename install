@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source install-lib/database-functions.sh
+
 # Create the var directory if it does not exist
 function create_var_directory() {
     DIR_VAR=var
@@ -15,79 +17,23 @@ function build_docker_images() {
     )
 }
 
-function create_database_in_container() {
-    source docker/mariadb/db.env
 
-    DB_NAME=$MYSQL_DATABASE
-    DB_USER=$MYSQL_USER
-    DB_PASS=$MYSQL_PASSWORD
-    CONTAINER_NAME=$1
-
-    wait_for_mariadb $CONTAINER_NAME $DB_USER $DB_PASS
-
-    # docker command to check if database exist in the container
-    DB_CHECK=$(docker exec -i $CONTAINER_NAME mysql -u$DB_USER -p$DB_PASS -e "SHOW DATABASES LIKE '$DB_NAME';")
-
-    if [[ "$DB_CHECK" == *"$DB_NAME"* ]]; then
-        echo "La base de données '$DB_NAME' existe déjà."
-    else
-        echo "La base de données '$DB_NAME' n'existe pas. Création en cours..."
-        # Commande Docker pour créer la base de données avec Doctrine
-        bin/console doctrine:database:create
-        if [ $? -eq 0 ]; then
-            echo "Base de données '$DB_NAME' créée avec succès."
-            # Commande Docker pour créer le schéma
-            bin/console doctrine:schema:create
-            if [ $? -eq 0 ]; then
-                echo "Schéma de la base de données créé avec succès."
-            else
-                echo "Erreur lors de la création du schéma de la base de données."
-            fi
-        else
-            echo "Erreur lors de la création de la base de données."
-        fi
-    fi
-
-    stop_database_container $CONTAINER_NAME
-}
-
-function wait_for_mariadb()
-{
-    CONTAINER_NAME=$1
-    DB_USER=$2
-    DB_PASS=$3
-    (
-        cd docker || exit
-        docker compose up -d $CONTAINER_NAME
-    )
-
-    local RETRIES=30
-    local WAIT=2
-    local COUNT=0
-
-    while [ $COUNT -lt $RETRIES ]; do
-        if docker exec $CONTAINER_NAME mysqladmin ping -u"$DB_USER" -p"$DB_PASS" --silent; then
-            echo "MariaDB is ready."
-            return 0
-        fi
-        echo "Waiting for MariaDB..."
-        COUNT=$((COUNT+1))
-        sleep $WAIT
-    done
-    echo "MariaDB n'a pas pu démarrer après $((RETRIES*WAIT)) secondes."
-    return 1
-}
-
-function stop_database_container
-{
-    (
-        cd docker || exit
-        docker compose down $CONTAINER_NAME
-    )
-}
-
+echo "-------------Step 1: Create some directories-----------------------------------------------------"
 create_var_directory
+echo "-------------Step 1: Done!"
+
+echo "-------------Step 2: Build docker images---------------------------------------------------------"
 build_docker_images
+echo "-------------Step 2: Done!"
+
+echo "-------------Step 3: Assure that no docker container is running anymore--------------------------"
 ./stop
+echo "-------------Step 3: Done!"
+
+echo "-------------Step 4: Composer tool will install php components in vendor directory---------------"
 ./bin/composer install
-create_database_in_container "chatbot-mariadb"
+echo "-------------Step 4: Done!"
+
+echo "-------------Step 5: Create database if no database exists---------------------------------------"
+create_database_in_container "docker/mariadb/db.env" "chatbot-mariadb"
+echo "-------------Step 5: Done!"
