@@ -29,11 +29,7 @@ services:
       - "$PWD/..:/var/chatbot"
       - "$PWD/..:$PWD/.."
     working_dir: $PWD/..
-    env_file: ../php-override.env
-#      - path: ./php.env
-#        required: true
-#      - path: ../php-override.env
-#        required: false
+    env_file: ../secret.env
     depends_on:
       chatbot-mariadb:
         condition: service_started
