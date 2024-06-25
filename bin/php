@@ -1,24 +1,23 @@
-#!/bin/sh
+#!/bin/bash
 
-cmd=`docker container ls | grep chatbot-php`
-status=$?
-if [ $status = 0 ]
-then
+PHP_CONTAINER_NAME=chatbot-php
+
+if docker ps --format '{{.Names}}' | grep -q "^$PHP_CONTAINER_NAME\$";  then
 docker exec \
     -ti \
     -e APP_ENV=test \
-    chatbot-php php $@
+    $PHP_CONTAINER_NAME php $@
 else
 ## execution de PHP de manière autonome (pas besoin d'un environnement de containers)
 docker run \
     --init \
     --rm \
     -ti \
-    --name php-chatbot-running-script \
+    --name "$PHP_CONTAINER_NAME-running-script" \
     -v "$(pwd)/bin/docker/php/php.ini:/usr/local/etc/php/php.ini" \
     -v "$PWD":"$PWD" \
     --user 1000:1000 \
     -w "$PWD" \
-    chatbot-php php $@
+    $PHP_CONTAINER_NAME php $@
 fi
 

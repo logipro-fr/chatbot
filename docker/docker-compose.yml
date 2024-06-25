@@ -14,7 +14,7 @@ services:
     ports:
       - "172.17.0.1:11080:80"
     networks:
-      - chatbot-networks
+      - chatbot-network
 
   chatbot-php:
     image: "chatbot-php"
@@ -29,11 +29,16 @@ services:
       - "$PWD/..:/var/chatbot"
       - "$PWD/..:$PWD/.."
     working_dir: $PWD/..
+    env_file: ../php-override.env
+#      - path: ./php.env
+#        required: true
+#      - path: ../php-override.env
+#        required: false
     depends_on:
       chatbot-mariadb:
         condition: service_started
     networks:
-      - chatbot-networks
+      - chatbot-network
 
   chatbot-mariadb:
     image: chatbot-mariadb:latest
@@ -50,7 +55,7 @@ services:
     env_file:
       - ./mariadb/db.env
     networks:
-      - chatbot-networks
+      - chatbot-network
 
   chatbot-phpmyadmin:
     image: phpmyadmin
@@ -63,7 +68,7 @@ services:
     ports:
       - "127.0.0.1:11090:80"
     networks:
-      - chatbot-networks
+      - chatbot-network
 
   chatbot-swagger-ui:
     image: swaggerapi/swagger-ui:latest
@@ -78,13 +83,14 @@ services:
     ports:
       - "172.17.0.1:11002:8080"
     networks:
-      - chatbot-networks
+      - chatbot-network
 
 
 
 networks:
-  chatbot-networks:
+  chatbot-network:
     driver: bridge
+    name: "chatbot-network"
     enable_ipv6: true
     ipam:
       config:
