@@ -6,13 +6,15 @@ Chatbot is a project to answer the user question
 
 ```console
 git clone git@github.com:logipro-fr/chatbot.git
+cd chatbot
+./install
 ```
 
 # To Contribute to Chatbot
 
 ## Requirements
 
-* docker
+* docker >=24.0.6
 * git
 
 

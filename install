@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source install-lib/database-functions.sh
+
 # Create the var directory if it does not exist
 function create_var_directory() {
     DIR_VAR=var
@@ -16,6 +18,22 @@ function build_docker_images() {
 }
 
 
+echo "-------------Step 1: Create some directories-----------------------------------------------------"
 create_var_directory
+echo "-------------Step 1: Done!"
+
+echo "-------------Step 2: Build docker images---------------------------------------------------------"
 build_docker_images
-bin/composer install
+echo "-------------Step 2: Done!"
+
+echo "-------------Step 3: Assure that no docker container is running anymore--------------------------"
+./stop
+echo "-------------Step 3: Done!"
+
+echo "-------------Step 4: Composer tool will install php components in vendor directory---------------"
+./bin/composer install
+echo "-------------Step 4: Done!"
+
+echo "-------------Step 5: Create database if no database exists---------------------------------------"
+create_database_in_container "docker/mariadb/db.env" "chatbot-mariadb"
+echo "-------------Step 5: Done!"
