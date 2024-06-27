@@ -1,9 +1,8 @@
 <?php
 
-namespace Chatbot\Domain\Model\Exceptions;
+namespace Chatbot\Domain\Model\Exception;
 
 use Exception;
-
 
 class BaseException extends Exception
 {

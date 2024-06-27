@@ -2,6 +2,8 @@
 
 namespace Chatbot\Application\Service\Exception;
 
-class BadInstanceException extends \Exception
+use Chatbot\Domain\Model\Exception\BaseException;
+
+class BadInstanceException extends BaseException
 {
 }

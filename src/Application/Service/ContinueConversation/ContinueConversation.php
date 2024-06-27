@@ -3,10 +3,10 @@
 namespace Chatbot\Application\Service\ContinueConversation;
 
 use Chatbot\Application\Service\MakeConversation\LanguageModelAbstractFactory;
+use Chatbot\Domain\Model\Conversation\Conversation;
 use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
 use Chatbot\Domain\Model\Conversation\Prompt;
 use Chatbot\Domain\Service\Ask\Ask;
-use Chatbot\Infrastructure\Exception\NoIdException;
 
 class ContinueConversation
 {
@@ -21,10 +21,8 @@ class ContinueConversation
     public function execute(ContinueConversationRequest $request): void
     {
 
+        /** @var Conversation */
         $conversation = $this->repository->findById($request->convId);
-        if ($conversation == null) {
-            throw new NoIdException("Id no exist in DataBase");
-        }
         $lm = $this->factory->create($request->lmName, $request->prompt->getUserResquest());
         $message = (new Ask())->execute(new Prompt($request->prompt->getUserResquest()), $lm);
         $conversation->addPair(new Prompt($request->prompt->getUserResquest()), $message);

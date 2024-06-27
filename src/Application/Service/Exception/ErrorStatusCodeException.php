@@ -2,6 +2,8 @@
 
 namespace Chatbot\Application\Service\Exception;
 
-class ErrorStatusCodeException extends \Exception
+use Chatbot\Domain\Model\Exception\BaseException;
+
+class ErrorStatusCodeException extends BaseException
 {
 }

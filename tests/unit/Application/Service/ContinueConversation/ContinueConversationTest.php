@@ -40,15 +40,18 @@ class ContinueConversationtest extends TestCase
     {
 
         //arrange / Given
-        $prompt = new ContinueConversationRequest(new Prompt("Bonjour"), $this->convid, "Parrot");
+        $prompt = new ContinueConversationRequest(new Prompt("Bonsoir"), $this->convid, "Parrot");
         $service = new ContinueConversation($this->repository, $this->factory);
         //act / When
         $token1 = $this->repository->findById($this->convid)->getTotalToken();
         $this->assertGreaterThan(1, $token1);
         $service->execute($prompt);
         //assert /Then
-        $token2 = $this->repository->findById($this->convid)->getTotalToken();
+        $conversation = $this->repository->findById($this->convid);
+        $token2 = $conversation->getTotalToken();
+        $lastPair = $conversation->getPair($conversation->getNbPair()-1);
         $this->assertGreaterThan($token1, $token2);
         $this->assertInstanceOf(ContinueConversationResponse::class, $service->getResponse());
+        $this->assertEquals($lastPair,$service->getResponse()->pair);
     }
 }
