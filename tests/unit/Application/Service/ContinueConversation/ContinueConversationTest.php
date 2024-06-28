@@ -49,9 +49,9 @@ class ContinueConversationtest extends TestCase
         //assert /Then
         $conversation = $this->repository->findById($this->convid);
         $token2 = $conversation->getTotalToken();
-        $lastPair = $conversation->getPair($conversation->getNbPair()-1);
+        $lastPair = $conversation->getPair($conversation->getNbPair() - 1);
         $this->assertGreaterThan($token1, $token2);
         $this->assertInstanceOf(ContinueConversationResponse::class, $service->getResponse());
-        $this->assertEquals($lastPair,$service->getResponse()->pair);
+        $this->assertEquals($lastPair, $service->getResponse()->pair);
     }
 }
