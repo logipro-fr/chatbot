@@ -32,9 +32,4 @@ class ConversationRepositoryDoctrine extends EntityRepository implements Convers
         }
         return $conversation;
     }
-
-    //public function flush(): void
-    //{
-       // $this->getEntityManager()->flush();
-    //}
 }

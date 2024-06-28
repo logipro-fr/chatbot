@@ -14,13 +14,4 @@ class ConversationRepositoryDoctrineTest extends ConversationRepositoryTestBase
         $this->initDoctrineTester();
         $this->repository = new ConversationRepositoryDoctrine($this->getEntityManager());
     }
-
-    /* public function testFlush(): void
-    {
-        $this->initDoctrineTester();
-        $repository = new ConversationRepositoryDoctrine($this->getEntityManager());
-
-        $repository->flush();
-        $this->assertTrue(true);
-    } */
 }
