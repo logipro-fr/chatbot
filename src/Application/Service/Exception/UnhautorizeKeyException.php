@@ -2,6 +2,8 @@
 
 namespace Chatbot\Application\Service\Exception;
 
-class UnhautorizeKeyException extends \Exception
+use Chatbot\Domain\Model\Exception\BaseException;
+
+class UnhautorizeKeyException extends BaseException
 {
 }

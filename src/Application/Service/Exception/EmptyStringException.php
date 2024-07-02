@@ -2,6 +2,8 @@
 
 namespace Chatbot\Application\Service\Exception;
 
-class EmptyStringException extends \Exception
+use Chatbot\Domain\Model\Exception\BaseException;
+
+class EmptyStringException extends BaseException
 {
 }
