@@ -70,15 +70,15 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: 8.3
+          extensions: pcov
 
       - name: Install dependencies
         run: composer install
 
       - name: Run PHPStan
         run: |
-          cp docker/php/php.ini $PHP_INI_DIR/php.ini
-          php vendor/bin/phpstan analyse --level=9 ./src
-          php vendor/bin/phpstan analyse --level=9 ./tests
+          php -d date.timezone=Europe/Paris -d memory_limit=-1 -d phar.readonly=0 -d pcov.enabled=1 -d expose_php=off vendor/bin/phpstan analyse --level=9 ./src
+          php -d date.timezone=Europe/Paris -d memory_limit=-1 -d phar.readonly=0 -d pcov.enabled=1 -d expose_php=off vendor/bin/phpstan analyse --level=9 ./tests
 
   phpunit:
     runs-on: ubuntu-latest
