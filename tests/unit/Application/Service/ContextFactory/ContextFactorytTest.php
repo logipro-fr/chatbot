@@ -3,7 +3,7 @@
 namespace Chatbot\Tests\Application\Service\ContextFactory;
 
 use Chatbot\Application\Service\ContextFactory\ContextFactory;
-use Chatbot\Domain\Model\Conversation\Context;
+use Chatbot\Domain\Model\Context\Context;
 use PHPUnit\Framework\TestCase;
 
 class ContextFactorytTest extends TestCase
@@ -14,6 +14,6 @@ class ContextFactorytTest extends TestCase
         $contextCreate = (new ContextFactory())->create("english");
         $this->assertInstanceOf(Context::class, $contextCreate);
         $context = "respond only with the prompt translated into english";
-        $this->assertEquals($context, $contextCreate->getContext());
+        $this->assertEquals($context, $contextCreate->getContext()->getMessage());
     }
 }

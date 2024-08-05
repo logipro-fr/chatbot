@@ -3,7 +3,7 @@
 namespace Chatbot\Infrastructure\LanguageModel\ChatGPT;
 
 use Chatbot\Domain\Model\Conversation\Answer;
-use Chatbot\Domain\Model\Conversation\Context;
+use Chatbot\Domain\Model\Context\Context;
 use Chatbot\Domain\Model\Conversation\LanguageModelInterface;
 use Chatbot\Domain\Model\Conversation\Prompt;
 use Symfony\Contracts\HttpClient\HttpClientInterface;

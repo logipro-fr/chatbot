@@ -21,7 +21,7 @@ class MakeConversation
     public function execute(MakeConversationRequest $request): void
     {
 
-        $lm = $this->factory->create($request->lmname, $request->context->getContext());
+        $lm = $this->factory->create($request->lmname, $request->context->getContext()->getMessage());
         $conversation = new Conversation(new PairArray());
         $message = (new Ask())->execute($request->prompt, $lm);
         $conversation->addPair($request->prompt, $message);

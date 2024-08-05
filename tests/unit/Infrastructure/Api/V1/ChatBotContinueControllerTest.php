@@ -4,7 +4,8 @@ namespace Chatbot\Tests\Infrastructure\Api\V1;
 
 use Chatbot\Application\Service\MakeConversation\MakeConversation;
 use Chatbot\Application\Service\MakeConversation\MakeConversationRequest;
-use Chatbot\Domain\Model\Conversation\Context;
+use Chatbot\Domain\Model\Context\Context;
+use Chatbot\Domain\Model\Context\ContextMessage;
 use Chatbot\Domain\Model\Conversation\Prompt;
 use Chatbot\Infrastructure\Api\V1\ChatBotContinueController;
 use Chatbot\Infrastructure\LanguageModel\ModelFactory;
@@ -39,7 +40,7 @@ class ChatBotContinueControllerTest extends WebTestCase
         $request = new MakeConversationRequest(
             new Prompt("Bonjour"),
             "Parrot",
-            new Context("You're helpfull assistant")
+            new Context(new ContextMessage("You're helpfull assistant"))
         );
         $service = new MakeConversation($repository, $factory);
         $service->execute($request);

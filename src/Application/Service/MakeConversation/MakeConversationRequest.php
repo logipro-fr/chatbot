@@ -2,7 +2,7 @@
 
 namespace Chatbot\Application\Service\MakeConversation;
 
-use Chatbot\Domain\Model\Conversation\Context;
+use Chatbot\Domain\Model\Context\Context;
 use Chatbot\Domain\Model\Conversation\Prompt;
 
 class MakeConversationRequest

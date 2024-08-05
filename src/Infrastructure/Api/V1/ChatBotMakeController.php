@@ -6,7 +6,8 @@ use Chatbot\Application\Service\MakeConversation\LanguageModelAbstractFactory;
 use Chatbot\Application\Service\MakeConversation\MakeConversation;
 use Chatbot\Application\Service\MakeConversation\MakeConversationRequest;
 use Chatbot\Application\Service\MakeConversation\MakeConversationResponse;
-use Chatbot\Domain\Model\Conversation\Context;
+use Chatbot\Domain\Model\Context\Context;
+use Chatbot\Domain\Model\Context\ContextMessage;
 use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
 use Chatbot\Domain\Model\Conversation\Prompt;
 use Doctrine\ORM\EntityManagerInterface;
@@ -57,7 +58,7 @@ class ChatBotMakeController
         /** @var string */
         $lmName = $data['lmName'];
         /** @var Context */
-        $context = new Context($data['context']);
+        $context = new Context(new ContextMessage($data['context']));
 
         return new MakeConversationRequest($prompt, $lmName, $context);
     }
