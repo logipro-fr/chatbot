@@ -50,11 +50,12 @@ class ChatBotMakeController
 
         $content = $request->getContent();
         /** @var array<string> $data */
+
         $data = json_decode($content, true);
 
 
         /** @var Prompt */
-        $prompt = new Prompt($data['Prompt']);
+        $prompt = new Prompt($data["Prompt"]);
         /** @var string */
         $lmName = $data['lmName'];
         /** @var Context */

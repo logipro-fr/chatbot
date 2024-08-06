@@ -6,7 +6,8 @@ use Chatbot\Application\Service\ContinueConversation\ContinueConversation;
 use Chatbot\Application\Service\ContinueConversation\ContinueConversationRequest;
 use Chatbot\Application\Service\MakeConversation\MakeConversation;
 use Chatbot\Application\Service\MakeConversation\MakeConversationRequest;
-use Chatbot\Domain\Model\Conversation\Context;
+use Chatbot\Domain\Model\Context\Context;
+use Chatbot\Domain\Model\Context\ContextMessage;
 use Chatbot\Domain\Model\Conversation\ConversationId;
 use Chatbot\Domain\Model\Conversation\Prompt;
 use Chatbot\Infrastructure\LanguageModel\ModelFactory;
@@ -21,7 +22,7 @@ class MakeConversationTest extends TestCase
         $repository = new ConversationRepositoryInMemory();
         $client = new CurlHttpClient();
         $factory = new ModelFactory();
-        $context = new Context("You're a helpfull assistant assistant");
+        $context = new Context(new ContextMessage("You're a helpfull assistant assistant"));
         $request = new MakeConversationRequest(new Prompt("Bonjour, comment vas tu ?"), "GPTModel", $context);
         $service = new MakeConversation($repository, $factory);
         $service->execute($request);
