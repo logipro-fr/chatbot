@@ -8,7 +8,8 @@ use Chatbot\Application\Service\ContinueConversation\ContinueConversationRequest
 use Chatbot\Application\Service\MakeConversation\MakeConversation;
 use Chatbot\Application\Service\MakeConversation\MakeConversationRequest;
 use Chatbot\Application\Service\MakeConversation\MakeConversationResponse;
-use Chatbot\Domain\Model\Conversation\Context as ConversationContext;
+use Chatbot\Domain\Model\Context\Context as ConversationContext;
+use Chatbot\Domain\Model\Context\ContextMessage;
 use Chatbot\Domain\Model\Conversation\Conversation;
 use Chatbot\Domain\Model\Conversation\ConversationId;
 use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
@@ -50,7 +51,7 @@ class QueryModelContext implements Context
         $request = new MakeConversationRequest(
             new Prompt($prompt),
             $this->lmName,
-            new ConversationContext("you're helpfull assitant")
+            new ConversationContext(new ContextMessage("you're helpfull assitant"))
         );
         $this->repository = new ConversationRepositoryInMemory();
         $factory = new ModelFactory();
@@ -88,7 +89,7 @@ class QueryModelContext implements Context
         $request = new MakeConversationRequest(
             new Prompt("Bonjour"),
             "Parrot",
-            new ConversationContext("you're helpfull assitant")
+            new ConversationContext(new ContextMessage("you're helpfull assitant"))
         );
         $this->repository = new ConversationRepositoryInMemory();
         $factory = new ModelFactory();
@@ -139,7 +140,7 @@ class QueryModelContext implements Context
     public function iHaveAnExistingConversation(): void
     {
         $this->repository = new ConversationRepositoryInMemory();
-        $context = "You're a helpfull assistant ";
+        $context = new ContextMessage("You're a helpfull assistant ");
 
         $request = new MakeConversationRequest(new Prompt("Bonjour"), "GPTModel", new ConversationContext($context));
         $factory = new ModelFactory();

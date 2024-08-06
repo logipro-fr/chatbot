@@ -77,7 +77,7 @@ class ChatBotContinueController
 
         $content = $request->getContent();
         /** @var array<string> $data */
-        
+
         $data = json_decode($content, true);
         /** @var Prompt */
         $prompt = new Prompt($data['Prompt']);

@@ -9,7 +9,7 @@ use Chatbot\Infrastructure\Exception\NoIdException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 
-/** @extends EntityRepository<Conversation>*/
+/** @extends EntityRepository<Context>*/
 
 class ContextRepositoryDoctrine extends EntityRepository implements ContextRepositoryInterface
 {

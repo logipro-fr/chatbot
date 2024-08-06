@@ -22,7 +22,7 @@ class ContextMessageType extends Type
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform): mixed
     {
-        return serialize($value);
+        return $value->getMessage();
     }
 
     /**

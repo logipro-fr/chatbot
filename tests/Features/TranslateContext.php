@@ -7,7 +7,8 @@ use Chatbot\Application\Service\MakeConversation\LanguageModelAbstractFactory;
 use Chatbot\Application\Service\MakeConversation\MakeConversation;
 use Chatbot\Application\Service\MakeConversation\MakeConversationRequest;
 use Chatbot\Application\Service\MakeConversation\MakeConversationResponse;
-use Chatbot\Domain\Model\Conversation\Context as ConversationContext;
+use Chatbot\Domain\Model\Context\Context as ContextContext;
+use Chatbot\Domain\Model\Context\ContextMessage;
 use Chatbot\Domain\Model\Conversation\ConversationId;
 use Chatbot\Domain\Model\Conversation\Prompt;
 use Chatbot\Infrastructure\LanguageModel\ModelFactory;
@@ -47,7 +48,7 @@ class TranslateContext implements Context
         $request = new MakeConversationRequest(
             new Prompt($prompt),
             "ParrotTranslate",
-            new ConversationContext($this->lang)
+            new ContextContext(new ContextMessage($this->lang))
         );
         $service = new MakeConversation($this->repository, $this->factory);
         $service->execute($request);

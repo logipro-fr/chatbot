@@ -75,9 +75,6 @@ class ChatBotMakeContext
         $data = json_decode($content, true);
         /** @var ContextMessage */
         $context = new ContextMessage($data['ContextMessage']);
-        /** @var string */
-       
-
 
         return new MakeContextRequest($context);
     }

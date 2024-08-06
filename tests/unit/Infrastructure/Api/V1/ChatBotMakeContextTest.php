@@ -68,9 +68,5 @@ class ChatBotMakeContextTest extends WebTestCase
         $this->assertStringContainsString('"success":true', $responseContent);
         $this->assertEquals(200, $responseCode);
         $this->assertStringContainsString('"id":"cot_', $responseContent);
-  
     }
-
-
-   
 }
