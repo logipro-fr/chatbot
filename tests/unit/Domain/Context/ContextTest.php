@@ -16,7 +16,6 @@ class ContextTest extends TestCase
         $context = new Context(new ContextMessage("I'm a context"));
 
         $this->assertInstanceOf(Context::class, $context);
-
     }
 
     public function testContextId(): void
@@ -47,6 +46,6 @@ class ContextTest extends TestCase
     public function testContextMessage(): void
     {
         $context = new Context(new ContextMessage("I'm a context message"));
-        $this->assertEquals("I'm a context message",$context->getContext()->getMessage());
+        $this->assertEquals("I'm a context message", $context->getContext()->getMessage());
     }
 }

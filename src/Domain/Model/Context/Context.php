@@ -10,10 +10,11 @@ use Safe\DateTimeImmutable as SafeDateTimeImmutable;
 class Context
 {
     public function __construct(
-        private ContextMessage $contextmessage ,
+        private ContextMessage $contextmessage,
         private ContextId $id = new ContextId(),
         private readonly DateTimeImmutable $createdAt = new SafeDateTimeImmutable()
-    ){}
+    ) {
+    }
 
     public function getContext(): ContextMessage
     {
@@ -29,6 +30,4 @@ class Context
     {
         return $this->createdAt;
     }
-
-
 }

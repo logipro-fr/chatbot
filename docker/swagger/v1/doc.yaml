@@ -158,3 +158,67 @@ paths:
                     type: string
                     description: Message associated with the response
                     example: Invalid request
+  /context/Make:
+    post:
+      summary: Make a context
+      operationId: makeContext
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ContextMessage:
+                  type: string
+                  description: The context you wante create for assistant 
+                  example: You're helpfull assistant
+                
+
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Indicates whether the publication was successful
+                    example: true
+                  statusCode:
+                    type: integer
+                    description: HTTP status code of the response
+                    example: 200
+                  data:
+                    type: object
+                    properties:
+                      contextId:
+                        type: string
+                        description: The ID of the context
+                        example: cot_664c50f9c95cb
+                    description: Data returned by the publication service
+                
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Indicates whether the conversation was created
+                    example: false
+                  statusCode:
+                    type: integer
+                    description: HTTP status code of the response
+                    example: 400
+                  data:
+                    type: object
+                    description: Data returned by the conversation service
+                  message:
+                    type: string
+                    description: Message associated with the response
+                    example: Invalid request
