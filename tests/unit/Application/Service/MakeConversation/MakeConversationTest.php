@@ -6,10 +6,12 @@ use Chatbot\Application\Service\MakeConversation\MakeConversation;
 use Chatbot\Application\Service\MakeConversation\MakeConversationRequest;
 use Chatbot\Application\Service\MakeConversation\MakeConversationResponse;
 use Chatbot\Domain\Model\Context\Context;
+use Chatbot\Domain\Model\Context\ContextId;
 use Chatbot\Domain\Model\Context\ContextMessage;
 use Chatbot\Domain\Model\Conversation\ConversationId;
 use Chatbot\Domain\Model\Conversation\Prompt;
 use Chatbot\Infrastructure\LanguageModel\ModelFactory;
+use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryInMemory;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
@@ -24,13 +26,14 @@ class MakeConversationTest extends TestCase
         // arrange / Given
 
         $repository = new ConversationRepositoryInMemory();
+        $contextrepo = new ContextRepositoryInMemory;
         $request = new MakeConversationRequest(
             new Prompt("Bonjour"),
             "Parrot",
-            new Context(new ContextMessage("You're helpfull assistant"))
+            new ContextId("base")
         );
         $factory = new ModelFactory();
-        $service = new MakeConversation($repository, $factory);
+        $service = new MakeConversation($repository, $factory, $contextrepo);
         //act / When
         $service->execute($request);
 
@@ -44,13 +47,14 @@ class MakeConversationTest extends TestCase
     {
         //arrange/ given
         $repository = new ConversationRepositoryInMemory();
+        $contextrepo = new ContextRepositoryInMemory;
         $request = new MakeConversationRequest(
             new Prompt("Bonjour"),
             "Parrot",
-            new Context(new ContextMessage("You're helpfull assistant"))
+            new ContextId("base")
         );
         $factory = new ModelFactory();
-        $service = new MakeConversation($repository, $factory);
+        $service = new MakeConversation($repository, $factory, $contextrepo);
 
         //act / When
         $service->execute($request);
@@ -71,15 +75,16 @@ class MakeConversationTest extends TestCase
     public function testWithChatGPTModel(): void
     {
         $repository = new ConversationRepositoryInMemory();
+        $contextrepo = new ContextRepositoryInMemory;
         $client = $this->createMockHttpClient("responseGETbonjour.json", 200);
         $request = new MakeConversationRequest(
             new Prompt("Bonjour"),
             "GPTModel",
-            new Context(new ContextMessage("Your're helpfull assistant"))
+            new ContextId("base")
         );
 
         $factory = new ModelFactory($client);
-        $service = new MakeConversation($repository, $factory);
+        $service = new MakeConversation($repository, $factory, $contextrepo);
 
         //act / When
         $service->execute($request);
@@ -105,10 +110,11 @@ class MakeConversationTest extends TestCase
     public function testWithChatGPTModelTranslate(): void
     {
         $repository = new ConversationRepositoryInMemory();
+        $contextrepo = new ContextRepositoryInMemory;
         $client = $this->createMockHttpClient("responseGETbonjour.json", 200);
-        $request = new MakeConversationRequest(new Prompt("Bonjour"), "GPTModelTranslate", new Context(new ContextMessage("english")));
+        $request = new MakeConversationRequest(new Prompt("Bonjour"), "GPTModelTranslate", new ContextId("base"));
         $factory = new ModelFactory($client);
-        $service = new MakeConversation($repository, $factory);
+        $service = new MakeConversation($repository, $factory, $contextrepo);
 
         //act / When
         $service->execute($request);

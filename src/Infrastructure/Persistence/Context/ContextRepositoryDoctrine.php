@@ -24,12 +24,12 @@ class ContextRepositoryDoctrine extends EntityRepository implements ContextRepos
         $this->getEntityManager()->persist($context);
     }
 
-    public function findById(ContextId $conversationId): Context|false
+    public function findById(ContextId $contextId): Context|false
     {
-        $conversation = $this->getEntityManager()->find(Context::class, $conversationId);
-        if ($conversation === null) {
-            throw new NoIdException("Id no exist in DataBase");
+        $context = $this->getEntityManager()->find(Context::class, $contextId);
+        if ($context === null) {
+            throw new NoIdException("$contextId is not found in Data Base");
         }
-        return $conversation;
+        return $context;
     }
 }

@@ -5,6 +5,7 @@ namespace Chatbot\Domain\Model\Conversation;
 use Chatbot\Domain\Event\ConversationCreated;
 use Chatbot\Domain\Event\PairAdded;
 use Chatbot\Domain\EventFacade\EventFacade;
+use Chatbot\Domain\Model\Context\ContextId;
 use DateTimeImmutable;
 use Safe\DateTimeImmutable as SafeDateTimeImmutable;
 
@@ -12,8 +13,10 @@ class Conversation
 {
     public function __construct(
         private PairArray $pairs,
+        private ContextId $context,
         private ConversationId $id = new ConversationId(),
-        private readonly DateTimeImmutable $createdAt = new SafeDateTimeImmutable()
+        private readonly DateTimeImmutable $createdAt = new SafeDateTimeImmutable(),
+        
     ) {
         (new EventFacade())->dispatch(new ConversationCreated($this->id->__toString()));
     }

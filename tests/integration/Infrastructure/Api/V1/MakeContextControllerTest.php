@@ -20,7 +20,7 @@ class MakeContextControllerTest extends WebTestCase
         $this->initDoctrineTester();
         $dotenv = new Dotenv();
         $dotenv->loadEnv(getcwd() . '/src/Infrastructure/Shared/Symfony/.env.local');
-        $this->clearTables(["context"]);
+        //$this->clearTables(["context"]);
         $this->client = self::createClient(["debug" => false]);
     }
 
@@ -34,7 +34,7 @@ class MakeContextControllerTest extends WebTestCase
             ['CONTENT_TYPE' => 'application/json'],
             json_encode(
                 [
-                "ContextMessage" => "english",
+                "ContextMessage" => "English",
                 ]
             )
         );

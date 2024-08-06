@@ -7,7 +7,8 @@ use Chatbot\Application\Service\MakeConversation\MakeConversation;
 use Chatbot\Application\Service\MakeConversation\MakeConversationRequest;
 use Chatbot\Application\Service\MakeConversation\MakeConversationResponse;
 use Chatbot\Domain\Model\Context\Context;
-use Chatbot\Domain\Model\Context\ContextMessage;
+use Chatbot\Domain\Model\Context\ContextId;
+use Chatbot\Domain\Model\Context\ContextRepositoryInterface;
 use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
 use Chatbot\Domain\Model\Conversation\Prompt;
 use Doctrine\ORM\EntityManagerInterface;
@@ -24,6 +25,7 @@ class ChatBotMakeController
 {
     public function __construct(
         private ConversationRepositoryInterface $repository,
+        private ContextRepositoryInterface $contextRepository,
         private LanguageModelAbstractFactory $factory,
         private EntityManagerInterface $entityManager
     ) {
@@ -33,7 +35,7 @@ class ChatBotMakeController
     {
         $request = $this->buildMakeconversationRequest($request);
 
-        $conversation = new MakeConversation($this->repository, $this->factory);
+        $conversation = new MakeConversation($this->repository, $this->factory, $this->contextRepository);
 
         try {
             $conversation->execute($request);
@@ -58,8 +60,8 @@ class ChatBotMakeController
         $prompt = new Prompt($data["Prompt"]);
         /** @var string */
         $lmName = $data['lmName'];
-        /** @var Context */
-        $context = new Context(new ContextMessage($data['context']));
+        /** @var ContextId */
+        $context = new ContextId($data['context']);
 
         return new MakeConversationRequest($prompt, $lmName, $context);
     }

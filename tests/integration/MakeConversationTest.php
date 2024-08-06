@@ -7,10 +7,12 @@ use Chatbot\Application\Service\ContinueConversation\ContinueConversationRequest
 use Chatbot\Application\Service\MakeConversation\MakeConversation;
 use Chatbot\Application\Service\MakeConversation\MakeConversationRequest;
 use Chatbot\Domain\Model\Context\Context;
+use Chatbot\Domain\Model\Context\ContextId;
 use Chatbot\Domain\Model\Context\ContextMessage;
 use Chatbot\Domain\Model\Conversation\ConversationId;
 use Chatbot\Domain\Model\Conversation\Prompt;
 use Chatbot\Infrastructure\LanguageModel\ModelFactory;
+use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryInMemory;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\CurlHttpClient;
@@ -20,11 +22,12 @@ class MakeConversationTest extends TestCase
     public function testMakeOneConversation(): void
     {
         $repository = new ConversationRepositoryInMemory();
+        $contextrepo = new ContextRepositoryInMemory();
         $client = new CurlHttpClient();
         $factory = new ModelFactory();
-        $context = new Context(new ContextMessage("You're a helpfull assistant assistant"));
+        $context = new ContextId("base");
         $request = new MakeConversationRequest(new Prompt("Bonjour, comment vas tu ?"), "GPTModel", $context);
-        $service = new MakeConversation($repository, $factory);
+        $service = new MakeConversation($repository, $factory, $contextrepo);
         $service->execute($request);
 
         $response = $service->getResponse();

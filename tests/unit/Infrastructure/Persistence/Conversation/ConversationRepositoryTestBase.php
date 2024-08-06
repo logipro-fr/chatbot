@@ -2,6 +2,7 @@
 
 namespace Chatbot\Tests\Infrastructure\Persistence\Conversation ;
 
+use Chatbot\Domain\Model\Context\ContextId;
 use Chatbot\Domain\Model\Conversation\Conversation;
 use Chatbot\Domain\Model\Conversation\ConversationId;
 use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
@@ -22,10 +23,11 @@ abstract class ConversationRepositoryTestBase extends TestCase
     {
 
         $id = new ConversationId("unId");
+        $context = new ContextId("Contextid");
 
-        $conversation = new Conversation(new PairArray(), $id);
+        $conversation = new Conversation(new PairArray(),$context, $id, );
 
-        $conversation2 = new Conversation(new PairArray(), new ConversationId("id2"));
+        $conversation2 = new Conversation(new PairArray(),$context, new ConversationId("id2"));
 
 
         $this->repository->add($conversation);
