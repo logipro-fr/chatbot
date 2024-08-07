@@ -44,7 +44,7 @@ paths:
                 properties:
                   success:
                     type: boolean
-                    description: Indicates whether the publication was successful
+                    description: Indicates if the conversation was create
                     example: true
                   statusCode:
                     type: integer
@@ -171,8 +171,8 @@ paths:
               properties:
                 ContextMessage:
                   type: string
-                  description: The context you wante create for assistant 
-                  example: You're helpfull assistant
+                  description: The context you want to create to personalize the chatbot's responses.
+                  example: Respond like a nextSign salesperson using a formal tone and short sentences.
                 
 
       responses:
@@ -185,7 +185,7 @@ paths:
                 properties:
                   success:
                     type: boolean
-                    description: Indicates whether the publication was successful
+                    description: indicate if the context was create
                     example: true
                   statusCode:
                     type: integer

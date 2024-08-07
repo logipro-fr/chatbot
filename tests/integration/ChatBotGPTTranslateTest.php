@@ -32,7 +32,7 @@ class ChatBotGPTTranslateTest extends TestCase
         $repository = new ConversationRepositoryInMemory();
         $factory = new ModelFactory();
         $contextrepository = new ContextRepositoryInMemory();
-        $contextrequest= new MakeContextRequest(new ContextMessage("english"), new ContextId("inEnglish"));
+        $contextrequest = new MakeContextRequest(new ContextMessage("english"));
         (new MakeContext($contextrepository))->execute($contextrequest);
         $request = new MakeConversationRequest(
             new Prompt("Bonjour, comment ça va?"),

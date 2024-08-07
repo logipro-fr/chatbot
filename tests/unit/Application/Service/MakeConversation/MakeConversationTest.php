@@ -26,7 +26,7 @@ class MakeConversationTest extends TestCase
         // arrange / Given
 
         $repository = new ConversationRepositoryInMemory();
-        $contextrepo = new ContextRepositoryInMemory;
+        $contextrepo = new ContextRepositoryInMemory();
         $request = new MakeConversationRequest(
             new Prompt("Bonjour"),
             "Parrot",
@@ -47,7 +47,7 @@ class MakeConversationTest extends TestCase
     {
         //arrange/ given
         $repository = new ConversationRepositoryInMemory();
-        $contextrepo = new ContextRepositoryInMemory;
+        $contextrepo = new ContextRepositoryInMemory();
         $request = new MakeConversationRequest(
             new Prompt("Bonjour"),
             "Parrot",
@@ -75,7 +75,7 @@ class MakeConversationTest extends TestCase
     public function testWithChatGPTModel(): void
     {
         $repository = new ConversationRepositoryInMemory();
-        $contextrepo = new ContextRepositoryInMemory;
+        $contextrepo = new ContextRepositoryInMemory();
         $client = $this->createMockHttpClient("responseGETbonjour.json", 200);
         $request = new MakeConversationRequest(
             new Prompt("Bonjour"),
@@ -110,7 +110,7 @@ class MakeConversationTest extends TestCase
     public function testWithChatGPTModelTranslate(): void
     {
         $repository = new ConversationRepositoryInMemory();
-        $contextrepo = new ContextRepositoryInMemory;
+        $contextrepo = new ContextRepositoryInMemory();
         $client = $this->createMockHttpClient("responseGETbonjour.json", 200);
         $request = new MakeConversationRequest(new Prompt("Bonjour"), "GPTModelTranslate", new ContextId("base"));
         $factory = new ModelFactory($client);

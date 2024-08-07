@@ -16,7 +16,6 @@ class Conversation
         private ContextId $context,
         private ConversationId $id = new ConversationId(),
         private readonly DateTimeImmutable $createdAt = new SafeDateTimeImmutable(),
-        
     ) {
         (new EventFacade())->dispatch(new ConversationCreated($this->id->__toString()));
     }
@@ -50,5 +49,10 @@ class Conversation
     public function getCreatedAt(): DateTimeImmutable
     {
         return $this->createdAt;
+    }
+
+    public function getContext(): ContextId
+    {
+        return $this->context;
     }
 }

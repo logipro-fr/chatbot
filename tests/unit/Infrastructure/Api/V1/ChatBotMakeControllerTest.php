@@ -32,7 +32,7 @@ class ChatBotMakeControllerTest extends WebTestCase
         $repository = new ConversationRepositoryInMemory();
         $factory = new ModelFactory();
         $contextrepo = new ContextRepositoryInMemory();
-        $controller = new ChatBotMakeController($repository, $contextrepo,$factory, $this->getEntityManager());
+        $controller = new ChatBotMakeController($repository, $contextrepo, $factory, $this->getEntityManager());
         $request = Request::create(
             "/api/v1/conversation/make",
             "POST",
@@ -71,7 +71,7 @@ class ChatBotMakeControllerTest extends WebTestCase
         /** @var array<mixed,array<mixed>> */
         $responseContent = json_decode($data, true);
         $contextid = $responseContent['data']['id'];
-        
+
         $this->client->request(
             "POST",
             "/api/v1/conversation/Make",
@@ -82,7 +82,7 @@ class ChatBotMakeControllerTest extends WebTestCase
 
                 "Prompt" => "Chien",
                 "lmName" => "ParrotTranslate",
-                "context" => "$contextid",
+                "context" => $contextid,
             ])
         );
         /** @var string */

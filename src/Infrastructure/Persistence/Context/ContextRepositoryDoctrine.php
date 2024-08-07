@@ -24,7 +24,7 @@ class ContextRepositoryDoctrine extends EntityRepository implements ContextRepos
         $this->getEntityManager()->persist($context);
     }
 
-    public function findById(ContextId $contextId): Context|false
+    public function findById(ContextId $contextId): Context
     {
         $context = $this->getEntityManager()->find(Context::class, $contextId);
         if ($context === null) {

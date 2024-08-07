@@ -29,7 +29,7 @@ class ContinueConversationtest extends TestCase
 
         $this->repository = new ConversationRepositoryInMemory();
         $this->factory = new ModelFactory();
-        $this->contextrepo = new ContextRepositoryInMemory; 
+        $this->contextrepo = new ContextRepositoryInMemory();
         $request = new MakeConversationRequest(
             new Prompt("Bonjour"),
             "Parrot",

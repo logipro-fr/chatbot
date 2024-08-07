@@ -55,7 +55,7 @@ class TranslateContext implements Context
         $contextservice = new MakeContext($this->contextrepo);
         $contextservice->execute(new MakeContextRequest(new ContextMessage($this->lang)));
         $response = $contextservice->getResponse();
- 
+
         $request = new MakeConversationRequest(
             new Prompt($prompt),
             "ParrotTranslate",

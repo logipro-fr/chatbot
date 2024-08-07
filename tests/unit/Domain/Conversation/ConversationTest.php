@@ -50,7 +50,7 @@ class ConversationTest extends TestCase
     {
         //arrange /Given
         //act /When
-        $conversation = new Conversation(new PairArray(), new ContextId(),new ConversationId("absolumentcequejeveut"));
+        $conversation = new Conversation(new PairArray(), new ContextId(), new ConversationId("absolumentcequejeveut"));
         //assert /then
         $this->assertEquals("absolumentcequejeveut", $conversation->getId());
     }
@@ -116,7 +116,7 @@ class ConversationTest extends TestCase
     public function testConversationIsCreatedAt(): void
     {
         $creationTime = SafeDateTimeImmutable::createFromFormat('d/m/Y H:i:s', "12/03/2022 15:32:45");
-        $conversation = new Conversation(new PairArray(), new ContextId() ,createdAt: $creationTime);
+        $conversation = new Conversation(new PairArray(), new ContextId(), createdAt: $creationTime);
         $this->assertEquals($creationTime, $conversation->getCreatedAt());
     }
 }
