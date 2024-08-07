@@ -38,7 +38,7 @@ class ChatBotContinueControllerTest extends WebTestCase
     public function testChatBotControllerExecute(): void
     {
         $repository = new ConversationRepositoryInMemory();
-        $contextrepo = new ContextRepositoryInMemory;
+        $contextrepo = new ContextRepositoryInMemory();
         $factory = new ModelFactory();
         $request = new MakeConversationRequest(
             new Prompt("Bonjour"),
@@ -88,7 +88,7 @@ class ChatBotContinueControllerTest extends WebTestCase
         /** @var array<mixed,array<mixed>> */
         $responseContent = json_decode($data, true);
         $contextid = $responseContent['data']['id'];
-        
+
 
         $this->client->request(
             "POST",
@@ -100,7 +100,7 @@ class ChatBotContinueControllerTest extends WebTestCase
 
                 "Prompt" => "Chien",
                 "lmName" => "ParrotTranslate",
-                "context" => "$contextid",
+                "context" => $contextid,
             ])
         );
         /** @var string */
@@ -135,7 +135,7 @@ class ChatBotContinueControllerTest extends WebTestCase
         $this->assertStringContainsString('"message":"', $responseContent);
     }
 
-   public function testControllerException(): void
+    public function testControllerException(): void
     {
         $this->client->request(
             "POST",

@@ -25,9 +25,9 @@ abstract class ConversationRepositoryTestBase extends TestCase
         $id = new ConversationId("unId");
         $context = new ContextId("Contextid");
 
-        $conversation = new Conversation(new PairArray(),$context, $id, );
+        $conversation = new Conversation(new PairArray(), $context, $id,);
 
-        $conversation2 = new Conversation(new PairArray(),$context, new ConversationId("id2"));
+        $conversation2 = new Conversation(new PairArray(), $context, new ConversationId("id2"));
 
 
         $this->repository->add($conversation);

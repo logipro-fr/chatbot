@@ -58,9 +58,9 @@ class QueryModelContext implements Context
             new ContextId("base")
         );
         $this->repository = new ConversationRepositoryInMemory();
-        $this->contextrepo = new ContextRepositoryInMemory;
+        $this->contextrepo = new ContextRepositoryInMemory();
         $factory = new ModelFactory();
-        $service = new MakeConversation($this->repository, $factory,$this->contextrepo);
+        $service = new MakeConversation($this->repository, $factory, $this->contextrepo);
         $service->execute($request);
         $this->response = $service->getResponse();
     }
@@ -97,9 +97,9 @@ class QueryModelContext implements Context
             new ContextId("base")
         );
         $this->repository = new ConversationRepositoryInMemory();
-        $this->contextrepo = new ContextRepositoryInMemory;
+        $this->contextrepo = new ContextRepositoryInMemory();
         $factory = new ModelFactory();
-        $service = new MakeConversation($this->repository, $factory,$this->contextrepo);
+        $service = new MakeConversation($this->repository, $factory, $this->contextrepo);
         $service->execute($request);
         $this->response = $service->getResponse();
         $this->conversation = $this->repository->findById(new ConversationId($this->response->conversationId));
@@ -146,7 +146,7 @@ class QueryModelContext implements Context
     public function iHaveAnExistingConversation(): void
     {
         $this->repository = new ConversationRepositoryInMemory();
-        $this->contextrepo = new ContextRepositoryInMemory;
+        $this->contextrepo = new ContextRepositoryInMemory();
 
         $request = new MakeConversationRequest(new Prompt("Bonjour"), "GPTModel", new ContextId("base"));
         $factory = new ModelFactory();

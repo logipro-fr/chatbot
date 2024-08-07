@@ -2,10 +2,8 @@
 
 namespace Chatbot\Tests\Infrastructure\Api\V1;
 
-use Chatbot\Infrastructure\Api\V1\ChatBotMakeController;
-use Chatbot\Infrastructure\LanguageModel\ModelFactory;
+use Chatbot\Infrastructure\Api\V1\ChatBotViewContextController;
 use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryInMemory;
-use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
 use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -13,7 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 use function Safe\json_encode;
 
-class ChatBotMakeControllerTest extends WebTestCase
+class ChatBotViewContextTest extends WebTestCase
 {
     use DoctrineRepositoryTesterTrait;
 
@@ -27,26 +25,23 @@ class ChatBotMakeControllerTest extends WebTestCase
         $this->client = static::createClient(["debug" => false]);
     }
 
-    public function testChatBotControllerExecute(): void
+    public function testViewContextControllerExecute(): void
     {
-        $repository = new ConversationRepositoryInMemory();
-        $factory = new ModelFactory();
+
         $contextrepo = new ContextRepositoryInMemory();
-        $controller = new ChatBotMakeController($repository, $contextrepo, $factory, $this->getEntityManager());
+        $controller = new ChatBotViewContextController($contextrepo, $this->getEntityManager());
         $request = Request::create(
-            "/api/v1/conversation/make",
+            "/api/v1/conversation/View",
             "POST",
             [],
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
             json_encode([
-                "Prompt" => "Chien",
-                "lmName" => "ParrotTranslate",
-                "context" => "base",
+                "Id" => "base",
             ])
         );
-        $response = $controller->makeConversation($request);
+        $response = $controller->viewContext($request);
         /** @var string */
         $responseContent = $response->getContent();
         $this->assertJson($responseContent);
@@ -74,15 +69,12 @@ class ChatBotMakeControllerTest extends WebTestCase
 
         $this->client->request(
             "POST",
-            "/api/v1/conversation/Make",
+            "/api/v1/context/View",
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
             json_encode([
-
-                "Prompt" => "Chien",
-                "lmName" => "ParrotTranslate",
-                "context" => $contextid,
+                "Id" => $contextid,
             ])
         );
         /** @var string */
@@ -91,36 +83,34 @@ class ChatBotMakeControllerTest extends WebTestCase
 
         $this->assertStringContainsString('"success":true', $responseContent);
         $this->assertEquals(200, $responseCode);
-        $this->assertStringContainsString('"id":"con_', $responseContent);
-        $this->assertStringContainsString('"nbPair":', $responseContent);
-        $this->assertStringContainsString('"lastPair":', $responseContent);
+        $this->assertStringContainsString('"context":"je suis un context', $responseContent);
         $this->assertStringContainsString('"message":"', $responseContent);
     }
-
-
-    public function testControllerException(): void
-    {
-        $this->client->request(
-            "POST",
-            "/api/v1/conversation/Make",
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            json_encode([
-
-                "Prompt" => "Chien",
-                "lmName" => "",
-                "context" => "base",
-            ])
-        );
-        /** @var string */
-        $responseContent = $this->client->getResponse()->getContent();
-        $responseCode = $this->client->getResponse()->getStatusCode();
-        $this->assertResponseIsSuccessful();
-
-        $this->assertStringContainsString('"success":false', $responseContent);
-        $this->assertEquals(200, $responseCode);
-        $this->assertStringContainsString('"data":"', $responseContent);
-        $this->assertStringContainsString('"message":"', $responseContent);
-    }
+//
+//
+//    public function testControllerException(): void
+//    {
+//        $this->client->request(
+//            "POST",
+//            "/api/v1/conversation/Make",
+//            [],
+//            [],
+//            ['CONTENT_TYPE' => 'application/json'],
+//            json_encode([
+//
+//                "Prompt" => "Chien",
+//                "lmName" => "",
+//                "context" => "base",
+//            ])
+//        );
+//        /** @var string */
+//        $responseContent = $this->client->getResponse()->getContent();
+//        $responseCode = $this->client->getResponse()->getStatusCode();
+//        $this->assertResponseIsSuccessful();
+//
+//        $this->assertStringContainsString('"success":false', $responseContent);
+//        $this->assertEquals(200, $responseCode);
+//        $this->assertStringContainsString('"data":"', $responseContent);
+//        $this->assertStringContainsString('"message":"', $responseContent);
+//    }
 }
