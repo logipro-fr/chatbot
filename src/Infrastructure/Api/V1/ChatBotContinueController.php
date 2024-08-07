@@ -27,7 +27,7 @@ class ChatBotContinueController
         private EntityManagerInterface $entityManager
     ) {
     }
-    #[Route('api/v1/conversation/Continue', 'continueConversation', methods: ['POST'])]
+    #[Route('api/v1/conversations/Continue', 'continueConversation', methods: ['POST'])]
     public function continueConversation(Request $request): Response
     {
         $request = $this->buildContinueconversationRequest($request);

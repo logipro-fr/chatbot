@@ -34,7 +34,7 @@ class ChatBotMakeControllerTest extends WebTestCase
         $contextrepo = new ContextRepositoryInMemory();
         $controller = new ChatBotMakeController($repository, $contextrepo, $factory, $this->getEntityManager());
         $request = Request::create(
-            "/api/v1/conversation/make",
+            "/api/v1/conversations/make",
             "POST",
             [],
             [],
@@ -74,7 +74,7 @@ class ChatBotMakeControllerTest extends WebTestCase
 
         $this->client->request(
             "POST",
-            "/api/v1/conversation/Make",
+            "/api/v1/conversations/Make",
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -102,7 +102,7 @@ class ChatBotMakeControllerTest extends WebTestCase
     {
         $this->client->request(
             "POST",
-            "/api/v1/conversation/Make",
+            "/api/v1/conversations/Make",
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],

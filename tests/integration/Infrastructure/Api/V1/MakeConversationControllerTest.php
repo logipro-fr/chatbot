@@ -27,7 +27,7 @@ class MakeConversationControllerTest extends WebTestCase
     {
         $this->client->request(
             "POST",
-            "/api/v1/conversation/Make",
+            "/api/v1/conversations/Make",
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],

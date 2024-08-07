@@ -30,7 +30,7 @@ class ChatBotMakeController
         private EntityManagerInterface $entityManager
     ) {
     }
-    #[Route('api/v1/conversation/Make', 'makeConversation', methods: ['POST'])]
+    #[Route('api/v1/conversations/Make', 'makeConversation', methods: ['POST'])]
     public function makeConversation(Request $request): Response
     {
         $request = $this->buildMakeconversationRequest($request);
