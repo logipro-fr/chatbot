@@ -33,6 +33,9 @@ class MakeContextTest extends TestCase
         //assert / Then
         $this->assertInstanceOf(MakeContextResponse::class, $response);
         $this->assertInstanceOf(ContextId::class, $response->contextId);
-        $this->assertEquals("You're helpfull assistant", $repository->findById($response->contextId)->getContext()->getMessage());
+        $this->assertEquals(
+            "You're helpfull assistant",
+            $repository->findById($response->contextId)->getContext()->getMessage()
+        );
     }
 }
