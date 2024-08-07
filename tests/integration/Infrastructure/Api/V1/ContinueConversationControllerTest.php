@@ -28,7 +28,7 @@ class ContinueConversationControllerTest extends WebTestCase
     {
         $this->client->request(
             "POST",
-            "/api/v1/conversation/Continue",
+            "/api/v1/conversations/Continue",
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],

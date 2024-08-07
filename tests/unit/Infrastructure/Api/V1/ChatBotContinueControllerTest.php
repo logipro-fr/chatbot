@@ -51,7 +51,7 @@ class ChatBotContinueControllerTest extends WebTestCase
         $this->convId = $response->conversationId;
         $controller = new ChatBotContinueController($repository, $factory, $this->getEntityManager());
         $request = Request::create(
-            "/api/v1/conversation/Continue",
+            "/api/v1/conversations/Continue",
             "POST",
             [],
             [],
@@ -92,7 +92,7 @@ class ChatBotContinueControllerTest extends WebTestCase
 
         $this->client->request(
             "POST",
-            "/api/v1/conversation/Make",
+            "/api/v1/conversations/Make",
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -112,7 +112,7 @@ class ChatBotContinueControllerTest extends WebTestCase
 
         $this->client->request(
             "POST",
-            "/api/v1/conversation/Continue",
+            "/api/v1/conversations/Continue",
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -139,7 +139,7 @@ class ChatBotContinueControllerTest extends WebTestCase
     {
         $this->client->request(
             "POST",
-            "/api/v1/conversation/Continue",
+            "/api/v1/conversations/Continue",
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],

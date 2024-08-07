@@ -9,9 +9,19 @@ servers:
     description: API routes
   - url: http://172.17.0.1:11080/api/v1
     description: Local Development usage API routes 
+
+tags:
+  - name: Conversations
+    description: Endpoints related to conversation management
+  - name: Context
+    description: Endpoints related to context management
+
 paths:
-  /conversation/Make:
+
+  /conversations/Make:
     post:
+      tags:
+        - Conversations
       summary: Make a conversation
       operationId: makeConversation
       requestBody:
@@ -84,8 +94,10 @@ paths:
                     type: string
                     description: Message associated with the response
                     example: Invalid request
-  /conversation/Continue:
+  /conversations/Continue:
     post:
+      tags:
+        - Conversations
       summary: Continue a conversation
       operationId: continueConversation
       requestBody:
@@ -160,6 +172,8 @@ paths:
                     example: Invalid request
   /context/Make:
     post:
+      tags:
+          - Context
       summary: Make a context
       operationId: makeContext
       requestBody:
