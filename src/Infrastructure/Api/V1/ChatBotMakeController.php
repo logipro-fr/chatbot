@@ -6,7 +6,9 @@ use Chatbot\Application\Service\MakeConversation\LanguageModelAbstractFactory;
 use Chatbot\Application\Service\MakeConversation\MakeConversation;
 use Chatbot\Application\Service\MakeConversation\MakeConversationRequest;
 use Chatbot\Application\Service\MakeConversation\MakeConversationResponse;
-use Chatbot\Domain\Model\Conversation\Context;
+use Chatbot\Domain\Model\Context\Context;
+use Chatbot\Domain\Model\Context\ContextId;
+use Chatbot\Domain\Model\Context\ContextRepositoryInterface;
 use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
 use Chatbot\Domain\Model\Conversation\Prompt;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,16 +25,17 @@ class ChatBotMakeController
 {
     public function __construct(
         private ConversationRepositoryInterface $repository,
+        private ContextRepositoryInterface $contextRepository,
         private LanguageModelAbstractFactory $factory,
         private EntityManagerInterface $entityManager
     ) {
     }
-    #[Route('api/v1/conversation/Make', 'makeConversation', methods: ['POST'])]
+    #[Route('api/v1/conversations/Make', 'makeConversation', methods: ['POST'])]
     public function makeConversation(Request $request): Response
     {
         $request = $this->buildMakeconversationRequest($request);
 
-        $conversation = new MakeConversation($this->repository, $this->factory);
+        $conversation = new MakeConversation($this->repository, $this->factory, $this->contextRepository);
 
         try {
             $conversation->execute($request);
@@ -49,15 +52,16 @@ class ChatBotMakeController
 
         $content = $request->getContent();
         /** @var array<string> $data */
+
         $data = json_decode($content, true);
 
 
         /** @var Prompt */
-        $prompt = new Prompt($data['Prompt']);
+        $prompt = new Prompt($data["Prompt"]);
         /** @var string */
         $lmName = $data['lmName'];
-        /** @var Context */
-        $context = new Context($data['context']);
+        /** @var ContextId */
+        $context = new ContextId($data['context']);
 
         return new MakeConversationRequest($prompt, $lmName, $context);
     }

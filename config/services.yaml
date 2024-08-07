@@ -18,13 +18,22 @@ services:
     autowire: true
     arguments:
       $repository: '@conversation.repository'
+      $contextrepository: '@context.repository'
       $factory: '@conversation.factory'
+      
 
   Chatbot\Infrastructure\Api\V1\ChatBotContinueController:
     autowire: true
     arguments:
       $repository: '@conversation.repository'
+      $contextrepository: '@context.repository'
       $factory: '@conversation.factory'
+      
+
+  Chatbot\Infrastructure\Api\V1\ChatBotMakeContext:
+    autowire: true
+    arguments:
+      $repository: '@context.repository'
 
   conversation.repository:
     public: true
@@ -35,10 +44,17 @@ services:
     public: true
     autowire: true
     class: Chatbot\Infrastructure\LanguageModel\ModelFactory
+
+  context.repository:
+    public: true
+    autowire: true
+    class: Chatbot\Infrastructure\Persistence\Context\ContextRepositoryDoctrine
        
 
   Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface: "@conversation.repository"
+  Chatbot\Domain\Model\Context\ContextRepositoryInterface: "@context.repository"
   Chatbot\Application\Service\MakeConversation\LanguageModelAbstractFactory: "@conversation.factory"
+
   
   Chatbot\Infrastructure\Api\V1\:
     resource: "../src/Infrastructure/Api/V1/"

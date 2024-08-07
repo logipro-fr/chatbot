@@ -2,7 +2,8 @@
 
 namespace Chatbot\Tests\integration;
 
-use Chatbot\Domain\Model\Conversation\Context;
+use Chatbot\Domain\Model\Context\Context;
+use Chatbot\Domain\Model\Context\ContextMessage;
 use Chatbot\Domain\Model\Conversation\Prompt;
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\ChatbotGPTApi;
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\RequestGPT;
@@ -23,7 +24,7 @@ class ChatbotGPTApiTest extends TestCase
         $client = new CurlHttpClient();
         $chatBotTest = new ChatbotGPTApi($client);
         $prompt = new Prompt("Comment t'appelles tu ?");
-        $context = new Context("You're a sarcastic assistant named Marvin");
+        $context = new Context(new ContextMessage("You're a sarcastic assistant named Marvin"));
         $requestGPT = new RequestGPT($prompt, $context);
         $response = $chatBotTest->request($requestGPT);
 
@@ -36,7 +37,7 @@ class ChatbotGPTApiTest extends TestCase
         $chatBotTest = new ChatbotGPTApi($client);
         $prompt = new Prompt("Comment t'appelles tu ?");
         $sentence = "You traduce the text your response start with 'le message en anglais est:'";
-        $context = new Context($sentence);
+        $context = new Context(new ContextMessage($sentence));
         $requestGPT = new RequestGPT($prompt, $context);
         $response = $chatBotTest->request($requestGPT);
         $this->assertEquals(true, is_string($response->message));

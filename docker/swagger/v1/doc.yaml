@@ -9,9 +9,19 @@ servers:
     description: API routes
   - url: http://172.17.0.1:11080/api/v1
     description: Local Development usage API routes 
+
+tags:
+  - name: Conversations
+    description: Endpoints related to conversation management
+  - name: Context
+    description: Endpoints related to context management
+
 paths:
-  /conversation/Make:
+
+  /conversations/Make:
     post:
+      tags:
+        - Conversations
       summary: Make a conversation
       operationId: makeConversation
       requestBody:
@@ -44,7 +54,7 @@ paths:
                 properties:
                   success:
                     type: boolean
-                    description: Indicates whether the publication was successful
+                    description: Indicates if the conversation was create
                     example: true
                   statusCode:
                     type: integer
@@ -84,8 +94,10 @@ paths:
                     type: string
                     description: Message associated with the response
                     example: Invalid request
-  /conversation/Continue:
+  /conversations/Continue:
     post:
+      tags:
+        - Conversations
       summary: Continue a conversation
       operationId: continueConversation
       requestBody:
@@ -136,6 +148,72 @@ paths:
                     type: string
                     description: Message associated with the response
                     example: "How can I help you today ?"
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Indicates whether the conversation was created
+                    example: false
+                  statusCode:
+                    type: integer
+                    description: HTTP status code of the response
+                    example: 400
+                  data:
+                    type: object
+                    description: Data returned by the conversation service
+                  message:
+                    type: string
+                    description: Message associated with the response
+                    example: Invalid request
+  /context/Make:
+    post:
+      tags:
+          - Context
+      summary: Make a context
+      operationId: makeContext
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ContextMessage:
+                  type: string
+                  description: The context you want to create to personalize the chatbot's responses.
+                  example: Respond like a nextSign salesperson using a formal tone and short sentences.
+                
+
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: indicate whether the context was created
+                    example: true
+                  statusCode:
+                    type: integer
+                    description: HTTP status code of the response
+                    example: 200
+                  data:
+                    type: object
+                    properties:
+                      contextId:
+                        type: string
+                        description: The ID of the context
+                        example: cot_664c50f9c95cb
+                    description: Data returned by the publication service
+                
         '400':
           description: Bad request
           content:

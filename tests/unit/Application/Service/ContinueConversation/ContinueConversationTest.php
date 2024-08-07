@@ -8,10 +8,13 @@ use Chatbot\Application\Service\ContinueConversation\ContinueConversationRespons
 use Chatbot\Application\Service\MakeConversation\LanguageModelAbstractFactory;
 use Chatbot\Application\Service\MakeConversation\MakeConversation;
 use Chatbot\Application\Service\MakeConversation\MakeConversationRequest;
-use Chatbot\Domain\Model\Conversation\Context;
+use Chatbot\Domain\Model\Context\Context;
+use Chatbot\Domain\Model\Context\ContextId;
+use Chatbot\Domain\Model\Context\ContextMessage;
 use Chatbot\Domain\Model\Conversation\ConversationId;
 use Chatbot\Domain\Model\Conversation\Prompt;
 use Chatbot\Infrastructure\LanguageModel\ModelFactory;
+use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryInMemory;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
 use PHPUnit\Framework\TestCase;
 
@@ -20,17 +23,19 @@ class ContinueConversationtest extends TestCase
     private ConversationRepositoryInMemory $repository;
     private ConversationId $convid;
     private LanguageModelAbstractFactory $factory;
+    private ContextRepositoryInMemory $contextrepo;
     public function setUp(): void
     {
 
         $this->repository = new ConversationRepositoryInMemory();
         $this->factory = new ModelFactory();
+        $this->contextrepo = new ContextRepositoryInMemory();
         $request = new MakeConversationRequest(
             new Prompt("Bonjour"),
             "Parrot",
-            new Context("You're helpfull assistant")
+            new ContextId("base")
         );
-        $service = new MakeConversation($this->repository, $this->factory);
+        $service = new MakeConversation($this->repository, $this->factory, $this->contextrepo);
         $service->execute($request);
         $response = $service->getResponse();
         $this->convid = new ConversationId($response->conversationId);

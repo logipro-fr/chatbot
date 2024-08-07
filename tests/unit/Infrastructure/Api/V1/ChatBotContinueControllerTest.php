@@ -4,10 +4,13 @@ namespace Chatbot\Tests\Infrastructure\Api\V1;
 
 use Chatbot\Application\Service\MakeConversation\MakeConversation;
 use Chatbot\Application\Service\MakeConversation\MakeConversationRequest;
-use Chatbot\Domain\Model\Conversation\Context;
+use Chatbot\Domain\Model\Context\Context;
+use Chatbot\Domain\Model\Context\ContextId;
+use Chatbot\Domain\Model\Context\ContextMessage;
 use Chatbot\Domain\Model\Conversation\Prompt;
 use Chatbot\Infrastructure\Api\V1\ChatBotContinueController;
 use Chatbot\Infrastructure\LanguageModel\ModelFactory;
+use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryInMemory;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
 use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -28,26 +31,27 @@ class ChatBotContinueControllerTest extends WebTestCase
     public function setUp(): void
     {
         $this->initDoctrineTester();
-        $this->clearTables(['conversations']);
+        //$this->clearTables(['conversations']);
         $this->client = static::createClient(["debug" => false]);
     }
 
     public function testChatBotControllerExecute(): void
     {
         $repository = new ConversationRepositoryInMemory();
+        $contextrepo = new ContextRepositoryInMemory();
         $factory = new ModelFactory();
         $request = new MakeConversationRequest(
             new Prompt("Bonjour"),
             "Parrot",
-            new Context("You're helpfull assistant")
+            new ContextId("base")
         );
-        $service = new MakeConversation($repository, $factory);
+        $service = new MakeConversation($repository, $factory, $contextrepo);
         $service->execute($request);
         $response = $service->getResponse();
         $this->convId = $response->conversationId;
         $controller = new ChatBotContinueController($repository, $factory, $this->getEntityManager());
         $request = Request::create(
-            "/api/v1/conversation/Continue",
+            "/api/v1/conversations/Continue",
             "POST",
             [],
             [],
@@ -67,9 +71,28 @@ class ChatBotContinueControllerTest extends WebTestCase
 
     public function testControllerRouting(): void
     {
+
         $this->client->request(
             "POST",
-            "/api/v1/conversation/Make",
+            "/api/v1/context/Make",
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode([
+                "ContextMessage" => "je suis un context",
+            ])
+        );
+
+        /** @var string */
+        $data = $this->client->getResponse()->getContent();
+        /** @var array<mixed,array<mixed>> */
+        $responseContent = json_decode($data, true);
+        $contextid = $responseContent['data']['id'];
+
+
+        $this->client->request(
+            "POST",
+            "/api/v1/conversations/Make",
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -77,7 +100,7 @@ class ChatBotContinueControllerTest extends WebTestCase
 
                 "Prompt" => "Chien",
                 "lmName" => "ParrotTranslate",
-                "context" => "english",
+                "context" => $contextid,
             ])
         );
         /** @var string */
@@ -89,7 +112,7 @@ class ChatBotContinueControllerTest extends WebTestCase
 
         $this->client->request(
             "POST",
-            "/api/v1/conversation/Continue",
+            "/api/v1/conversations/Continue",
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -116,7 +139,7 @@ class ChatBotContinueControllerTest extends WebTestCase
     {
         $this->client->request(
             "POST",
-            "/api/v1/conversation/Continue",
+            "/api/v1/conversations/Continue",
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],

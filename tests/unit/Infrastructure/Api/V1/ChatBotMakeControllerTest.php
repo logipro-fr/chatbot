@@ -4,6 +4,7 @@ namespace Chatbot\Tests\Infrastructure\Api\V1;
 
 use Chatbot\Infrastructure\Api\V1\ChatBotMakeController;
 use Chatbot\Infrastructure\LanguageModel\ModelFactory;
+use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryInMemory;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
 use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -30,9 +31,10 @@ class ChatBotMakeControllerTest extends WebTestCase
     {
         $repository = new ConversationRepositoryInMemory();
         $factory = new ModelFactory();
-        $controller = new ChatBotMakeController($repository, $factory, $this->getEntityManager());
+        $contextrepo = new ContextRepositoryInMemory();
+        $controller = new ChatBotMakeController($repository, $contextrepo, $factory, $this->getEntityManager());
         $request = Request::create(
-            "/api/v1/conversation/make",
+            "/api/v1/conversations/make",
             "POST",
             [],
             [],
@@ -41,7 +43,7 @@ class ChatBotMakeControllerTest extends WebTestCase
             json_encode([
                 "Prompt" => "Chien",
                 "lmName" => "ParrotTranslate",
-                "context" => "english",
+                "context" => "base",
             ])
         );
         $response = $controller->makeConversation($request);
@@ -52,9 +54,27 @@ class ChatBotMakeControllerTest extends WebTestCase
 
     public function testControllerRouting(): void
     {
+
         $this->client->request(
             "POST",
-            "/api/v1/conversation/Make",
+            "/api/v1/context/Make",
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode([
+                "ContextMessage" => "je suis un context",
+            ])
+        );
+
+        /** @var string */
+        $data = $this->client->getResponse()->getContent();
+        /** @var array<mixed,array<mixed>> */
+        $responseContent = json_decode($data, true);
+        $contextid = $responseContent['data']['id'];
+
+        $this->client->request(
+            "POST",
+            "/api/v1/conversations/Make",
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -62,7 +82,7 @@ class ChatBotMakeControllerTest extends WebTestCase
 
                 "Prompt" => "Chien",
                 "lmName" => "ParrotTranslate",
-                "context" => "english",
+                "context" => $contextid,
             ])
         );
         /** @var string */
@@ -82,7 +102,7 @@ class ChatBotMakeControllerTest extends WebTestCase
     {
         $this->client->request(
             "POST",
-            "/api/v1/conversation/Make",
+            "/api/v1/conversations/Make",
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -90,7 +110,7 @@ class ChatBotMakeControllerTest extends WebTestCase
 
                 "Prompt" => "Chien",
                 "lmName" => "",
-                "context" => "english",
+                "context" => "base",
             ])
         );
         /** @var string */

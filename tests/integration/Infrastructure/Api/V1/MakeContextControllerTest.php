@@ -9,7 +9,7 @@ use Symfony\Component\Dotenv\Dotenv;
 
 use function Safe\json_encode;
 
-class MakeConversationControllerTest extends WebTestCase
+class MakeContextControllerTest extends WebTestCase
 {
     use DoctrineRepositoryTesterTrait;
 
@@ -20,6 +20,7 @@ class MakeConversationControllerTest extends WebTestCase
         $this->initDoctrineTester();
         $dotenv = new Dotenv();
         $dotenv->loadEnv(getcwd() . '/src/Infrastructure/Shared/Symfony/.env.local');
+        //$this->clearTables(["context"]);
         $this->client = self::createClient(["debug" => false]);
     }
 
@@ -27,15 +28,13 @@ class MakeConversationControllerTest extends WebTestCase
     {
         $this->client->request(
             "POST",
-            "/api/v1/conversations/Make",
+            "/api/v1/context/Make",
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
             json_encode(
                 [
-                "Prompt" => "Chien",
-                "lmName" => "GPTModelTranslate",
-                "context" => "cot_66b22045444f1",
+                "ContextMessage" => "English",
                 ]
             )
         );
@@ -46,7 +45,7 @@ class MakeConversationControllerTest extends WebTestCase
         $this->assertResponseIsSuccessful();
         $this->assertStringContainsString('"success":true', $responseContent);
         $this->assertEquals(200, $responseCode);
-        $this->assertStringContainsString('"id":"con_', $responseContent);
+        $this->assertStringContainsString('"id":"cot_', $responseContent);
         $this->assertStringContainsString('"message":"', $responseContent);
     }
 }

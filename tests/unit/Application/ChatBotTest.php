@@ -2,7 +2,9 @@
 
 namespace Chatbot\Tests\Application;
 
-use Chatbot\Domain\Model\Conversation\Context;
+use Chatbot\Domain\Model\Context\Context;
+use Chatbot\Domain\Model\Context\ContextId;
+use Chatbot\Domain\Model\Context\ContextMessage;
 use Chatbot\Domain\Model\Conversation\Conversation;
 use Chatbot\Domain\Model\Conversation\PairArray;
 use Chatbot\Domain\Model\Conversation\Prompt;
@@ -20,10 +22,10 @@ class ChatBotTest extends TestCase
 {
     public function testConversation(): void
     {
-        $request = new RequestGPT(new Prompt("allo"), new Context("tu es un assistant sympa"));
+        $request = new RequestGPT(new Prompt("allo"), new Context(new ContextMessage("tu es un assistant sympa")));
         $engine = new LanguageModelFake();
         $engine->add("\n\nBonjour ! Je vais bien merci ! comment puis-je vous aidez aujourd'hui");
-        $conversation = new Conversation(new PairArray());
+        $conversation = new Conversation(new PairArray(), new ContextId());
         $client = $this->createMockHttpClient('responseGETbonjour.json', 200);
         $chatBot = (new ChatBot($client))->conversation($request);
 

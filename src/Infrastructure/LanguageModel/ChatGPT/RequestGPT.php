@@ -3,7 +3,7 @@
 namespace Chatbot\Infrastructure\LanguageModel\ChatGPT;
 
 use Chatbot\Application\Service\RequestInterface;
-use Chatbot\Domain\Model\Conversation\Context;
+use Chatbot\Domain\Model\Context\Context;
 use Chatbot\Domain\Model\Conversation\Prompt;
 
 class RequestGPT implements RequestInterface

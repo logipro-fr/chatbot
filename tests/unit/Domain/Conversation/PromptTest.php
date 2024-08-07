@@ -1,6 +1,6 @@
 <?php
 
-namespace Chatbot\Tests\Domain;
+namespace Chatbot\Tests\Domain\Conversation;
 
 use Chatbot\Domain\Model\Conversation\Prompt;
 use PHPUnit\Framework\TestCase;

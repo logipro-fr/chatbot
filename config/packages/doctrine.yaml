@@ -4,6 +4,9 @@ doctrine:
     types:
       conversation_id: Chatbot\Infrastructure\Persistence\Doctrine\Types\ConversationIdType
       pairs: Chatbot\Infrastructure\Persistence\Doctrine\Types\PairCollectionType
+      context_id : Chatbot\Infrastructure\Persistence\Doctrine\Types\ContextIdType
+      contextmessage : Chatbot\Infrastructure\Persistence\Doctrine\Types\ContextMessageType
+
   orm:
     auto_generate_proxy_classes: true
     naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware

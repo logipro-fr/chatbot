@@ -7,7 +7,8 @@ use Chatbot\Application\Service\Exception\BadRequestException;
 use Chatbot\Application\Service\Exception\ExcesRequestException;
 use Chatbot\Application\Service\Exception\OtherException;
 use Chatbot\Application\Service\Exception\UnhautorizeKeyException;
-use Chatbot\Domain\Model\Conversation\Context;
+use Chatbot\Domain\Model\Context\Context;
+use Chatbot\Domain\Model\Context\ContextMessage;
 use Chatbot\Domain\Model\Conversation\Prompt;
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\ChatbotGPTApi;
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\RequestGPT;
@@ -50,7 +51,7 @@ class ChatbotGPTApiTest extends TestCase
     {
         $client = $this->createMockHttpClient('responseGETblague.json', 200);
         $prompt = new Prompt("raconte moi une blague stp");
-        $context = new Context(self::CONTEXT);
+        $context = new Context(new ContextMessage(self::CONTEXT));
         $chatBotTest = new ChatbotGPTApi($client);
         $requestGPT = new RequestGPT($prompt, $context);
         $response = $chatBotTest->request($requestGPT);
@@ -72,7 +73,7 @@ class ChatbotGPTApiTest extends TestCase
         $client = $this->createMockHttpClient('responseGETbonjour.json', 200);
         $chatBotTest = new ChatbotGPTApi($client);
         $prompt = new Prompt("bonjour comment vas tu");
-        $context = new Context(self::CONTEXT);
+        $context = new Context(new ContextMessage(self::CONTEXT));
         $requestGPT = new RequestGPT($prompt, $context);
         $response = $chatBotTest->request($requestGPT);
         $this->assertEquals(
@@ -106,7 +107,7 @@ class ChatbotGPTApiTest extends TestCase
         $this->expectExceptionMessage("Bad Key");
         $client = $this->createMockHttpClient('responseGETblague.json', 401);
         $prompt = new Prompt("bonjour comment vas tu");
-        $context = new Context(self::CONTEXT);
+        $context = new Context(new ContextMessage(self::CONTEXT));
         /** @var RequestGPT $requestGPT */
         $requestGPT = new RequestGPT($prompt, $context);
         (new ChatbotGPTApi($client))->request($requestGPT);
@@ -118,7 +119,7 @@ class ChatbotGPTApiTest extends TestCase
         $this->expectExceptionMessage("Bad Request");
         $client = $this->createMockHttpClient('responseGETblague.json', 400);
         $prompt = new Prompt("bonjour comment vas tu");
-        $context = new Context(self::CONTEXT);
+        $context = new Context(new ContextMessage(self::CONTEXT));
         $requestGPT = new RequestGPT($prompt, $context);
         (new ChatbotGPTApi($client))->request($requestGPT);
     }
@@ -129,7 +130,7 @@ class ChatbotGPTApiTest extends TestCase
         $this->expectExceptionMessage("Exceeded quota");
         $client = $this->createMockHttpClient('responseGETblague.json', 429);
         $prompt = new Prompt("bonjour comment vas tu");
-        $context = new Context(self::CONTEXT);
+        $context = new Context(new ContextMessage(self::CONTEXT));
         $requestGPT = new RequestGPT($prompt, $context);
         (new ChatbotGPTApi($client))->request($requestGPT);
     }
@@ -140,7 +141,7 @@ class ChatbotGPTApiTest extends TestCase
         $this->expectExceptionMessage("Other error");
         $client = $this->createMockHttpClient('responseGETblague.json', 404);
         $prompt = new Prompt("bonjour comment vas tu");
-        $context = new Context(self::CONTEXT);
+        $context = new Context(new ContextMessage(self::CONTEXT));
         $requestGPT = new RequestGPT($prompt, $context);
         (new ChatbotGPTApi($client))->request($requestGPT);
     }

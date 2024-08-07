@@ -40,7 +40,7 @@ class ChatbotGPTApi implements ChatbotApiInterface
 
         if ($request instanceof RequestGPT) {
             $userprompt = $request->prompt->getUserResquest();
-            $context = $request->context->getContext();
+            $context = $request->context->getContext()->getMessage();
 
             $content = <<<EOF
             {

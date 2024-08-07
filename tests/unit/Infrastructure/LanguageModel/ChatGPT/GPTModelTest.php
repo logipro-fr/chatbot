@@ -2,7 +2,8 @@
 
 namespace Chatbot\Tests\Infrastructure\languageModel\ChatGPT;
 
-use Chatbot\Domain\Model\Conversation\Context;
+use Chatbot\Domain\Model\Context\ContextMessage;
+use Chatbot\Domain\Model\Context\Context;
 use Chatbot\Domain\Model\Conversation\Prompt;
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\GPTModel;
 use PHPUnit\Framework\TestCase;
@@ -16,7 +17,7 @@ class GPTModelTest extends TestCase
     public function testGPTModel(): void
     {
         $client = $this->createMockHttpClient('responseGETbonjour.json', 200);
-        $service = new GPTModel($client, new Context("Your're helpfull assistant"));
+        $service = new GPTModel($client, new Context(new ContextMessage("Your're helpfull assistant")));
         $message = $service->generateTextAnswer(new Prompt("Bonjour"));
         $response = "\n\nBonjour ! Je vais bien merci ! comment puis-je vous aidez aujourd'hui";
         $this->assertEquals($response, $message->getMessage());
