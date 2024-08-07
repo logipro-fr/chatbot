@@ -199,7 +199,7 @@ paths:
                 properties:
                   success:
                     type: boolean
-                    description: indicate if the context was create
+                    description: indicate whether the context was created
                     example: true
                   statusCode:
                     type: integer
