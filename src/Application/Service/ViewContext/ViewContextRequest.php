@@ -7,7 +7,8 @@ use Chatbot\Domain\Model\Context\ContextId;
 class ViewContextRequest
 {
     public function __construct(
-        public readonly ContextId $contextId,
+        public readonly string $id,
+        public readonly string $type
     ) {
     }
 }

@@ -12,6 +12,7 @@
         </id>
         <field name="createdAt" type="datetime_immutable" column="created_at"/>
         <field name="pairs" type="pairs" column="pairs"/>
+        <field name="context" type="context" column="context"/>
     </entity>
 
     

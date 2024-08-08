@@ -35,7 +35,7 @@ class ViewContextControllerTest extends WebTestCase
             json_encode(
                 [
                 "IdType" => "context",
-                "Id" => "cot_66b38a5bd1467",
+                "Id" => "cot_66b46fefe29d5",
                 ]
             )
         );
@@ -46,7 +46,7 @@ class ViewContextControllerTest extends WebTestCase
         $this->assertResponseIsSuccessful();
         $this->assertStringContainsString('"success":true', $responseContent);
         $this->assertEquals(200, $responseCode);
-        $this->assertStringContainsString('"context":"English', $responseContent);
+        $this->assertStringContainsString('"context":"You', $responseContent);
         $this->assertStringContainsString('"message":"', $responseContent);
     }
 
@@ -61,7 +61,7 @@ class ViewContextControllerTest extends WebTestCase
             json_encode(
                 [
                 "IdType" => "conversations",
-                "Id" => "con_66b38baa032a3",
+                "Id" => "con_66b47799219ad",
                 ]
             )
         );

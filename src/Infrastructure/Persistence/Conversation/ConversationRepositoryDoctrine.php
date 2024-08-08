@@ -24,7 +24,7 @@ class ConversationRepositoryDoctrine extends EntityRepository implements Convers
         $this->getEntityManager()->persist($conversation);
     }
 
-    public function findById(ConversationId $conversationId): Conversation|false
+    public function findById(ConversationId $conversationId): Conversation
     {
         $conversation = $this->getEntityManager()->find(Conversation::class, $conversationId);
         if ($conversation === null) {

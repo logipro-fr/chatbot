@@ -35,7 +35,7 @@ class MakeConversationControllerTest extends WebTestCase
                 [
                 "Prompt" => "Chien",
                 "lmName" => "GPTModelTranslate",
-                "context" => "cot_66b22045444f1",
+                "context" => "cot_66b46fefe29d5",
                 ]
             )
         );

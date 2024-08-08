@@ -4,6 +4,7 @@ namespace Chatbot\Tests\Infrastructure\Api\V1;
 
 use Chatbot\Infrastructure\Api\V1\ChatBotViewContextController;
 use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryInMemory;
+use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
 use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -29,7 +30,8 @@ class ChatBotViewContextTest extends WebTestCase
     {
 
         $contextrepo = new ContextRepositoryInMemory();
-        $controller = new ChatBotViewContextController($contextrepo, $this->getEntityManager());
+        $convrepo = new ConversationRepositoryInMemory();
+        $controller = new ChatBotViewContextController($contextrepo, $convrepo, $this->getEntityManager());
         $request = Request::create(
             "/api/v1/conversation/View",
             "POST",
@@ -39,6 +41,7 @@ class ChatBotViewContextTest extends WebTestCase
             ['CONTENT_TYPE' => 'application/json'],
             json_encode([
                 "Id" => "base",
+                "IdType" => "context",
             ])
         );
         $response = $controller->viewContext($request);
@@ -75,6 +78,7 @@ class ChatBotViewContextTest extends WebTestCase
             ['CONTENT_TYPE' => 'application/json'],
             json_encode([
                 "Id" => $contextid,
+                "IdType" => "context",
             ])
         );
         /** @var string */

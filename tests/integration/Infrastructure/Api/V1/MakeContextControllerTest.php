@@ -34,7 +34,7 @@ class MakeContextControllerTest extends WebTestCase
             ['CONTENT_TYPE' => 'application/json'],
             json_encode(
                 [
-                "ContextMessage" => "English",
+                "ContextMessage" => "You're helpfull asistant",
                 ]
             )
         );

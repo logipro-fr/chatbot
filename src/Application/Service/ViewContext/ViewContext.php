@@ -2,8 +2,10 @@
 
 namespace Chatbot\Application\Service\ViewContext;
 
+use Chatbot\Application\Service\FindId\FindId;
 use Chatbot\Domain\Model\Context\ContextRepositoryInterface;
 use Chatbot\Domain\Model\Conversation\Conversation;
+use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
 
 class ViewContext
 {
@@ -12,11 +14,14 @@ class ViewContext
 
     public function __construct(
         private ContextRepositoryInterface $contextrepository,
+        private ConversationRepositoryInterface $convrepository
     ) {
     }
     public function execute(ViewContextRequest $request): void
     {
-        $context = $this->contextrepository->findById($request->contextId);
+        $finder = new FindId($this->convrepository);
+        $id = $finder->find($request->type, $request->id);
+        $context = $this->contextrepository->findById($id);
 
         $this->response = new ViewContextResponse($context->getContext());
     }

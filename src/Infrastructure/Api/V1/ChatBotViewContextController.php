@@ -7,6 +7,8 @@ use Chatbot\Application\Service\ViewContext\ViewContextRequest;
 use Chatbot\Application\Service\ViewContext\ViewContextResponse;
 use Chatbot\Domain\Model\Context\ContextId;
 use Chatbot\Domain\Model\Context\ContextRepositoryInterface;
+use Chatbot\Domain\Model\Conversation\Conversation;
+use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -21,6 +23,7 @@ class ChatBotViewContextController
 {
     public function __construct(
         private ContextRepositoryInterface $repository,
+        private ConversationRepositoryInterface $convrepository,
         private EntityManagerInterface $entityManager
     ) {
     }
@@ -28,7 +31,7 @@ class ChatBotViewContextController
     public function viewContext(Request $request): Response
     {
         $request = $this->buildViewContextRequest($request);
-        $context = new ViewContext($this->repository);
+        $context = new ViewContext($this->repository, $this->convrepository);
         try {
             $context->execute($request);
             $this->entityManager->flush();
@@ -73,9 +76,10 @@ class ChatBotViewContextController
         $content = $request->getContent();
         /** @var array<string> $data */
         $data = json_decode($content, true);
-        /** @var ContextId */
-        $context = new ContextId($data['Id']);
+        /** @var string */
+        $context = $data['Id'];
+        $type = $data['IdType'];
 
-        return new ViewContextRequest($context);
+        return new ViewContextRequest($context, $type);
     }
 }

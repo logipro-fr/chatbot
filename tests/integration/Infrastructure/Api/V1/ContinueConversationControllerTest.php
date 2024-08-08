@@ -35,7 +35,7 @@ class ContinueConversationControllerTest extends WebTestCase
             json_encode(
                 [
                 "Prompt" => "Tu peux me repeter ce que tu as dit avant ?",
-                "convId" => "con_66680a4a5ee25",
+                "convId" => "con_66b47799219ad",
                 "lmName" => "GPTModel",
                 ]
             )
