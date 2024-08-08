@@ -4,7 +4,6 @@ namespace Chatbot\Application\Service\ViewContext;
 
 use Chatbot\Application\Service\FindId\FindId;
 use Chatbot\Domain\Model\Context\ContextRepositoryInterface;
-use Chatbot\Domain\Model\Conversation\Conversation;
 use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
 
 class ViewContext

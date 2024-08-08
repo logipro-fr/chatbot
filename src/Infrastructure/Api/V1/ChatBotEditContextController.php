@@ -2,13 +2,12 @@
 
 namespace Chatbot\Infrastructure\Api\V1;
 
-use Chatbot\Application\Service\ViewContext\ViewContext;
-use Chatbot\Application\Service\ViewContext\ViewContextRequest;
-use Chatbot\Application\Service\ViewContext\ViewContextResponse;
+use Chatbot\Application\Service\EditContext\EditContext;
+use Chatbot\Application\Service\EditContext\EditContextRequest;
+use Chatbot\Application\Service\EditContext\EditContextResponse;
 use Chatbot\Domain\Model\Context\ContextId;
+use Chatbot\Domain\Model\Context\ContextMessage;
 use Chatbot\Domain\Model\Context\ContextRepositoryInterface;
-use Chatbot\Domain\Model\Conversation\Conversation;
-use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -19,19 +18,18 @@ use Throwable;
 
 use function Safe\json_decode;
 
-class ChatBotViewContextController
+class ChatBotEditContextController
 {
     public function __construct(
         private ContextRepositoryInterface $repository,
-        private ConversationRepositoryInterface $convrepository,
         private EntityManagerInterface $entityManager
     ) {
     }
-    #[Route('api/v1/context/View', 'viewContext', methods: ['POST'])]
-    public function viewContext(Request $request): Response
+    #[Route('api/v1/context/Edit', 'editContext', methods: ['POST'])]
+    public function editContext(Request $request): Response
     {
-        $request = $this->buildViewContextRequest($request);
-        $context = new viewContext($this->repository, $this->convrepository);
+        $request = $this->buildEditContextRequest($request);
+        $context = new EditContext($this->repository);
         try {
             $context->execute($request);
             $this->entityManager->flush();
@@ -42,14 +40,15 @@ class ChatBotViewContextController
         return $this->writeSuccessfulResponse($response);
     }
 
-    private function writeSuccessfulResponse(ViewContextResponse $contextResponse): JsonResponse
+    private function writeSuccessfulResponse(EditContextResponse $response): JsonResponse
     {
         return new JsonResponse(
             [
                 'success' => true,
                 'errorCode' => "",
                 'data' => [
-                    'context' => $contextResponse->contextMessage->getMessage(),
+                    'Id' => $response->contextId->__toString() ,
+                    'context' => $response->contextMessage->getMessage(),
                 ],
                     'message' => "",
             ],
@@ -70,16 +69,18 @@ class ChatBotViewContextController
         );
     }
 
-    private function buildViewContextRequest(Request $request): ViewContextRequest
+    private function buildEditContextRequest(Request $request): EditContextRequest
     {
 
         $content = $request->getContent();
         /** @var array<string> $data */
         $data = json_decode($content, true);
-        /** @var string */
-        $context = $data['Id'];
-        $type = $data['IdType'];
+        
+        /** @var ContextId */
+        $context = new ContextId($data['Id']);
+        /** @var ContextMessage */
+        $message = new ContextMessage($data['NewMessage']);
 
-        return new ViewContextRequest($context, $type);
+        return new EditContextRequest($message, $context);
     }
 }

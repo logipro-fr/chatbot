@@ -28,6 +28,11 @@ services:
       $repository: '@conversation.repository'
       $contextrepository: '@context.repository'
       $factory: '@conversation.factory'
+  
+  Chatbot\Infrastructure\Api\V1\ChatBotChangeController:
+    autowire: true
+    arguments:
+      $repository: '@conversation.repository'
       
 
   Chatbot\Infrastructure\Api\V1\ChatBotMakeContext:
@@ -40,6 +45,11 @@ services:
     arguments:
       $repository: '@context.repository'
       $convrepository: '@conversation.repository'
+
+  Chatbot\Infrastructure\Api\V1\ChatBotEditContextController:
+    autowire: true
+    arguments:
+      $repository: '@context.repository'
 
   conversation.repository:
     public: true
