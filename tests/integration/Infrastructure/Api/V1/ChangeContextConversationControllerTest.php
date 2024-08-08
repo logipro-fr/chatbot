@@ -34,7 +34,7 @@ class ChangeContextConversationControllerTest extends WebTestCase
             ['CONTENT_TYPE' => 'application/json'],
             json_encode([
                 "ConversationId" => "con_66b49782713ab",
-                "ContextId" => "id_modified",
+                "ContextId" => "Ne",
             ])
         );
         /** @var string */

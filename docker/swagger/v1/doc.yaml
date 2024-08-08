@@ -170,6 +170,83 @@ paths:
                     type: string
                     description: Message associated with the response
                     example: Invalid request
+  /conversations/ChangeContext:
+    post:
+      tags:
+        - Conversations
+      summary: Change a context of conversation
+      operationId: changecontextConversation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ConversationId:
+                  type: string
+                  description: The ID of the conversation where I want to change the context.
+                  example: con_66b49782713ab
+                ContextId:
+                  type: string
+                  description: The new context ID
+                  example: id_modified
+                
+
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Indicate whether the context was changed
+                    example: true
+                  statusCode:
+                    type: integer
+                    description: HTTP status code of the response
+                    example: 200
+                  data:
+                    type: object
+                    properties:
+                      newId:
+                        type: string
+                        description: The Id of new Context
+                        example: con_664c50f9c95cb
+                      conversationId:
+                        type: string
+                        description: The Id of the conversation
+                        example: con_664c50f9c95cb
+                    description: Data returned by the conversation service
+                  message:
+                    type: string
+                    description: Message associated with the response
+                    example: "How can I help you today ?"
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Indicates whether the conversation was created
+                    example: false
+                  statusCode:
+                    type: integer
+                    description: HTTP status code of the response
+                    example: 400
+                  data:
+                    type: object
+                    description: Data returned by the conversation service
+                  message:
+                    type: string
+                    description: Message associated with the response
+                    example: Invalid request
   /context/Make:
     post:
       tags:
