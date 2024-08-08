@@ -41,8 +41,8 @@ paths:
                   example: GPTModel
                 context:
                   type: string
-                  description: The order to the model so that it answers me as I want
-                  example: You're a helpful assistant
+                  description: The context id
+                  example: cot_66b46fefe29d5
 
       responses:
         '200':
@@ -187,6 +187,76 @@ paths:
                   type: string
                   description: The context you want to create to personalize the chatbot's responses.
                   example: Respond like a nextSign salesperson using a formal tone and short sentences.
+                
+
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: indicate whether the context was created
+                    example: true
+                  statusCode:
+                    type: integer
+                    description: HTTP status code of the response
+                    example: 200
+                  data:
+                    type: object
+                    properties:
+                      contextId:
+                        type: string
+                        description: The ID of the context
+                        example: cot_664c50f9c95cb
+                    description: Data returned by the publication service
+                
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Indicates whether the conversation was created
+                    example: false
+                  statusCode:
+                    type: integer
+                    description: HTTP status code of the response
+                    example: 400
+                  data:
+                    type: object
+                    description: Data returned by the conversation service
+                  message:
+                    type: string
+                    description: Message associated with the response
+                    example: Invalid request
+  /context/View:
+    post:
+      tags:
+          - Context
+      summary: View a context
+      operationId: viewContext
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Id:
+                  type: string
+                  description: The context you want to view, if you provide the context of a conversation, they will find the relevant context.
+                  example: cot_66b46fefe29d5
+                IdType:
+                  type: string
+                  description: Determine whether the given ID is a context ID or a conversation ID.
+                  example: context
                 
 
       responses:
