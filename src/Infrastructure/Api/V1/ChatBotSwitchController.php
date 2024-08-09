@@ -2,9 +2,9 @@
 
 namespace Chatbot\Infrastructure\Api\V1;
 
-use Chatbot\Application\Service\ChangeContextConversation\ChangeContextConversation;
-use Chatbot\Application\Service\ChangeContextConversation\ChangeContextConversationRequest;
-use Chatbot\Application\Service\ChangeContextConversation\ChangeContextConversationResponse;
+use Chatbot\Application\Service\SwitchContextConversation\SwitchContextConversation;
+use Chatbot\Application\Service\SwitchContextConversation\SwitchContextConversationRequest;
+use Chatbot\Application\Service\SwitchContextConversation\SwitchContextConversationResponse;
 use Chatbot\Application\Service\ContinueConversation\ContinueConversation;
 use Chatbot\Application\Service\ContinueConversation\ContinueConversationRequest;
 use Chatbot\Application\Service\ContinueConversation\ContinueConversationResponse;
@@ -23,18 +23,18 @@ use Throwable;
 
 use function Safe\json_decode;
 
-class ChatBotChangeController
+class ChatBotSwitchController
 {
     public function __construct(
         private ConversationRepositoryInterface $repository,
         private EntityManagerInterface $entityManager
     ) {
     }
-    #[Route('api/v1/conversations/ChangeContext', 'changecontextConversation', methods: ['POST'])]
-    public function changeContextConversation(Request $request): Response
+    #[Route('api/v1/conversations/SwitchContext', 'SwitchContextConversation', methods: ['POST'])]
+    public function switchContextConversation(Request $request): Response
     {
-        $request = $this->buildchangeContextConversationRequest($request);
-        $conversation = new ChangeContextConversation($this->repository);
+        $request = $this->buildswitchContextConversationRequest($request);
+        $conversation = new SwitchContextConversation($this->repository);
         try {
             $conversation->execute($request);
             $this->entityManager->flush();
@@ -45,7 +45,7 @@ class ChatBotChangeController
         return $this->writeSuccessfulResponse($response);
     }
 
-    private function writeSuccessfulResponse(ChangeContextConversationResponse $conversationResponse): JsonResponse
+    private function writeSuccessfulResponse(SwitchContextConversationResponse $conversationResponse): JsonResponse
     {
         return new JsonResponse(
             [
@@ -75,7 +75,7 @@ class ChatBotChangeController
         );
     }
 
-    private function buildchangeContextConversationRequest(Request $request): ChangeContextConversationRequest
+    private function buildswitchContextConversationRequest(Request $request): SwitchContextConversationRequest
     {
 
         $content = $request->getContent();
@@ -89,6 +89,6 @@ class ChatBotChangeController
         
 
 
-        return new ChangeContextConversationRequest($contextId, $convId,);
+        return new SwitchContextConversationRequest($contextId, $convId,);
     }
 }

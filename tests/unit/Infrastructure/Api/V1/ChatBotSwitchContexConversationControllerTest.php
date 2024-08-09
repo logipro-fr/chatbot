@@ -6,9 +6,8 @@ use Chatbot\Domain\Model\Context\ContextId;
 use Chatbot\Domain\Model\Conversation\Conversation;
 use Chatbot\Domain\Model\Conversation\ConversationId;
 use Chatbot\Domain\Model\Conversation\PairArray;
-use Chatbot\Infrastructure\Api\V1\ChatBotChangeController;
-use Chatbot\Infrastructure\Api\V1\ChatBotEditContextController;
-use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryInMemory;
+use Chatbot\Infrastructure\Api\V1\ChatBotSwitchController;
+
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
 use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -17,7 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 use function Safe\json_encode;
 
-class ChatBotChangeContexConversationControllerTest extends WebTestCase
+class ChatBotSwitchContexConversationControllerTest extends WebTestCase
 {
     use DoctrineRepositoryTesterTrait;
 
@@ -36,9 +35,9 @@ class ChatBotChangeContexConversationControllerTest extends WebTestCase
 
         $repository = new ConversationRepositoryInMemory();
         $repository->add(new Conversation(new PairArray, new ContextId("base"), new ConversationId("conversation_id")));
-        $controller = new ChatBotChangeController($repository, $this->getEntityManager());
+        $controller = new ChatBotSwitchController($repository, $this->getEntityManager());
         $request = Request::create(
-            "/api/v1/conversations/ChangeContext",
+            "/api/v1/conversations/SwitchContext",
             "POST",
             [],
             [],
@@ -49,7 +48,7 @@ class ChatBotChangeContexConversationControllerTest extends WebTestCase
                 "ContextId" => "id_modified",
             ])
         );
-        $response = $controller->changeContextConversation($request);
+        $response = $controller->switchContextConversation($request);
         /** @var string */
         $responseContent = $response->getContent();
         $this->assertJson($responseContent);
@@ -97,7 +96,7 @@ class ChatBotChangeContexConversationControllerTest extends WebTestCase
 
         $this->client->request(
             "POST",
-            "/api/v1/conversations/ChangeContext",
+            "/api/v1/conversations/SwitchContext",
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],

@@ -56,7 +56,7 @@ class Conversation
         return $this->context;
     }
 
-    public function ChangeContext(ContextId $contextId): void
+    public function SwitchContext(ContextId $contextId): void
     {
         $this->context = $contextId; 
     }

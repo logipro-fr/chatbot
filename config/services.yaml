@@ -29,7 +29,7 @@ services:
       $contextrepository: '@context.repository'
       $factory: '@conversation.factory'
   
-  Chatbot\Infrastructure\Api\V1\ChatBotChangeController:
+  Chatbot\Infrastructure\Api\V1\ChatBotSwitchController:
     autowire: true
     arguments:
       $repository: '@conversation.repository'

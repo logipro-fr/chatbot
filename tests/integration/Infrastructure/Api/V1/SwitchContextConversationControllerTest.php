@@ -9,7 +9,7 @@ use Symfony\Component\Dotenv\Dotenv;
 
 use function Safe\json_encode;
 
-class ChangeContextConversationControllerTest extends WebTestCase
+class SwitchContextConversationControllerTest extends WebTestCase
 {
     use DoctrineRepositoryTesterTrait;
 
@@ -28,7 +28,7 @@ class ChangeContextConversationControllerTest extends WebTestCase
     {
         $this->client->request(
             "POST",
-            "/api/v1/conversations/ChangeContext",
+            "/api/v1/conversations/SwitchContext",
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
