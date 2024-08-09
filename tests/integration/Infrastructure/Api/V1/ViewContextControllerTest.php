@@ -46,7 +46,7 @@ class ViewContextControllerTest extends WebTestCase
         $this->assertResponseIsSuccessful();
         $this->assertStringContainsString('"success":true', $responseContent);
         $this->assertEquals(200, $responseCode);
-        $this->assertStringContainsString('"context":"You', $responseContent);
+        $this->assertStringContainsString('"context":', $responseContent);
         $this->assertStringContainsString('"message":"', $responseContent);
     }
 

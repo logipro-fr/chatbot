@@ -51,6 +51,12 @@ services:
     arguments:
       $repository: '@context.repository'
 
+  Chatbot\Infrastructure\Api\V1\ChatBotDeleteContextController:
+    autowire: true
+    arguments:
+      $repository: '@context.repository'
+      $convrepository: '@conversation.repository'
+
   conversation.repository:
     public: true
     autowire: true

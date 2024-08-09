@@ -1,6 +1,6 @@
 <?php
 
-namespace Chatbot\Tests\Application\Service\MakeContext;
+namespace Chatbot\Tests\Application\Service\EditContext;
 
 use Chatbot\Application\Service\EditContext\EditContext;
 use Chatbot\Application\Service\EditContext\EditContextRequest;
@@ -19,7 +19,7 @@ use function Safe\file_get_contents;
 
 class EditContextTest extends TestCase
 {
-    public function testSomeoneCreateAContext(): void
+    public function testSomeoneEditAContext(): void
     {
         // arrange / Given
 

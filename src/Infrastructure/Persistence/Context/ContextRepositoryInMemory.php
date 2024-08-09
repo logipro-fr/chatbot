@@ -32,4 +32,9 @@ class ContextRepositoryInMemory implements ContextRepositoryInterface
 
         return $this->contexts[$contextId->__toString()];
     }
+
+    public function removeContext(ContextId $contextId): void
+    {
+        unset($this->contexts[$contextId->__toString()]);
+    }
 }

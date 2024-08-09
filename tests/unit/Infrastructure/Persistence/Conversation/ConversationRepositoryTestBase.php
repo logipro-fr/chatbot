@@ -7,6 +7,7 @@ use Chatbot\Domain\Model\Conversation\Conversation;
 use Chatbot\Domain\Model\Conversation\ConversationId;
 use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
 use Chatbot\Domain\Model\Conversation\PairArray;
+use Chatbot\Infrastructure\Exception\ContextAssociatedConversationException;
 use PHPUnit\Framework\TestCase;
 
 abstract class ConversationRepositoryTestBase extends TestCase
@@ -43,5 +44,27 @@ abstract class ConversationRepositoryTestBase extends TestCase
         $this->assertEquals("id2", $found2->getId());
         $this->assertInstanceOf(Conversation::class, $found);
         $this->assertFalse($idFound->equals($found2->getId()));
+    }
+
+
+    public function testFindByContextId(): void
+    {
+
+        $id = new ConversationId("con_66b4d66139fd2");
+        $context = new ContextId("id_modified");
+
+        $conversation = new Conversation(new PairArray(), $context, $id,);
+
+
+        $this->repository->add($conversation);
+        $test = $this->repository->findById($id);
+        //var_dump($test);
+        /** @var Conversation */
+        
+        //var_dump($found);
+        $this->expectException(ContextAssociatedConversationException::class);
+        $this->expectExceptionMessage("The context can't be deleted, is associated at ". $id ." conversation");
+
+        $found = $this->repository->findByContextId($context);
     }
 }
