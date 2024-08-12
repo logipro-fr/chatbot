@@ -382,8 +382,7 @@ paths:
                   message:
                     type: string
                     description: Message associated with the response
-                    example: Invalid request
-
+                    example: Invalid request          
   /context/Edit:
     post:
       tags:
@@ -434,6 +433,70 @@ paths:
                         type: string
                         description: The new message context
                         example: cot_664c50f9c95cb
+                    description: Data returned by the context service
+                
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Indicates whether the conversation was created
+                    example: false
+                  statusCode:
+                    type: integer
+                    description: HTTP status code of the response
+                    example: 400
+                  data:
+                    type: object
+                    description: Data returned by the conversation service
+                  message:
+                    type: string
+                    description: Message associated with the response
+                    example: Invalid request
+  /context/Delete:
+    post:
+      tags:
+          - Context
+      summary: Delete a context
+      operationId: deleteContext
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Id:
+                  type: string
+                  description: The context you want to delete.
+                  example: cot_66b46fefe29d5
+  
+                
+
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: indicate whether the context was created
+                    example: true
+                  statusCode:
+                    type: integer
+                    description: HTTP status code of the response
+                    example: 200
+                  data:
+                    type: object
+                    properties:
+                      "The context was be deleted"
                     description: Data returned by the context service
                 
         '400':
