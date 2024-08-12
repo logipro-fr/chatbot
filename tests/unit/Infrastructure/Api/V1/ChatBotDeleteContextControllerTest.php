@@ -35,8 +35,8 @@ class ChatBotDeleteContextControllerTest extends WebTestCase
 
         $contextrepo = new ContextRepositoryInMemory();
         $conversationrepo = new ConversationRepositoryInMemory();
-        $conversationrepo->add(new Conversation(new PairArray, new ContextId("english")));
-        $controller = new ChatBotDeleteContextController($contextrepo, $conversationrepo,$this->getEntityManager());
+        $conversationrepo->add(new Conversation(new PairArray(), new ContextId("english")));
+        $controller = new ChatBotDeleteContextController($contextrepo, $conversationrepo, $this->getEntityManager());
         $request = Request::create(
             "/api/v1/conversation/Delete",
             "POST",

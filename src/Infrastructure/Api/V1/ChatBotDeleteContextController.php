@@ -34,7 +34,6 @@ class ChatBotDeleteContextController
         try {
             $context->execute($request);
             $this->entityManager->flush();
-        
         } catch (Exception $e) {
             return $this->writeUnSuccessFulResponse($e);
         }
@@ -76,10 +75,10 @@ class ChatBotDeleteContextController
         $content = $request->getContent();
         /** @var array<string> $data */
         $data = json_decode($content, true);
-        
+
         /** @var ContextId */
         $context = new ContextId($data['Id']);
-        
+
         return new DeleteContextRequest($context);
     }
 }

@@ -58,12 +58,11 @@ abstract class ConversationRepositoryTestBase extends TestCase
 
         $this->repository->add($conversation);
         $test = $this->repository->findById($id);
-        //var_dump($test);
-        /** @var Conversation */
-        
-        //var_dump($found);
+
+
+
         $this->expectException(ContextAssociatedConversationException::class);
-        $this->expectExceptionMessage("The context can't be deleted, is associated at ". $id ." conversation");
+        $this->expectExceptionMessage("The context can't be deleted, is associated at " . $id . " conversation");
 
         $found = $this->repository->findByContextId($context);
     }

@@ -54,7 +54,7 @@ class ChatBotSwitchController
                 'data' => [
                     'NewId' => $conversationResponse->contextId->__toString(),
                     'ConversationId' => $conversationResponse->conversation->getId(),
-                    
+
                 ],
                     'message' => "",
             ],
@@ -86,7 +86,7 @@ class ChatBotSwitchController
         $contextId = new ContextId($data['ContextId']);
         /** @var ConversationId */
         $convId = new ConversationId($data['ConversationId']);
-        
+
 
 
         return new SwitchContextConversationRequest($contextId, $convId,);

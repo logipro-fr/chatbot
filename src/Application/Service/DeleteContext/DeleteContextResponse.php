@@ -7,7 +7,7 @@ use Chatbot\Domain\Model\Context\ContextMessage;
 
 class DeleteContextResponse
 {
-    public function __construct(
-    ) {
+    public function __construct()
+    {
     }
 }

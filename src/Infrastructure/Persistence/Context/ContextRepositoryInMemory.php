@@ -6,6 +6,7 @@ use Chatbot\Domain\Model\Context\Context;
 use Chatbot\Domain\Model\Context\ContextId;
 use Chatbot\Domain\Model\Context\ContextMessage;
 use Chatbot\Domain\Model\Context\ContextRepositoryInterface;
+use Chatbot\Infrastructure\Exception\NoIdException;
 
 class ContextRepositoryInMemory implements ContextRepositoryInterface
 {
@@ -29,8 +30,11 @@ class ContextRepositoryInMemory implements ContextRepositoryInterface
 
     public function findById(ContextId $contextId): Context
     {
-
-        return $this->contexts[$contextId->__toString()];
+        $context = $this->contexts[$contextId->__toString()];
+        if ($context == null) {
+            throw new NoIdException("");
+        }
+        return $context ;
     }
 
     public function removeContext(ContextId $contextId): void

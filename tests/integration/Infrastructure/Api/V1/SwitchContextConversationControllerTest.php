@@ -47,6 +47,4 @@ class SwitchContextConversationControllerTest extends WebTestCase
         $this->assertStringContainsString('"ConversationId":"', $responseContent);
         $this->assertStringContainsString('"message":"', $responseContent);
     }
-
-   
 }

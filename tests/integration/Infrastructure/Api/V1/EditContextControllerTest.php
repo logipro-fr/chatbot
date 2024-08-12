@@ -50,6 +50,4 @@ class EditContextControllerTest extends WebTestCase
         $this->assertStringContainsString('"context":"', $responseContent);
         $this->assertStringContainsString('"message":"', $responseContent);
     }
-
-   
 }

@@ -2,17 +2,17 @@
 
 namespace Chatbot\Application\Service\SwitchContextConversation;
 
-
 use Chatbot\Domain\Model\Context\ContextRepositoryInterface;
 use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
 use PhpParser\Node\Stmt\Switch_;
 
-class SwitchContextConversation{
+class SwitchContextConversation
+{
     private SwitchContextConversationResponse $response;
 
     public function __construct(
-        private ConversationRepositoryInterface $conversationrepo)
-    {
+        private ConversationRepositoryInterface $conversationrepo
+    ) {
     }
     public function execute(SwitchContextConversationRequest $request): void
     {

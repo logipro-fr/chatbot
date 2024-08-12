@@ -7,6 +7,7 @@ use Chatbot\Domain\Model\Context\ContextId;
 use Chatbot\Domain\Model\Context\ContextMessage;
 use Chatbot\Domain\Model\Context\ContextRepositoryInterface;
 use Chatbot\Domain\Model\Conversation\Conversation;
+use Chatbot\Infrastructure\Exception\NoIdException;
 use ErrorException;
 use PHPUnit\Framework\TestCase;
 
@@ -45,13 +46,13 @@ abstract class ContextRepositoryTestBase extends TestCase
         $this->assertFalse($idFound->equals($found2->getId()));
     }
 
-    public function TestRemove(): void 
+    public function testRemove(): void
     {
         $id = new ContextId("base");
         $context = new Context(new ContextMessage(""), $id);
         $this->repository->add($context);
         $this->repository->removeContext(($id));
-        $this->expectException(ErrorException::class);
+        $this->expectException(NoIdException::class);
         $found = $this->repository->findById($id);
     }
 }

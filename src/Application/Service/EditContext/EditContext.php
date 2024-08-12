@@ -4,7 +4,8 @@ namespace Chatbot\Application\Service\EditContext;
 
 use Chatbot\Domain\Model\Context\ContextRepositoryInterface;
 
-class EditContext{
+class EditContext
+{
     private EditContextResponse $response;
 
     public function __construct(private ContextRepositoryInterface $repository)

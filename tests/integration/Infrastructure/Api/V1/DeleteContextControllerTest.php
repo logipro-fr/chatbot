@@ -47,6 +47,4 @@ class DeleteContextControllerTest extends WebTestCase
         $this->assertEquals(200, $responseCode);
         $this->assertStringContainsString('"message":"', $responseContent);
     }
-
-   
 }

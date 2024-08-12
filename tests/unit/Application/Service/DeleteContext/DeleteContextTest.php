@@ -18,7 +18,6 @@ use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemo
 use PHPUnit\Framework\TestCase;
 
 class DeleteContextTest extends TestCase
-
 {
     public function testSomeoneDeleteAContext(): void
     {
@@ -31,11 +30,11 @@ class DeleteContextTest extends TestCase
             new ContextId("base")
         );
         $service = new DeleteContext($repository, $conv);
-        
-        
+
+
         $service->execute($request);
         $response = $service->getResponse();
-        
+
         //assert / Then
         $this->assertInstanceOf(DeleteContextResponse::class, $response);
     }
@@ -52,7 +51,7 @@ class DeleteContextTest extends TestCase
         );
         $service = new DeleteContext($repository, $conv);
         //assert / Then
-      
+
         $this->expectException(ContextAssociatedConversationException::class);
 
         $service->execute($request);

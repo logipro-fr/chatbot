@@ -24,13 +24,17 @@ class SwitchContextConversationTest extends TestCase
 
         $repository = new ContextRepositoryInMemory();
         $convrepository = new ConversationRepositoryInMemory();
-        $convrepository->add(new Conversation(new PairArray(),new ContextId("Base"),new ConversationId("conversation_base")));
+        $convrepository->add(new Conversation(
+            new PairArray(),
+            new ContextId("Base"),
+            new ConversationId("conversation_base")
+        ));
         $request = new SwitchContextConversationRequest(
             new ContextId("New_Id"),
             new ConversationId("conversation_base")
         );
         $service = new SwitchContextConversation($convrepository);
-        
+
         $service->execute($request);
         $response = $service->getResponse();
 

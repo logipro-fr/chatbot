@@ -7,7 +7,6 @@ use Chatbot\Domain\Model\Conversation\Conversation;
 use Chatbot\Domain\Model\Conversation\ConversationId;
 use Chatbot\Domain\Model\Conversation\PairArray;
 use Chatbot\Infrastructure\Api\V1\ChatBotSwitchController;
-
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
 use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -34,7 +33,9 @@ class ChatBotSwitchContexConversationControllerTest extends WebTestCase
     {
 
         $repository = new ConversationRepositoryInMemory();
-        $repository->add(new Conversation(new PairArray, new ContextId("base"), new ConversationId("conversation_id")));
+        $repository->add(
+            new Conversation(new PairArray(), new ContextId("base"), new ConversationId("conversation_id"))
+        );
         $controller = new ChatBotSwitchController($repository, $this->getEntityManager());
         $request = Request::create(
             "/api/v1/conversations/SwitchContext",
@@ -86,7 +87,7 @@ class ChatBotSwitchContexConversationControllerTest extends WebTestCase
                 "lmName" => "ParrotTranslate",
                 "context" => $contextid,
             ])
-            );
+        );
 
         /** @var string */
         $data = $this->client->getResponse()->getContent();

@@ -29,10 +29,11 @@ class ConversationRepositoryInMemory implements ConversationRepositoryInterface
 
     public function findByContextId(ContextId $contextId): Conversation|false
     {
-        foreach ($this->conversations as $conversation)
-        {
-            if ($conversation->getContext()->equals($contextId)){
-                throw new ContextAssociatedConversationException("The context can't be deleted, is associated at ".$conversation->getId(). " conversation");
+        foreach ($this->conversations as $conversation) {
+            if ($conversation->getContext()->equals($contextId)) {
+                throw new ContextAssociatedConversationException(
+                    "The context can't be deleted, is associated at " . $conversation->getId() . " conversation"
+                );
             }
         }
         return false;
