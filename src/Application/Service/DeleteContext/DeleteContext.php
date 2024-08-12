@@ -16,10 +16,12 @@ class DeleteContext
     }
     public function execute(DeleteContextRequest $request): void
     {
-
-        if (false == $this->convrepo->findByContextId($request->id)) {
+        $conversation = $this->convrepo->findByContextId($request->id);
+        if (false == $conversation) {
             $this->repository->removeContext($request->id);
-            $this->response = new DeleteContextResponse();
+            $this->response = new DeleteContextResponse("The conversation was deleted");
+        }else{
+            $this->response = new DeleteContextResponse("the context can't be deleted because is associate to ". $conversation->getId() . "conversation");
         }
     }
 

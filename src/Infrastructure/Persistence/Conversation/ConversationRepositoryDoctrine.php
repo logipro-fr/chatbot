@@ -40,9 +40,7 @@ class ConversationRepositoryDoctrine extends EntityRepository implements Convers
         $conversations = $this->findBy(["context" => $contextId]);
         foreach ($conversations as $conversation) {
             if ($conversation->getContext()->equals($contextId)) {
-                throw new ContextAssociatedConversationException(
-                    "The context can't be deleted, is associated at " . $conversation->getId() . " conversation"
-                );
+                return $conversation;
             }
         }
         return false;

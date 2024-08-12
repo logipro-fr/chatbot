@@ -50,20 +50,16 @@ abstract class ConversationRepositoryTestBase extends TestCase
     public function testFindByContextId(): void
     {
 
-        $id = new ConversationId("con_66b4d66139fd2");
-        $context = new ContextId("id_modified");
+        $id = new ConversationId("con_66ba0cbdba97c");
+        $context = new ContextId("cot_66ba0cbdb8c53");
 
         $conversation = new Conversation(new PairArray(), $context, $id,);
-
 
         $this->repository->add($conversation);
         $test = $this->repository->findById($id);
 
 
-
-        $this->expectException(ContextAssociatedConversationException::class);
-        $this->expectExceptionMessage("The context can't be deleted, is associated at " . $id . " conversation");
-
         $found = $this->repository->findByContextId($context);
+        $this->assertInstanceOf(Conversation::class, $found);
     }
 }
