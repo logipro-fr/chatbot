@@ -28,6 +28,7 @@ class ChatBotDeleteContextControllerTest extends WebTestCase
 
         $this->initDoctrineTester();
         $this->client = static::createClient(["debug" => false]);
+        $this->clearTables(["context"]);
     }
 
     public function testDeleteContextControllerExecute(): void

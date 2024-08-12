@@ -14,14 +14,36 @@ class DeleteContextControllerTest extends WebTestCase
     use DoctrineRepositoryTesterTrait;
 
     private KernelBrowser $client;
+    private string $contextId;
 
     public function setUp(): void
     {
         $this->initDoctrineTester();
         $dotenv = new Dotenv();
         $dotenv->loadEnv(getcwd() . '/src/Infrastructure/Shared/Symfony/.env.local');
-        //$this->clearTables(["context"]);
+        $this->clearTables(["context"]);
         $this->client = self::createClient(["debug" => false]);
+
+        $this->client->request(
+            "POST",
+            "/api/v1/context/Make",
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode(
+                [
+                "ContextMessage" => "You're helpfull asistant",
+                ]
+            )
+        );
+
+        /** @var string */
+        $data = $this->client->getResponse()->getContent();
+        /** @var array<mixed,array<mixed>> */
+        $responseContent = json_decode($data, true);
+        /** @var string */
+        $id = $responseContent['data']['id'];
+        $this->contextId = $id;
     }
 
     public function testControllerRouting(): void
@@ -34,7 +56,7 @@ class DeleteContextControllerTest extends WebTestCase
             ['CONTENT_TYPE' => 'application/json'],
             json_encode(
                 [
-                "Id" => "cot_66b4b714b24f2",
+                "Id" => $this->contextId,
                 ]
             )
         );

@@ -23,6 +23,7 @@ class ChatBotViewContextTest extends WebTestCase
     {
 
         $this->initDoctrineTester();
+        $this->clearTables(["context"]);
         $this->client = static::createClient(["debug" => false]);
     }
 

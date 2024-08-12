@@ -24,6 +24,7 @@ class ChatBotMakeControllerTest extends WebTestCase
     {
 
         $this->initDoctrineTester();
+        $this->clearTables(["conversations"]);
         $this->client = static::createClient(["debug" => false]);
     }
 

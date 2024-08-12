@@ -5,7 +5,7 @@ Chatbot is a project to answer the user question
 # Install
 
 ```console
-git clone git@github.com:logipro-fr/chatbot.git
+git clone git@github.com:logipro-fr/chatbot.git or use git clone https://github.com/logipro-fr/chatbot.git
 cd chatbot
 ./install
 ```
