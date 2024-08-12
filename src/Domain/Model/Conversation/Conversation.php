@@ -60,4 +60,5 @@ class Conversation
     {
         $this->context = $contextId; 
     }
+
 }
