@@ -9,7 +9,6 @@ class DeleteContextResponse
 {
     public function __construct(
         public readonly string $message,
-    )
-    {
+    ) {
     }
 }
