@@ -17,7 +17,7 @@ class FindId
 
     private const CONVERSATIONS = "conversations";
     private const CONTEXTS = "contexts";
-    
+
     public function find(string $IdType, string $id): ContextId
     {
         switch ($IdType) {
@@ -30,6 +30,4 @@ class FindId
                 throw new BadTypeNameException("Please use 'conversations' or 'contexts");
         }
     }
-
-    
 }
