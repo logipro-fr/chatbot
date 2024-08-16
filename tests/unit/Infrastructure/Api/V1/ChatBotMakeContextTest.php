@@ -25,6 +25,7 @@ class ChatBotMakeContextTest extends WebTestCase
     {
 
         $this->initDoctrineTester();
+        $this->clearTables(["context"]);
         $this->client = static::createClient(["debug" => false]);
     }
 
@@ -68,5 +69,29 @@ class ChatBotMakeContextTest extends WebTestCase
         $this->assertStringContainsString('"success":true', $responseContent);
         $this->assertEquals(200, $responseCode);
         $this->assertStringContainsString('"id":"cot_', $responseContent);
+    }
+
+    public function testControllerException(): void
+    {
+        $this->client->request(
+            "POST",
+            "/api/v1/context/Make",
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode([
+
+                "ContextMessage" => "",
+            ])
+        );
+        /** @var string */
+        $responseContent = $this->client->getResponse()->getContent();
+        $responseCode = $this->client->getResponse()->getStatusCode();
+        $this->assertResponseIsSuccessful();
+
+        $this->assertStringContainsString('"success":false', $responseContent);
+        $this->assertEquals(200, $responseCode);
+        $this->assertStringContainsString('"data":"', $responseContent);
+        $this->assertStringContainsString('"message":"', $responseContent);
     }
 }

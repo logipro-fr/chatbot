@@ -32,4 +32,10 @@ class ContextRepositoryDoctrine extends EntityRepository implements ContextRepos
         }
         return $context;
     }
+
+    public function removeContext(ContextId $context): void
+    {
+        $context = $this->findById($context);
+        $this->getEntityManager()->remove($context);
+    }
 }

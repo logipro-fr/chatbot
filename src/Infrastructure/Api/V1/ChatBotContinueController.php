@@ -52,6 +52,7 @@ class ChatBotContinueController
                     'id' => $conversationResponse->conversationId->__toString(),
                     'nbPair' => $conversationResponse->nbPair,
                     'lastPair' => $conversationResponse->pair,
+                    'Answer' => $conversationResponse->botMessage,
                 ],
                     'message' => "",
             ],

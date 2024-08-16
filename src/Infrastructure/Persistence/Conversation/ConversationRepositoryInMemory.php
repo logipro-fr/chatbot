@@ -2,9 +2,12 @@
 
 namespace Chatbot\Infrastructure\Persistence\Conversation;
 
+use Chatbot\Domain\Model\Context\ContextId;
 use Chatbot\Domain\Model\Conversation\Conversation;
 use Chatbot\Domain\Model\Conversation\ConversationId;
 use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
+use Chatbot\Infrastructure\Exception\ContextAssociatedConversationException;
+use SebastianBergmann\Type\FalseType;
 
 class ConversationRepositoryInMemory implements ConversationRepositoryInterface
 {
@@ -22,5 +25,15 @@ class ConversationRepositoryInMemory implements ConversationRepositoryInterface
     {
 
         return $this->conversations[$id->__toString()];
+    }
+
+    public function findByContextId(ContextId $contextId): Conversation|false
+    {
+        foreach ($this->conversations as $conversation) {
+            if ($conversation->getContext()->equals($contextId)) {
+                return $conversation;
+            }
+        }
+        return false;
     }
 }

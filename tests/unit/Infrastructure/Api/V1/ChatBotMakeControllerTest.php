@@ -24,6 +24,7 @@ class ChatBotMakeControllerTest extends WebTestCase
     {
 
         $this->initDoctrineTester();
+        $this->clearTables(["conversations"]);
         $this->client = static::createClient(["debug" => false]);
     }
 
@@ -94,6 +95,7 @@ class ChatBotMakeControllerTest extends WebTestCase
         $this->assertStringContainsString('"id":"con_', $responseContent);
         $this->assertStringContainsString('"nbPair":', $responseContent);
         $this->assertStringContainsString('"lastPair":', $responseContent);
+        $this->assertStringContainsString('"Answer":"Chien', $responseContent);
         $this->assertStringContainsString('"message":"', $responseContent);
     }
 

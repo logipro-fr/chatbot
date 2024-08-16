@@ -28,7 +28,12 @@ class MakeConversation
         $conversation->addPair($request->prompt, $message);
         $this->addToRepository($conversation);
         $pair = $conversation->getPair($conversation->getNbPair() - 1);
-        $this->response = new MakeConversationResponse($conversation->getId(), $pair, $conversation->getNbPair());
+        $this->response = new MakeConversationResponse(
+            $conversation->getId(),
+            $pair,
+            $conversation->getNbPair(),
+            $pair->getAnswer()->getMessage()
+        );
     }
     private function addToRepository(Conversation $conversation): void
     {

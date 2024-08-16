@@ -30,4 +30,9 @@ class Context
     {
         return $this->createdAt;
     }
+
+    public function editMessage(ContextMessage $context): void
+    {
+        $this->contextmessage = $context;
+    }
 }
