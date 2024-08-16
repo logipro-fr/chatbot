@@ -80,7 +80,7 @@ class ViewContextControllerTest extends WebTestCase
             ['CONTENT_TYPE' => 'application/json'],
             json_encode(
                 [
-                "IdType" => "context",
+                "IdType" => "contexts",
                 "Id" => $this->contextId,
                 ]
             )
@@ -106,7 +106,7 @@ class ViewContextControllerTest extends WebTestCase
             ['CONTENT_TYPE' => 'application/json'],
             json_encode(
                 [
-                "IdType" => "conversation",
+                "IdType" => "conversations",
                 "Id" => $this->conversationId,
                 ]
             )
