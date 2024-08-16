@@ -42,7 +42,7 @@ class ChatBotViewContextTest extends WebTestCase
             ['CONTENT_TYPE' => 'application/json'],
             json_encode([
                 "Id" => "base",
-                "IdType" => "context",
+                "IdType" => "contexts",
             ])
         );
         $response = $controller->viewContext($request);
@@ -79,7 +79,7 @@ class ChatBotViewContextTest extends WebTestCase
             ['CONTENT_TYPE' => 'application/json'],
             json_encode([
                 "Id" => $contextid,
-                "IdType" => "context",
+                "IdType" => "contexts",
             ])
         );
         /** @var string */

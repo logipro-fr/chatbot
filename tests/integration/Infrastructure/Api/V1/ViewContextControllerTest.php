@@ -106,7 +106,7 @@ class ViewContextControllerTest extends WebTestCase
             ['CONTENT_TYPE' => 'application/json'],
             json_encode(
                 [
-                "IdType" => "conversations",
+                "IdType" => "conversation",
                 "Id" => $this->conversationId,
                 ]
             )

@@ -15,16 +15,21 @@ class FindId
     {
     }
 
+    private const CONVERSATIONS = "conversations";
+    private const CONTEXTS = "contexts";
+    
     public function find(string $IdType, string $id): ContextId
     {
         switch ($IdType) {
-            case "conversations":
+            case self::CONVERSATIONS:
                 $conversation = $this->repo->findById(new ConversationId($id));
                 return new ContextId($conversation->getContext());
-            case "context":
+            case self::CONTEXTS:
                 return new ContextId($id);
             default:
-                throw new BadTypeNameException("Please use 'conversations' or 'context");
+                throw new BadTypeNameException("Please use 'conversations' or 'contexts");
         }
     }
+
+    
 }

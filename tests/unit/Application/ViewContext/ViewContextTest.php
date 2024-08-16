@@ -29,7 +29,7 @@ class ViewContextTest extends TestCase
         $service->execute($request);
         $id = $service->getResponse()->contextId->__toString();
 
-        $request = new ViewContextRequest($id, "context");
+        $request = new ViewContextRequest($id, "contexts");
         $service = new ViewContext($repository, $convrepository);
 
         $service->execute($request);
