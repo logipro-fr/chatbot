@@ -30,11 +30,10 @@ class ContextRepositoryInMemory implements ContextRepositoryInterface
 
     public function findById(ContextId $contextId): Context
     {
-        $context = $this->contexts[$contextId->__toString()];
-        if ($context == null) {
+        if (!isset($this->contexts[$contextId->__toString()])) {
             throw new NoIdException("");
         }
-        return $context ;
+        return $this->contexts[$contextId->__toString()] ;
     }
 
     public function removeContext(ContextId $contextId): void

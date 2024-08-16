@@ -87,7 +87,32 @@ class ChatBotEditContextControllerTest extends WebTestCase
 
         $this->assertStringContainsString('"success":true', $responseContent);
         $this->assertEquals(200, $responseCode);
+        $this->assertStringContainsString('"Id":"' . $contextid, $responseContent);
         $this->assertStringContainsString('"context":"new context', $responseContent);
+        $this->assertStringContainsString('"message":"', $responseContent);
+    }
+
+    public function testControllerException(): void
+    {
+        $this->client->request(
+            "POST",
+            "/api/v1/context/Edit",
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode([
+                "Id" => "Je n'existe pas",
+                "NewMessage" => "new context",
+            ])
+        );
+        /** @var string */
+        $responseContent = $this->client->getResponse()->getContent();
+        $responseCode = $this->client->getResponse()->getStatusCode();
+        $this->assertResponseIsSuccessful();
+
+        $this->assertStringContainsString('"success":false', $responseContent);
+        $this->assertEquals(200, $responseCode);
+        $this->assertStringContainsString('"data":"', $responseContent);
         $this->assertStringContainsString('"message":"', $responseContent);
     }
 }

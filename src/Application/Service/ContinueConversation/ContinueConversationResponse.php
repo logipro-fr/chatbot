@@ -10,7 +10,8 @@ class ContinueConversationResponse
     public function __construct(
         public readonly ConversationId $conversationId,
         public readonly Pair $pair,
-        public readonly int $nbPair
+        public readonly int $nbPair,
+        public readonly string $botMessage
     ) {
     }
 }

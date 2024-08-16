@@ -91,31 +91,29 @@ class ChatBotViewContextTest extends WebTestCase
         $this->assertStringContainsString('"context":"je suis un context', $responseContent);
         $this->assertStringContainsString('"message":"', $responseContent);
     }
-//
-//
-//    public function testControllerException(): void
-//    {
-//        $this->client->request(
-//            "POST",
-//            "/api/v1/conversation/Make",
-//            [],
-//            [],
-//            ['CONTENT_TYPE' => 'application/json'],
-//            json_encode([
-//
-//                "Prompt" => "Chien",
-//                "lmName" => "",
-//                "context" => "base",
-//            ])
-//        );
-//        /** @var string */
-//        $responseContent = $this->client->getResponse()->getContent();
-//        $responseCode = $this->client->getResponse()->getStatusCode();
-//        $this->assertResponseIsSuccessful();
-//
-//        $this->assertStringContainsString('"success":false', $responseContent);
-//        $this->assertEquals(200, $responseCode);
-//        $this->assertStringContainsString('"data":"', $responseContent);
-//        $this->assertStringContainsString('"message":"', $responseContent);
-//    }
+
+
+    public function testControllerException(): void
+    {
+        $this->client->request(
+            "POST",
+            "/api/v1/context/View",
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode([
+              "Id" => "je n'existe pas",
+              "IdType" => "context",
+            ])
+        );
+        /** @var string */
+        $responseContent = $this->client->getResponse()->getContent();
+        $responseCode = $this->client->getResponse()->getStatusCode();
+        $this->assertResponseIsSuccessful();
+
+        $this->assertStringContainsString('"success":false', $responseContent);
+        $this->assertEquals(200, $responseCode);
+        $this->assertStringContainsString('"data":"', $responseContent);
+        $this->assertStringContainsString('"message":"', $responseContent);
+    }
 }

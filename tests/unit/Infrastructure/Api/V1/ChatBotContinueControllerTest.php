@@ -132,6 +132,7 @@ class ChatBotContinueControllerTest extends WebTestCase
         $this->assertStringContainsString('"id":"con_', $responseContent);
         $this->assertStringContainsString('"nbPair":', $responseContent);
         $this->assertStringContainsString('"lastPair":', $responseContent);
+        $this->assertStringContainsString('"Answer":"Bonjour', $responseContent);
         $this->assertStringContainsString('"message":"', $responseContent);
     }
 

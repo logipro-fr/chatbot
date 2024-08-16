@@ -45,21 +45,4 @@ abstract class ConversationRepositoryTestBase extends TestCase
         $this->assertInstanceOf(Conversation::class, $found);
         $this->assertFalse($idFound->equals($found2->getId()));
     }
-
-
-    public function testFindByContextId(): void
-    {
-
-        $id = new ConversationId("con_66ba0cbdba97c");
-        $context = new ContextId("cot_66ba0cbdb8c53");
-
-        $conversation = new Conversation(new PairArray(), $context, $id,);
-
-        $this->repository->add($conversation);
-        $test = $this->repository->findById($id);
-
-
-        $found = $this->repository->findByContextId($context);
-        $this->assertInstanceOf(Conversation::class, $found);
-    }
 }

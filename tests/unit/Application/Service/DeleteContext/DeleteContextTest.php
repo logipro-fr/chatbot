@@ -1,6 +1,6 @@
 <?php
 
-namespace Chatbot\Tests\Application\Service\EditContext;
+namespace Chatbot\Tests\Application\Service\DeleteContext;
 
 use Chatbot\Application\Service\DeleteContext\DeleteContext;
 use Chatbot\Application\Service\DeleteContext\DeleteContextRequest;
@@ -15,6 +15,7 @@ use Chatbot\Infrastructure\Exception\NoIdException;
 use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryInMemory;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryDoctrine;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
+use ErrorException;
 use PHPUnit\Framework\TestCase;
 
 class DeleteContextTest extends TestCase
@@ -24,7 +25,9 @@ class DeleteContextTest extends TestCase
         // arrange / Given
 
         $conv = new ConversationRepositoryInMemory();
-        $conv->add(new Conversation(new PairArray(), new ContextId("english"), new ConversationId("conversation_id")));
+        $conv->add(
+            new Conversation(new PairArray(), new ContextId("un_context"), new ConversationId("conversation_id"))
+        );
         $repository = new ContextRepositoryInMemory();
         $request = new DeleteContextRequest(
             new ContextId("base")
@@ -37,6 +40,8 @@ class DeleteContextTest extends TestCase
 
         //assert / Then
         $this->assertInstanceOf(DeleteContextResponse::class, $response);
+        $this->expectException(NoIdException::class);
+        $repository->findById(new ContextId("un_context"));
     }
 
     public function testSomeoneDeleteAContextAssociatedConversation(): void
@@ -52,9 +57,12 @@ class DeleteContextTest extends TestCase
         $service = new DeleteContext($repository, $conv);
         //assert / Then
 
-        $this->expectException(ContextAssociatedConversationException::class);
-
         $service->execute($request);
         $response = $service->getResponse();
+        $this->assertInstanceOf(DeleteContextResponse::class, $response);
+        $this->assertStringContainsString(
+            "the context can't be deleted because is associate to conversation_idconversation",
+            $response->message
+        );
     }
 }
