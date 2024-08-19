@@ -3,7 +3,7 @@ services:
     image: "chatbot-nginx"
     container_name: "chatbot-nginx"
     build:
-      context: ../.
+      context: .
       dockerfile: docker/nginx/Dockerfile
     command: [nginx, '-g', 'daemon off;']
     depends_on:
@@ -20,15 +20,15 @@ services:
     image: "chatbot-php"
     container_name: "chatbot-php"
     build:
-      context: ../.
+      context: .
       dockerfile: docker/php/Dockerfile
       tags:
         - php-chatbot
     user: 1000:1000
     volumes:
-      - "$PWD/..:/var/chatbot"
-      - "$PWD/..:$PWD/.."
-    working_dir: $PWD/..
+      - "./:/var/chatbot"
+      - "./:$PWD"
+    working_dir: $PWD
     env_file: secret.env
     depends_on:
       chatbot-mariadb:
@@ -41,13 +41,13 @@ services:
     container_name: "chatbot-mariadb"
     build:
       context: .
-      dockerfile: mariadb/Dockerfile
+      dockerfile: docker/mariadb/Dockerfile
       tags:
         - latest
     restart: always
     volumes: 
       - /home/debian/projet/chatbot-mariadb/_data:/var/lib/mysql
-      - ../../mariabackup:/backup
+      - ./mariabackup:/backup
     env_file:
       - ./docker/mariadb/db.env
     networks:
