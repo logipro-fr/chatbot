@@ -23,7 +23,7 @@ use Throwable;
 
 use function Safe\json_decode;
 
-class ChatBotSwitchController
+class ChatBotSwitchController extends AbstractController
 {
     public function __construct(
         private ConversationRepositoryInterface $repository,
@@ -45,35 +45,6 @@ class ChatBotSwitchController
         return $this->writeSuccessfulResponse($response);
     }
 
-    private function writeSuccessfulResponse(SwitchContextConversationResponse $conversationResponse): JsonResponse
-    {
-        return new JsonResponse(
-            [
-                'success' => true,
-                'errorCode' => "",
-                'data' => [
-                    'NewId' => $conversationResponse->contextId->__toString(),
-                    'ConversationId' => $conversationResponse->conversation->getId(),
-
-                ],
-                    'message' => "",
-            ],
-            200
-        );
-    }
-
-    private function writeUnSuccessFulResponse(Throwable $e): JsonResponse
-    {
-        $className = (new \ReflectionClass($e))->getShortName();
-        return new JsonResponse(
-            [
-                'success' => false,
-                'ErrorCode' => $className,
-                'data' => '',
-                'message' => $e->getMessage(),
-            ],
-        );
-    }
 
     private function buildswitchContextConversationRequest(Request $request): SwitchContextConversationRequest
     {

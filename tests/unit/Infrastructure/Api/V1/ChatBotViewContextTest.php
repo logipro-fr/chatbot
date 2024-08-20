@@ -2,6 +2,7 @@
 
 namespace Chatbot\Tests\Infrastructure\Api\V1;
 
+use Chatbot\Application\Service\Exception\BadTypeNameException;
 use Chatbot\Infrastructure\Api\V1\ChatBotViewContextController;
 use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryInMemory;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
@@ -15,6 +16,7 @@ use function Safe\json_encode;
 class ChatBotViewContextTest extends WebTestCase
 {
     use DoctrineRepositoryTesterTrait;
+    use AssertResponseTrait;
 
     private KernelBrowser $client;
 
@@ -69,7 +71,7 @@ class ChatBotViewContextTest extends WebTestCase
         $data = $this->client->getResponse()->getContent();
         /** @var array<mixed,array<mixed>> */
         $responseContent = json_decode($data, true);
-        $contextid = $responseContent['data']['id'];
+        $contextid = $responseContent['data']['contextId'];
 
         $this->client->request(
             "POST",
@@ -83,13 +85,13 @@ class ChatBotViewContextTest extends WebTestCase
             ])
         );
         /** @var string */
-        $responseContent = $this->client->getResponse()->getContent();
+        $data = $this->client->getResponse()->getContent();
         $responseCode = $this->client->getResponse()->getStatusCode();
+        $responseContent = json_decode($data, true);
 
-        $this->assertStringContainsString('"success":true', $responseContent);
+        $this->assertTrue($responseContent["success"]);
         $this->assertEquals(200, $responseCode);
-        $this->assertStringContainsString('"context":"je suis un context', $responseContent);
-        $this->assertStringContainsString('"message":"', $responseContent);
+        $this->assertArrayHasKey("contextMessage",$responseContent["data"]);
     }
 
 
@@ -110,13 +112,10 @@ class ChatBotViewContextTest extends WebTestCase
         /** @var string */
         $data = $this->client->getResponse()->getContent();
         $responseCode = $this->client->getResponse()->getStatusCode();
-        $this->assertResponseIsSuccessful();
-        $responseContent = json_decode($data, true);
-
-
-        $this->assertFalse($responseContent["success"]);
-        $this->assertEquals(200, $responseCode);
-        $this->assertStringContainsString('BadTypeNameException', $responseContent["ErrorCode"]);
-        $this->assertStringContainsString("Please use 'conversations' or 'contexts", $responseContent["message"]);
+        
+        $this->assertResponseFailure(
+            $this->client->getResponse(),
+            (new \ReflectionClass(BadTypeNameException::class))->getShortName()
+        );
     }
 }

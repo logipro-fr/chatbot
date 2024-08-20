@@ -21,7 +21,7 @@ use Throwable;
 
 use function Safe\json_decode;
 
-class ChatBotMakeController
+class ChatBotMakeController extends AbstractController
 {
     public function __construct(
         private ConversationRepositoryInterface $repository,
@@ -64,36 +64,5 @@ class ChatBotMakeController
         $context = new ContextId($data['context']);
 
         return new MakeConversationRequest($prompt, $lmName, $context);
-    }
-
-    private function writeSuccessfulResponse(MakeConversationResponse $conversationResponse): JsonResponse
-    {
-        return new JsonResponse(
-            [
-                'success' => true,
-                'errorCode' => "",
-                'data' => [
-                    'id' => $conversationResponse->conversationId->__toString(),
-                    'numberOfPairs' => $conversationResponse->nbPair,
-                    'lastPair' => $conversationResponse->pair,
-                    'Answer' => $conversationResponse->botMessage,
-                ],
-                    'message' => "",
-            ],
-            200
-        );
-    }
-
-    private function writeUnSuccessFulResponse(Throwable $e): JsonResponse
-    {
-        $className = (new \ReflectionClass($e))->getShortName();
-        return new JsonResponse(
-            [
-                'success' => false,
-                'ErrorCode' => $className,
-                'data' => '',
-                'message' => $e->getMessage(),
-            ],
-        );
     }
 }

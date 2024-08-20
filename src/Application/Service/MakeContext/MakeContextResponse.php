@@ -7,7 +7,7 @@ use Chatbot\Domain\Model\Context\ContextId;
 class MakeContextResponse
 {
     public function __construct(
-        public readonly ContextId $contextId,
+        public readonly string $contextId,
     ) {
     }
 }

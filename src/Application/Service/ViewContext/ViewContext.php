@@ -22,7 +22,7 @@ class ViewContext
         $id = $finder->find($request->type, $request->id);
         $context = $this->contextRepository->findById($id);
 
-        $this->response = new ViewContextResponse($context->getContext());
+        $this->response = new ViewContextResponse($context->getContext()->getMessage());
     }
 
     public function getResponse(): ViewContextResponse

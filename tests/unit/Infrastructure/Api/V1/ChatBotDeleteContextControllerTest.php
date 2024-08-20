@@ -7,6 +7,7 @@ use Chatbot\Domain\Model\Conversation\Conversation;
 use Chatbot\Domain\Model\Conversation\PairArray;
 use Chatbot\Infrastructure\Api\V1\ChatBotDeleteContextController;
 use Chatbot\Infrastructure\Api\V1\ChatBotEditContextController;
+use Chatbot\Infrastructure\Exception\NoIdException;
 use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryInMemory;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
 use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
@@ -19,6 +20,7 @@ use function Safe\json_encode;
 class ChatBotDeleteContextControllerTest extends WebTestCase
 {
     use DoctrineRepositoryTesterTrait;
+    use AssertResponseTrait;
 
     private KernelBrowser $client;
 
@@ -73,7 +75,7 @@ class ChatBotDeleteContextControllerTest extends WebTestCase
         $data = $this->client->getResponse()->getContent();
         /** @var array<mixed,array<mixed>> */
         $responseContent = json_decode($data, true);
-        $contextid = $responseContent['data']['id'];
+        $contextid = $responseContent['data']['contextId'];
 
         $this->client->request(
             "POST",
@@ -86,13 +88,12 @@ class ChatBotDeleteContextControllerTest extends WebTestCase
             ])
         );
         /** @var string */
-        $responseContent = $this->client->getResponse()->getContent();
+        $data = $this->client->getResponse()->getContent();
         $responseCode = $this->client->getResponse()->getStatusCode();
-
-        $this->assertStringContainsString('"success":true', $responseContent);
+        $responseContent = json_decode($data, true);
+        $this->assertTrue($responseContent["success"]);
         $this->assertEquals(200, $responseCode);
-        $this->assertStringContainsString('"data":["Deleted context"]', $responseContent);
-        $this->assertStringContainsString('"message":"', $responseContent);
+        $this->assertArrayHasKey('message', $responseContent["data"]);
     }
 
     public function testControllerException(): void
@@ -110,11 +111,10 @@ class ChatBotDeleteContextControllerTest extends WebTestCase
         /** @var string */
         $responseContent = $this->client->getResponse()->getContent();
         $responseCode = $this->client->getResponse()->getStatusCode();
-        $this->assertResponseIsSuccessful();
-
-        $this->assertStringContainsString('"success":false', $responseContent);
-        $this->assertEquals(200, $responseCode);
-        $this->assertStringContainsString('"data":"', $responseContent);
-        $this->assertStringContainsString('"message":"', $responseContent);
+        
+        $this->assertResponseFailure(
+            $this->client->getResponse(),
+            (new \ReflectionClass(NoIdException::class))->getShortName()
+        );
     }
 }

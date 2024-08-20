@@ -9,8 +9,8 @@ use Chatbot\Domain\Model\Conversation\ConversationId;
 class SwitchContextConversationResponse
 {
     public function __construct(
-        public readonly ContextId $contextId,
-        public readonly ConversationId $conversation,
+        public readonly string $contextId,
+        public readonly string $conversation,
     ) {
     }
 }

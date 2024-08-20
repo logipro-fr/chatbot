@@ -18,7 +18,7 @@ use Throwable;
 
 use function Safe\json_decode;
 
-class ChatBotDeleteContextController
+class ChatBotDeleteContextController extends AbstractController
 {
     public function __construct(
         private ContextRepositoryInterface $repository,
@@ -39,34 +39,6 @@ class ChatBotDeleteContextController
         }
         $response = $context->getResponse();
         return $this->writeSuccessfulResponse($response);
-    }
-
-    private function writeSuccessfulResponse(DeleteContextResponse $response): JsonResponse
-    {
-        return new JsonResponse(
-            [
-                'success' => true,
-                'errorCode' => "",
-                'data' => [
-                    "Deleted context"
-                ],
-                    'message' => "",
-            ],
-            200
-        );
-    }
-
-    private function writeUnSuccessFulResponse(Throwable $e): JsonResponse
-    {
-        $className = (new \ReflectionClass($e))->getShortName();
-        return new JsonResponse(
-            [
-                'success' => false,
-                'errorCode' => $className,
-                'data' => '',
-                'message' => $e->getMessage(),
-            ],
-        );
     }
 
     private function buildDeleteContextRequest(Request $request): DeleteContextRequest

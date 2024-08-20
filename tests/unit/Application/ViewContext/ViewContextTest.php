@@ -27,7 +27,7 @@ class ViewContextTest extends TestCase
         );
         $service = new MakeContext($repository);
         $service->execute($request);
-        $id = $service->getResponse()->contextId->__toString();
+        $id = $service->getResponse()->contextId;
 
         $request = new ViewContextRequest($id, "contexts");
         $service = new ViewContext($repository, $convrepository);
@@ -37,7 +37,7 @@ class ViewContextTest extends TestCase
 
         //assert / Then
         $this->assertInstanceOf(ViewContextResponse::class, $response);
-        $this->assertInstanceOf(ContextMessage::class, $response->contextMessage);
-        $this->assertEquals("You're helpfull assistant", $response->contextMessage->getMessage());
+        $this->assertIsString($response->contextMessage);
+        $this->assertEquals("You're helpfull assistant", $response->contextMessage);
     }
 }

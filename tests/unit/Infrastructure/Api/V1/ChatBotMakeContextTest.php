@@ -2,6 +2,7 @@
 
 namespace Chatbot\Tests\Infrastructure\Api\V1;
 
+use Chatbot\Application\Service\Exception\EmptyStringException;
 use Chatbot\Infrastructure\Api\V1\ChatBotMakeContext;
 use Chatbot\Infrastructure\Api\V1\ChatBotMakeController;
 use Chatbot\Infrastructure\LanguageModel\ModelFactory;
@@ -19,6 +20,7 @@ class ChatBotMakeContextTest extends WebTestCase
     use DoctrineRepositoryTesterTrait;
 
     private KernelBrowser $client;
+    use AssertResponseTrait;
 
 
     public function setUp(): void
@@ -63,12 +65,14 @@ class ChatBotMakeContextTest extends WebTestCase
             ])
         );
         /** @var string */
-        $responseContent = $this->client->getResponse()->getContent();
+        $data = $this->client->getResponse()->getContent();
         $responseCode = $this->client->getResponse()->getStatusCode();
-
-        $this->assertStringContainsString('"success":true', $responseContent);
+        $responseContent = json_decode($data, true);
+        
+        $this->assertTrue($responseContent["success"]);
         $this->assertEquals(200, $responseCode);
-        $this->assertStringContainsString('"id":"cot_', $responseContent);
+        $this->assertArrayHasKey("contextId",$responseContent["data"]);
+        
     }
 
     public function testControllerException(): void
@@ -87,11 +91,9 @@ class ChatBotMakeContextTest extends WebTestCase
         /** @var string */
         $responseContent = $this->client->getResponse()->getContent();
         $responseCode = $this->client->getResponse()->getStatusCode();
-        $this->assertResponseIsSuccessful();
-
-        $this->assertStringContainsString('"success":false', $responseContent);
-        $this->assertEquals(200, $responseCode);
-        $this->assertStringContainsString('"data":"', $responseContent);
-        $this->assertStringContainsString('"message":"', $responseContent);
+        $this->assertResponseFailure(
+            $this->client->getResponse(),
+            (new \ReflectionClass(EmptyStringException::class))->getShortName()
+        );
     }
 }

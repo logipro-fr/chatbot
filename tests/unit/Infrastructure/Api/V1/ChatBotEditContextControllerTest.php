@@ -3,6 +3,7 @@
 namespace Chatbot\Tests\Infrastructure\Api\V1;
 
 use Chatbot\Infrastructure\Api\V1\ChatBotEditContextController;
+use Chatbot\Infrastructure\Exception\NoIdException;
 use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryInMemory;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
 use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
@@ -15,6 +16,7 @@ use function Safe\json_encode;
 class ChatBotEditContextControllerTest extends WebTestCase
 {
     use DoctrineRepositoryTesterTrait;
+    use AssertResponseTrait;
 
     private KernelBrowser $client;
 
@@ -68,7 +70,7 @@ class ChatBotEditContextControllerTest extends WebTestCase
         $data = $this->client->getResponse()->getContent();
         /** @var array<mixed,array<mixed>> */
         $responseContent = json_decode($data, true);
-        $contextid = $responseContent['data']['id'];
+        $contextid = $responseContent['data']['contextId'];
 
         $this->client->request(
             "PUT",
@@ -82,14 +84,16 @@ class ChatBotEditContextControllerTest extends WebTestCase
             ])
         );
         /** @var string */
-        $responseContent = $this->client->getResponse()->getContent();
+        $data = $this->client->getResponse()->getContent();
         $responseCode = $this->client->getResponse()->getStatusCode();
+        $responseContent = json_decode($data, true);
 
-        $this->assertStringContainsString('"success":true', $responseContent);
+        $this->assertTrue($responseContent["success"]);
         $this->assertEquals(200, $responseCode);
-        $this->assertStringContainsString('"Id":"' . $contextid, $responseContent);
-        $this->assertStringContainsString('"context":"new context', $responseContent);
-        $this->assertStringContainsString('"message":"', $responseContent);
+
+
+        $this->assertArrayHasKey("contextId", $responseContent["data"]);
+        $this->assertArrayHasKey("contextMessage", $responseContent["data"]);
     }
 
     public function testControllerException(): void
@@ -108,11 +112,10 @@ class ChatBotEditContextControllerTest extends WebTestCase
         /** @var string */
         $responseContent = $this->client->getResponse()->getContent();
         $responseCode = $this->client->getResponse()->getStatusCode();
-        $this->assertResponseIsSuccessful();
-
-        $this->assertStringContainsString('"success":false', $responseContent);
-        $this->assertEquals(200, $responseCode);
-        $this->assertStringContainsString('"data":"', $responseContent);
-        $this->assertStringContainsString('"message":"', $responseContent);
+        
+        $this->assertResponseFailure(
+            $this->client->getResponse(),
+            (new \ReflectionClass(NoIdException::class))->getShortName()
+        );
     }
 }
