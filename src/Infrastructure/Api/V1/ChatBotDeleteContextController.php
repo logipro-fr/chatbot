@@ -62,7 +62,7 @@ class ChatBotDeleteContextController
         return new JsonResponse(
             [
                 'success' => false,
-                'ErrorCode' => $className,
+                'errorCode' => $className,
                 'data' => '',
                 'message' => $e->getMessage(),
             ],

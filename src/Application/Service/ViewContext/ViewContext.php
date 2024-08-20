@@ -12,15 +12,15 @@ class ViewContext
 
 
     public function __construct(
-        private ContextRepositoryInterface $contextrepository,
-        private ConversationRepositoryInterface $convrepository
+        private ContextRepositoryInterface $contextRepository,
+        private ConversationRepositoryInterface $convRepository
     ) {
     }
     public function execute(ViewContextRequest $request): void
     {
-        $finder = new FindId($this->convrepository);
+        $finder = new FindId($this->convRepository);
         $id = $finder->find($request->type, $request->id);
-        $context = $this->contextrepository->findById($id);
+        $context = $this->contextRepository->findById($id);
 
         $this->response = new ViewContextResponse($context->getContext());
     }

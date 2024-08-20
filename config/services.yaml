@@ -60,7 +60,7 @@ services:
   conversation.repository:
     public: true
     autowire: true
-    class: Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryDoctrine
+    class: Chatbot\Infrastructure\Persistence\Conversation\conversationRepositoryDoctrine
 
   conversation.factory:
     public: true
@@ -70,7 +70,7 @@ services:
   context.repository:
     public: true
     autowire: true
-    class: Chatbot\Infrastructure\Persistence\Context\ContextRepositoryDoctrine
+    class: Chatbot\Infrastructure\Persistence\Context\contextRepositoryDoctrine
        
 
   Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface: "@conversation.repository"

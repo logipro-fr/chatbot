@@ -50,7 +50,7 @@ class ChatBotContinueController
                 'errorCode' => "",
                 'data' => [
                     'id' => $conversationResponse->conversationId->__toString(),
-                    'nbPair' => $conversationResponse->nbPair,
+                    'numberOfPairs' => $conversationResponse->numberOfPairs,
                     'lastPair' => $conversationResponse->pair,
                     'Answer' => $conversationResponse->botMessage,
                 ],

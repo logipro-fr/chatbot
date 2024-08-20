@@ -74,7 +74,7 @@ class ChatBotMakeController
                 'errorCode' => "",
                 'data' => [
                     'id' => $conversationResponse->conversationId->__toString(),
-                    'nbPair' => $conversationResponse->nbPair,
+                    'numberOfPairs' => $conversationResponse->nbPair,
                     'lastPair' => $conversationResponse->pair,
                     'Answer' => $conversationResponse->botMessage,
                 ],

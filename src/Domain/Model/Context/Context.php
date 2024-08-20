@@ -2,6 +2,8 @@
 
 namespace Chatbot\Domain\Model\Context;
 
+use Chatbot\Domain\Event\ContextCreated;
+use Chatbot\Domain\EventFacade\EventFacade;
 use Chatbot\Domain\Model\Context\ContextId;
 use Chatbot\Domain\Model\Context\ContextMessage;
 use DateTimeImmutable;
@@ -14,6 +16,7 @@ class Context
         private ContextId $id = new ContextId(),
         private readonly DateTimeImmutable $createdAt = new SafeDateTimeImmutable()
     ) {
+        (new EventFacade())->dispatch(new ContextCreated($this->id->__toString(), $this->contextmessage->getMessage()));
     }
 
     public function getContext(): ContextMessage
@@ -34,5 +37,6 @@ class Context
     public function editMessage(ContextMessage $context): void
     {
         $this->contextmessage = $context;
+        (new EventFacade())->dispatch(new ContextCreated($this->id->__toString(), $this->contextmessage->getMessage()));
     }
 }

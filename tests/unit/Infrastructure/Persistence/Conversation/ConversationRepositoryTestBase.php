@@ -7,7 +7,6 @@ use Chatbot\Domain\Model\Conversation\Conversation;
 use Chatbot\Domain\Model\Conversation\ConversationId;
 use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
 use Chatbot\Domain\Model\Conversation\PairArray;
-use Chatbot\Infrastructure\Exception\ContextAssociatedConversationException;
 use PHPUnit\Framework\TestCase;
 
 abstract class ConversationRepositoryTestBase extends TestCase

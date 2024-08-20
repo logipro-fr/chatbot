@@ -4,7 +4,7 @@ namespace Chatbot\Tests\Infrastructure\Persistence\Context;
 
 use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryInMemory;
 
-class ContextRepositoryInMemoryTest extends ContextRepositoryTestBase
+class contextRepositoryInMemoryTest extends contextRepositoryTestBase
 {
     protected function initialize(): void
     {

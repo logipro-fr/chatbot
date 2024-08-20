@@ -25,7 +25,7 @@ class ChatBotEditContextController
         private EntityManagerInterface $entityManager
     ) {
     }
-    #[Route('api/v1/context/Edit', 'editContext', methods: ['POST'])]
+    #[Route('api/v1/context/Edit', 'editContext', methods: ['PUT'])]
     public function editContext(Request $request): Response
     {
         $request = $this->buildEditContextRequest($request);

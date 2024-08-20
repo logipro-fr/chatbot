@@ -93,7 +93,7 @@ class ChatBotMakeControllerTest extends WebTestCase
         $this->assertStringContainsString('"success":true', $responseContent);
         $this->assertEquals(200, $responseCode);
         $this->assertStringContainsString('"id":"con_', $responseContent);
-        $this->assertStringContainsString('"nbPair":', $responseContent);
+        $this->assertStringContainsString('"numberOfPairs":', $responseContent);
         $this->assertStringContainsString('"lastPair":', $responseContent);
         $this->assertStringContainsString('"Answer":"Chien', $responseContent);
         $this->assertStringContainsString('"message":"', $responseContent);
