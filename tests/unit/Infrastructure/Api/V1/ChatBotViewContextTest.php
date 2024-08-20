@@ -112,7 +112,6 @@ class ChatBotViewContextTest extends WebTestCase
         $responseCode = $this->client->getResponse()->getStatusCode();
         $this->assertResponseIsSuccessful();
         $responseContent = json_decode($data, true);
-        var_dump($responseContent);
 
 
         $this->assertFalse($responseContent["success"]);

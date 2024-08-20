@@ -384,7 +384,7 @@ paths:
                     description: Message associated with the response
                     example: Invalid request          
   /context/Edit:
-    post:
+    put:
       tags:
           - Context
       summary: Edit a context

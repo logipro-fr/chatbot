@@ -34,7 +34,7 @@ class ChatBotEditContextControllerTest extends WebTestCase
         $controller = new ChatBotEditContextController($contextrepo, $this->getEntityManager());
         $request = Request::create(
             "/api/v1/conversation/Edit",
-            "POST",
+            "PUT",
             [],
             [],
             [],
@@ -71,7 +71,7 @@ class ChatBotEditContextControllerTest extends WebTestCase
         $contextid = $responseContent['data']['id'];
 
         $this->client->request(
-            "POST",
+            "PUT",
             "/api/v1/context/Edit",
             [],
             [],
@@ -95,7 +95,7 @@ class ChatBotEditContextControllerTest extends WebTestCase
     public function testControllerException(): void
     {
         $this->client->request(
-            "POST",
+            "PUT",
             "/api/v1/context/Edit",
             [],
             [],
