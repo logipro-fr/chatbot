@@ -106,14 +106,18 @@ class ChatBotViewContextTest extends WebTestCase
               "IdType" => "context",
             ])
         );
+        
         /** @var string */
-        $responseContent = $this->client->getResponse()->getContent();
+        $data = $this->client->getResponse()->getContent();
         $responseCode = $this->client->getResponse()->getStatusCode();
         $this->assertResponseIsSuccessful();
+        $responseContent = json_decode($data, true);
+        var_dump($responseContent);
 
-        $this->assertStringContainsString('"success":false', $responseContent);
+
+        $this->assertFalse($responseContent["success"]);
         $this->assertEquals(200, $responseCode);
-        $this->assertStringContainsString('"data":"', $responseContent);
-        $this->assertStringContainsString('"message":"', $responseContent);
+        $this->assertStringContainsString('BadTypeNameException', $responseContent["ErrorCode"]);
+        $this->assertStringContainsString("Please use 'conversations' or 'contexts", $responseContent["message"]);
     }
 }
