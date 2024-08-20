@@ -3,13 +3,16 @@
 function create_database_in_container() {
     DB_ENV_FULLFILENAME=$1
     DB_CONTAINER_NAME=$2
+    PHP_CONTAINER_NAME=$3
     source $DB_ENV_FULLFILENAME
 
     DB_NAME=$MYSQL_DATABASE
     DB_USER=$MYSQL_USER
     DB_PASS=$MYSQL_PASSWORD
 
+
     _wait_for_mariadb $DB_CONTAINER_NAME $DB_USER $DB_PASS
+
     sleep 5
     # docker command to check if database exist in the container
     DB_CHECK=$(docker exec -i $DB_CONTAINER_NAME mysql -u$DB_USER -p$DB_PASS -e "SHOW DATABASES LIKE '$DB_NAME';")
@@ -26,15 +29,14 @@ function create_database_in_container() {
             echo "Error: Database creation failed"
         fi
     fi
-
-    bin/console doctrine:schema:create
+    #bin/console doctrine:schema:create
     if [ $? -eq 0 ]; then
         echo "Success! Database schema created."
     else
         echo "Error: Database schema creation failed."
     fi
 
-    _stop_database_container $CONTAINER_NAME chatbot-php
+    _stop_database_container mariadb php
 }
 
 function _wait_for_mariadb()
@@ -43,7 +45,7 @@ function _wait_for_mariadb()
     DB_USER=$2
     DB_PASS=$3
     (
-        docker compose up -d $CONTAINER_NAME chatbot-php
+        docker compose up -d mariadb php
     )
 
     local RETRIES=30
@@ -66,6 +68,8 @@ function _wait_for_mariadb()
 function _stop_database_container
 {
     (
-        docker compose down $CONTAINER_NAME chatbot-php
+        CONTAINER_NAME=$1
+        PHP_CONTAINER_NAME=$2
+        docker compose down "$CONTAINER_NAME" "$PHP_CONTAINER_NAME"
     )
 }
