@@ -59,7 +59,7 @@ class TranslateContext implements Context
         $request = new MakeConversationRequest(
             new Prompt($prompt),
             "ParrotTranslate",
-            $response->contextId
+            new ContextId($response->contextId)
         );
         $service = new MakeConversation($this->repository, $this->factory, $this->contextrepo);
         $service->execute($request);

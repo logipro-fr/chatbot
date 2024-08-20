@@ -18,9 +18,10 @@ use function Safe\json_encode;
 class ChatBotMakeContextTest extends WebTestCase
 {
     use DoctrineRepositoryTesterTrait;
+    use AssertResponseTrait;
 
     private KernelBrowser $client;
-    use AssertResponseTrait;
+
 
 
     public function setUp(): void
@@ -67,12 +68,12 @@ class ChatBotMakeContextTest extends WebTestCase
         /** @var string */
         $data = $this->client->getResponse()->getContent();
         $responseCode = $this->client->getResponse()->getStatusCode();
+        /** @var array<mixed,array<mixed>> */
         $responseContent = json_decode($data, true);
-        
+
         $this->assertTrue($responseContent["success"]);
         $this->assertEquals(200, $responseCode);
-        $this->assertArrayHasKey("contextId",$responseContent["data"]);
-        
+        $this->assertArrayHasKey("contextId", $responseContent["data"]);
     }
 
     public function testControllerException(): void

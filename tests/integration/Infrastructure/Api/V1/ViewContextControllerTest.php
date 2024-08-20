@@ -43,7 +43,7 @@ class ViewContextControllerTest extends WebTestCase
         /** @var array<mixed,array<mixed>> */
         $responseContent = json_decode($data, true);
         /** @var string */
-        $id = $responseContent['data']['id'];
+        $id = $responseContent['data']['contextId'];
         $this->contextId = $id;
 
         $this->client->request(
@@ -66,7 +66,7 @@ class ViewContextControllerTest extends WebTestCase
         /** @var array<mixed,array<mixed>> */
         $responseContent = json_decode($data, true);
         /** @var string */
-        $id = $responseContent['data']['id'];
+        $id = $responseContent['data']['conversationId'];
         $this->conversationId = $id;
     }
 
@@ -85,15 +85,15 @@ class ViewContextControllerTest extends WebTestCase
                 ]
             )
         );
-        /** @var string */
-        $responseContent = $this->client->getResponse()->getContent();
-        $responseCode = $this->client->getResponse()->getStatusCode();
+       /** @var string */
+       $data = $this->client->getResponse()->getContent();
+       $responseCode = $this->client->getResponse()->getStatusCode();
+       /** @var array<mixed,array<mixed>> */
+       $responseContent = json_decode($data, true);
 
-        $this->assertResponseIsSuccessful();
-        $this->assertStringContainsString('"success":true', $responseContent);
+        $this->assertTrue($responseContent["success"]);
         $this->assertEquals(200, $responseCode);
-        $this->assertStringContainsString('"context":', $responseContent);
-        $this->assertStringContainsString('"message":"', $responseContent);
+        $this->assertArrayHasKey("contextMessage", $responseContent["data"]);
     }
 
     public function testConversationId(): void
@@ -112,13 +112,13 @@ class ViewContextControllerTest extends WebTestCase
             )
         );
         /** @var string */
-        $responseContent = $this->client->getResponse()->getContent();
+        $data = $this->client->getResponse()->getContent();
         $responseCode = $this->client->getResponse()->getStatusCode();
+        /** @var array<mixed,array<mixed>> */
+        $responseContent = json_decode($data, true);
 
-        $this->assertResponseIsSuccessful();
-        $this->assertStringContainsString('"success":true', $responseContent);
+        $this->assertTrue($responseContent["success"]);
         $this->assertEquals(200, $responseCode);
-        $this->assertStringContainsString('"context":"', $responseContent);
-        $this->assertStringContainsString('"message":"', $responseContent);
+        $this->assertArrayHasKey("contextMessage", $responseContent["data"]);
     }
 }

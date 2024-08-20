@@ -87,11 +87,12 @@ class ChatBotViewContextTest extends WebTestCase
         /** @var string */
         $data = $this->client->getResponse()->getContent();
         $responseCode = $this->client->getResponse()->getStatusCode();
+        /** @var array<mixed,array<mixed>> */
         $responseContent = json_decode($data, true);
 
         $this->assertTrue($responseContent["success"]);
         $this->assertEquals(200, $responseCode);
-        $this->assertArrayHasKey("contextMessage",$responseContent["data"]);
+        $this->assertArrayHasKey("contextMessage", $responseContent["data"]);
     }
 
 
@@ -108,11 +109,11 @@ class ChatBotViewContextTest extends WebTestCase
               "IdType" => "context",
             ])
         );
-        
+
         /** @var string */
         $data = $this->client->getResponse()->getContent();
         $responseCode = $this->client->getResponse()->getStatusCode();
-        
+
         $this->assertResponseFailure(
             $this->client->getResponse(),
             (new \ReflectionClass(BadTypeNameException::class))->getShortName()

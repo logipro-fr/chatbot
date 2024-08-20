@@ -42,7 +42,7 @@ class SwitchContextConversationControllerTest extends WebTestCase
         $data = $this->client->getResponse()->getContent();
         /** @var array<mixed,array<mixed>> */
         $responseContent = json_decode($data, true);
-        $contextId = $responseContent['data']['id'];
+        $contextId = $responseContent['data']['contextId'];
 
         $this->client->request(
             "POST",
@@ -64,7 +64,7 @@ class SwitchContextConversationControllerTest extends WebTestCase
         /** @var array<mixed,array<mixed>> */
         $responseContent = json_decode($data, true);
         /** @var string */
-        $id = $responseContent['data']['id'];
+        $id = $responseContent['data']['conversationId'];
         $this->conversationId = $id;
 
         $this->client->request(
@@ -85,7 +85,7 @@ class SwitchContextConversationControllerTest extends WebTestCase
         /** @var array<mixed,array<mixed>> */
         $responseContent = json_decode($data, true);
         /** @var string */
-        $id = $responseContent['data']['id'];
+        $id = $responseContent['data']['contextId'];
         $this->contextId = $id;
     }
 
@@ -103,13 +103,13 @@ class SwitchContextConversationControllerTest extends WebTestCase
             ])
         );
         /** @var string */
-        $responseContent = $this->client->getResponse()->getContent();
+        $data = $this->client->getResponse()->getContent();
         $responseCode = $this->client->getResponse()->getStatusCode();
-
-        $this->assertStringContainsString('"success":true', $responseContent);
+        /** @var array<mixed,array<mixed>> */
+        $responseContent = json_decode($data, true);
+        $this->assertTrue($responseContent["success"]);
         $this->assertEquals(200, $responseCode);
-        $this->assertStringContainsString('"NewId"', $responseContent);
-        $this->assertStringContainsString('"ConversationId":"', $responseContent);
-        $this->assertStringContainsString('"message":"', $responseContent);
+        $this->assertArrayHasKey("contextId", $responseContent["data"]);
+        $this->assertArrayHasKey("conversation", $responseContent["data"]);
     }
 }

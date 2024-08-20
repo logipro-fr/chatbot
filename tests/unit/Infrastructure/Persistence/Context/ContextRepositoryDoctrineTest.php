@@ -5,7 +5,7 @@ namespace Chatbot\Tests\Infrastructure\Persistence\Context ;
 use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryDoctrine;
 use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
 
-class contextRepositoryDoctrineTest extends contextRepositoryTestBase
+class ContextRepositoryDoctrineTest extends ContextRepositoryTestBase
 {
     use DoctrineRepositoryTesterTrait;
 

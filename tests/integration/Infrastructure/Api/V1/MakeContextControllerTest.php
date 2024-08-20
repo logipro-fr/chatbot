@@ -39,13 +39,14 @@ class MakeContextControllerTest extends WebTestCase
             )
         );
         /** @var string */
-        $responseContent = $this->client->getResponse()->getContent();
+        $data = $this->client->getResponse()->getContent();
         $responseCode = $this->client->getResponse()->getStatusCode();
 
-        $this->assertResponseIsSuccessful();
-        $this->assertStringContainsString('"success":true', $responseContent);
+        /** @var array<mixed,array<mixed>> */
+        $responseContent = json_decode($data, true);
+
+        $this->assertTrue($responseContent["success"]);
         $this->assertEquals(200, $responseCode);
-        $this->assertStringContainsString('"id":"cot_', $responseContent);
-        $this->assertStringContainsString('"message":"', $responseContent);
+        $this->assertArrayHasKey("contextId", $responseContent["data"]);
     }
 }

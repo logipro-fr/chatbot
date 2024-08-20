@@ -34,7 +34,7 @@ class EditContextTest extends TestCase
         $id = $response->contextId;
         $newMessage = new ContextMessage("I'm a new context message");
         $service = new EditContext($repository);
-        $service->execute(new EditContextRequest($newMessage,new ContextId($id)));
+        $service->execute(new EditContextRequest($newMessage, new ContextId($id)));
         $response = $service->getResponse();
 
         //assert / Then

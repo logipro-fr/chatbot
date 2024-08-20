@@ -130,11 +130,12 @@ class ChatBotContinueControllerTest extends WebTestCase
         /** @var string */
         $data = $this->client->getResponse()->getContent();
         $responseCode = $this->client->getResponse()->getStatusCode();
+        /** @var array<mixed,array<mixed>> */
         $responseContent = json_decode($data, true);
-        
+
         $this->assertTrue($responseContent["success"]);
         $this->assertEquals(200, $responseCode);
-        $this->assertArrayHasKey("conversationId",$responseContent["data"]);
+        $this->assertArrayHasKey("conversationId", $responseContent["data"]);
         $this->assertArrayHasKey("numberOfPairs", $responseContent["data"]);
         $this->assertArrayHasKey("pair", $responseContent["data"]);
         $this->assertArrayHasKey("botMessage", $responseContent["data"]);
@@ -159,12 +160,11 @@ class ChatBotContinueControllerTest extends WebTestCase
         $data = $this->client->getResponse()->getContent();
         $responseCode = $this->client->getResponse()->getStatusCode();
         $responseContent = json_decode($data, true);
-       
+
 
         $this->assertResponseFailure(
             $this->client->getResponse(),
             (new \ReflectionClass(NoIdException::class))->getShortName()
         );
-
     }
 }

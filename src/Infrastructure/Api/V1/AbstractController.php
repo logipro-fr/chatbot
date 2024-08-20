@@ -13,7 +13,7 @@ abstract class AbstractController
 
     protected function writeSuccessfulResponse(object $data, int $httpStatusCode = self::ERROR_CODE_SUCCESS): Response
     {
-        
+
         return new Response(
             json_encode([
                 "success" => true,
@@ -22,7 +22,6 @@ abstract class AbstractController
             $httpStatusCode,
             ["Content-Type" => "application/json"]
         );
-
     }
 
     protected function writeUnsuccessfulResponse(\Exception $e, int $code = self::ERROR_CODE_ERROR): Response

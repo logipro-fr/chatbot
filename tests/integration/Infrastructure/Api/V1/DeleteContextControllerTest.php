@@ -42,7 +42,7 @@ class DeleteContextControllerTest extends WebTestCase
         /** @var array<mixed,array<mixed>> */
         $responseContent = json_decode($data, true);
         /** @var string */
-        $id = $responseContent['data']['id'];
+        $id = $responseContent['data']['contextId'];
         $this->contextId = $id;
     }
 
@@ -61,12 +61,13 @@ class DeleteContextControllerTest extends WebTestCase
             )
         );
         /** @var string */
-        $responseContent = $this->client->getResponse()->getContent();
+        $data = $this->client->getResponse()->getContent();
         $responseCode = $this->client->getResponse()->getStatusCode();
+        /** @var array<mixed,array<mixed>> */
+        $responseContent = json_decode($data, true);
 
-        $this->assertResponseIsSuccessful();
-        $this->assertStringContainsString('"success":true', $responseContent);
+        $this->assertTrue($responseContent["success"]);
         $this->assertEquals(200, $responseCode);
-        $this->assertStringContainsString('"message":"', $responseContent);
+        $this->assertArrayHasKey('message', $responseContent["data"]);
     }
 }

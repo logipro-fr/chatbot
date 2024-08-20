@@ -11,7 +11,7 @@ use Chatbot\Infrastructure\Exception\NoIdException;
 use ErrorException;
 use PHPUnit\Framework\TestCase;
 
-abstract class contextRepositoryTestBase extends TestCase
+abstract class ContextRepositoryTestBase extends TestCase
 {
     protected ContextRepositoryInterface $repository;
     protected function setUp(): void
