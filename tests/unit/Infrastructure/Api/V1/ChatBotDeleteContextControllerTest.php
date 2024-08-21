@@ -78,8 +78,8 @@ class ChatBotDeleteContextControllerTest extends WebTestCase
         $contextid = $responseContent['data']['contextId'];
 
         $this->client->request(
-            "POST",
-            "/api/v1/context/Delete",
+            "DELETE",
+            "/api/v1/contexts",
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -101,8 +101,8 @@ class ChatBotDeleteContextControllerTest extends WebTestCase
     public function testControllerException(): void
     {
         $this->client->request(
-            "POST",
-            "/api/v1/context/Delete",
+            "DELETE",
+            "/api/v1/contexts",
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],

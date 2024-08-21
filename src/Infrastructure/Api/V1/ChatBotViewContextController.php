@@ -27,7 +27,7 @@ class ChatBotViewContextController extends AbstractController
         private EntityManagerInterface $entityManager
     ) {
     }
-    #[Route('api/v1/context/View', 'viewContext', methods: ['POST'])]
+    #[Route('api/v1/contexts', 'viewContext', methods: ['GET'])]
     public function viewContext(Request $request): Response
     {
         $request = $this->buildViewContextRequest($request);
@@ -44,13 +44,9 @@ class ChatBotViewContextController extends AbstractController
 
     private function buildViewContextRequest(Request $request): ViewContextRequest
     {
-
-        $content = $request->getContent();
-        /** @var array<string> $data */
-        $data = json_decode($content, true);
         /** @var string */
-        $context = $data['Id'];
-        $type = $data['IdType'];
+        $context = $request->query->get('Id');
+        $type = $request->query->get('IdType');
 
         return new ViewContextRequest($context, $type);
     }

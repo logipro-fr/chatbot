@@ -49,8 +49,8 @@ class DeleteContextControllerTest extends WebTestCase
     public function testControllerRouting(): void
     {
         $this->client->request(
-            "POST",
-            "/api/v1/context/Delete",
+            "DELETE",
+            "/api/v1/contexts",
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],

@@ -36,16 +36,13 @@ class ChatBotViewContextTest extends WebTestCase
         $convrepo = new ConversationRepositoryInMemory();
         $controller = new ChatBotViewContextController($contextrepo, $convrepo, $this->getEntityManager());
         $request = Request::create(
-            "/api/v1/conversation/View",
-            "POST",
-            [],
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            json_encode([
+            "GET",
+            "/api/v1/contexts",
+            [
                 "Id" => "base",
                 "IdType" => "contexts",
-            ])
+            ],
+            ['CONTENT_TYPE' => 'application/json'],
         );
         $response = $controller->viewContext($request);
         /** @var string */
@@ -71,18 +68,17 @@ class ChatBotViewContextTest extends WebTestCase
         $data = $this->client->getResponse()->getContent();
         /** @var array<mixed,array<mixed>> */
         $responseContent = json_decode($data, true);
-        $contextid = $responseContent['data']['contextId'];
+        $contextId = $responseContent['data']['contextId'];
 
         $this->client->request(
-            "POST",
-            "/api/v1/context/View",
-            [],
+            "GET",
+            "/api/v1/contexts",
+            [
+                "Id" => $contextId,
+                "IdType" => "contexts",
+            ],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode([
-                "Id" => $contextid,
-                "IdType" => "contexts",
-            ])
         );
         /** @var string */
         $data = $this->client->getResponse()->getContent();
@@ -99,15 +95,14 @@ class ChatBotViewContextTest extends WebTestCase
     public function testControllerException(): void
     {
         $this->client->request(
-            "POST",
-            "/api/v1/context/View",
-            [],
+            "GET",
+            "/api/v1/contexts",
+            [
+                "Id" => "Je n'existe pas",
+                "IdType" => "context",
+            ],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode([
-              "Id" => "je n'existe pas",
-              "IdType" => "context",
-            ])
         );
 
         /** @var string */

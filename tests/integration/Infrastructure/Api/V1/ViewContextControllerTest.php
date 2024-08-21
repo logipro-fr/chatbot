@@ -73,17 +73,14 @@ class ViewContextControllerTest extends WebTestCase
     public function testControllerRouting(): void
     {
         $this->client->request(
-            "POST",
-            "/api/v1/context/View",
-            [],
+            "GET",
+            "/api/v1/contexts",
+            [
+                "Id" => $this->contextId,
+                "IdType" => "contexts",
+            ],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode(
-                [
-                "IdType" => "contexts",
-                "Id" => $this->contextId,
-                ]
-            )
         );
        /** @var string */
         $data = $this->client->getResponse()->getContent();
@@ -99,17 +96,14 @@ class ViewContextControllerTest extends WebTestCase
     public function testConversationId(): void
     {
         $this->client->request(
-            "POST",
-            "/api/v1/context/View",
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            json_encode(
-                [
+            "GET",
+            "/api/v1/contexts",
+            [
                 "IdType" => "conversations",
                 "Id" => $this->conversationId,
-                ]
-            )
+            ],
+            [],
+            ['CONTENT_TYPE' => 'application/json']
         );
         /** @var string */
         $data = $this->client->getResponse()->getContent();

@@ -50,7 +50,7 @@ class EditContextControllerTest extends WebTestCase
     public function testControllerRouting(): void
     {
         $this->client->request(
-            "PUT",
+            "PATCH",
             "/api/v1/contexts",
             [],
             [],

@@ -26,7 +26,7 @@ class ChatBotDeleteContextController extends AbstractController
         private EntityManagerInterface $entityManager
     ) {
     }
-    #[Route('api/v1/context/Delete', 'deleteContext', methods: ['POST'])]
+    #[Route('api/v1/contexts', 'deleteContext', methods: ['DELETE'])]
     public function deleteContext(Request $request): Response
     {
         $request = $this->buildDeleteContextRequest($request);
