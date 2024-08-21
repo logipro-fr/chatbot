@@ -46,6 +46,7 @@ class ChatBotViewContextController extends AbstractController
     {
         /** @var string */
         $context = $request->query->get('Id');
+        /** @var string */
         $type = $request->query->get('IdType');
 
         return new ViewContextRequest($context, $type);
