@@ -31,7 +31,8 @@ class ChatBotMakeContext extends AbstractController
         $context = new MakeContext($this->repository);
         try {
             $context->execute($request);
-            $this->entityManager->flush();
+            $eventFlush = new EventFlush($this->entityManager);
+            $eventFlush->flushAndDistribute();
         } catch (Exception $e) {
             return $this->writeUnSuccessFulResponse($e);
         }

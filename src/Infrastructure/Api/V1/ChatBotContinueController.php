@@ -34,7 +34,8 @@ class ChatBotContinueController extends AbstractController
         $conversation = new ContinueConversation($this->repository, $this->factory);
         try {
             $conversation->execute($request);
-            $this->entityManager->flush();
+            $eventFlush = new EventFlush($this->entityManager);
+            $eventFlush->flushAndDistribute();
         } catch (Exception $e) {
             return $this->writeUnSuccessFulResponse($e);
         }

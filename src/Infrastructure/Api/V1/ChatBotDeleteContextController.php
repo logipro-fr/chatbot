@@ -33,7 +33,8 @@ class ChatBotDeleteContextController extends AbstractController
         $context = new DeleteContext($this->repository, $this->convrepositry);
         try {
             $context->execute($request);
-            $this->entityManager->flush();
+            $eventFlush = new EventFlush($this->entityManager);
+            $eventFlush->flushAndDistribute();
         } catch (Exception $e) {
             return $this->writeUnSuccessFulResponse($e);
         }

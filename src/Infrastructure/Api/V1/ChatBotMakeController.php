@@ -39,7 +39,8 @@ class ChatBotMakeController extends AbstractController
 
         try {
             $conversation->execute($request);
-            $this->entityManager->flush();
+            $eventFlush = new EventFlush($this->entityManager);
+            $eventFlush->flushAndDistribute();
         } catch (Exception $e) {
             return $this->writeUnSuccessFulResponse($e);
         }
