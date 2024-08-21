@@ -9,7 +9,6 @@ class MakeConversationResponse
 {
     public function __construct(
         public readonly string $conversationId,
-        public readonly Pair $pair,
         public readonly int $numberOfPairs,
         public readonly string $botMessage
     ) {

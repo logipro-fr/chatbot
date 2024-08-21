@@ -92,7 +92,7 @@ class ChatBotDeleteContextControllerTest extends WebTestCase
         $responseCode = $this->client->getResponse()->getStatusCode();
         /** @var array<mixed,array<mixed>> */
         $responseContent = json_decode($data, true);
-        
+
         $this->assertTrue($responseContent["success"]);
         $this->assertEquals(200, $responseCode);
         $this->assertArrayHasKey('message', $responseContent["data"]);

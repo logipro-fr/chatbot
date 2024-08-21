@@ -3,6 +3,7 @@
 namespace Chatbot\Domain\Model\Context;
 
 use Chatbot\Domain\Event\ContextCreated;
+use Chatbot\Domain\Event\ContextEdited;
 use Chatbot\Domain\EventFacade\EventFacade;
 use Chatbot\Domain\Model\Context\ContextId;
 use Chatbot\Domain\Model\Context\ContextMessage;
@@ -37,6 +38,6 @@ class Context
     public function editMessage(ContextMessage $context): void
     {
         $this->contextmessage = $context;
-        (new EventFacade())->dispatch(new ContextCreated($this->id->__toString(), $this->contextmessage->getMessage()));
+        (new EventFacade())->dispatch(new ContextEdited($this->id->__toString(), $this->contextmessage->getMessage()));
     }
 }

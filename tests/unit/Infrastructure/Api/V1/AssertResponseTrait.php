@@ -8,7 +8,7 @@ use function Safe\json_decode;
 
 trait AssertResponseTrait
 {
-    public function assertResponseFailure(Response $response, string $raisedExceptionClassName): void
+    public function assertResponseFailure(Response $response, string $expectedExceptionClassName): void
     {
         $this->assertTrue($response->headers->has("Content-Type"));
         $this->assertEquals("application/json", $response->headers->get("Content-Type"));
@@ -18,7 +18,7 @@ trait AssertResponseTrait
         /** @var \stdClass $responseObject */
         $responseObject = json_decode($content);
         $this->assertFalse($responseObject->success);
-        $this->assertEquals($raisedExceptionClassName, $responseObject->error);
+        $this->assertEquals($expectedExceptionClassName, $responseObject->error);
         $this->assertArrayNotHasKey("data", (array) $responseObject);
     }
 

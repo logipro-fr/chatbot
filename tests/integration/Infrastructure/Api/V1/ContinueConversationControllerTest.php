@@ -91,7 +91,6 @@ class ContinueConversationControllerTest extends WebTestCase
         $this->assertTrue($responseContent["success"]);
         $this->assertArrayHasKey("conversationId", $responseContent["data"]);
         $this->assertArrayHasKey("numberOfPairs", $responseContent["data"]);
-        $this->assertArrayHasKey("pair", $responseContent["data"]);
         $this->assertArrayHasKey("botMessage", $responseContent["data"]);
     }
 }

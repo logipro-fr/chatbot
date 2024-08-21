@@ -86,10 +86,10 @@ class ViewContextControllerTest extends WebTestCase
             )
         );
        /** @var string */
-       $data = $this->client->getResponse()->getContent();
-       $responseCode = $this->client->getResponse()->getStatusCode();
+        $data = $this->client->getResponse()->getContent();
+        $responseCode = $this->client->getResponse()->getStatusCode();
        /** @var array<mixed,array<mixed>> */
-       $responseContent = json_decode($data, true);
+        $responseContent = json_decode($data, true);
 
         $this->assertTrue($responseContent["success"]);
         $this->assertEquals(200, $responseCode);

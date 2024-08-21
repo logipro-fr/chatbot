@@ -51,7 +51,7 @@ class EditContextControllerTest extends WebTestCase
     {
         $this->client->request(
             "PUT",
-            "/api/v1/context/Edit",
+            "/api/v1/contexts",
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],

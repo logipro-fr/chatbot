@@ -98,7 +98,6 @@ class ChatBotMakeControllerTest extends WebTestCase
         $this->assertEquals(200, $responseCode);
         $this->assertArrayHasKey("conversationId", $responseContent["data"]);
         $this->assertArrayHasKey("numberOfPairs", $responseContent["data"]);
-        $this->assertArrayHasKey("pair", $responseContent["data"]);
         $this->assertArrayHasKey("botMessage", $responseContent["data"]);
     }
 

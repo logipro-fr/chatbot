@@ -30,7 +30,6 @@ class MakeConversation
         $pair = $conversation->getPair($conversation->getNbPair() - 1);
         $this->response = new MakeConversationResponse(
             $conversation->getId(),
-            $pair,
             $conversation->getNbPair(),
             $pair->getAnswer()->getMessage()
         );
