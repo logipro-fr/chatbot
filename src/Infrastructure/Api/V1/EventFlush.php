@@ -7,8 +7,10 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class EventFlush
 {
-    public function __construct(private EntityManagerInterface $em, private EventFacade $eventFacade = new EventFacade())
-    {
+    public function __construct(
+        private EntityManagerInterface $em,
+        private EventFacade $eventFacade = new EventFacade()
+    ) {
     }
 
     public function flushAndDistribute(): void
