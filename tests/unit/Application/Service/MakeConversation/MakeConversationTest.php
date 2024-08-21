@@ -67,7 +67,7 @@ class MakeConversationTest extends TestCase
         $this->assertNotEquals($response->conversationId, $responseOtherConversation->conversationId);
 
 
-        $conversation = $repository->findById(new ConversationId($response->conversationId->__toString()));
+        $conversation = $repository->findById(new ConversationId($response->conversationId));
         $this->assertGreaterThan(1, $conversation->getTotalToken());
     }
 

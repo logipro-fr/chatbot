@@ -30,7 +30,7 @@ class QueryModelContext implements Context
     private Conversation $conversation;
     private ConversationRepositoryInterface $repository;
     private ContextRepositoryInterface $contextrepo;
-    private int $nbPair;
+    private int $numberOfPairs;
     private string $lmName;
     private int $tokencount1;
 
@@ -158,7 +158,7 @@ class QueryModelContext implements Context
         $pair = $this->conversation->getPair(0);
         $responseMessage = $pair->getAnswer()->getMessage();
 
-        $this->nbPair = $this->conversation->getNbPair();
+        $this->numberOfPairs = $this->conversation->getNbPair();
     }
 
 
@@ -187,6 +187,6 @@ class QueryModelContext implements Context
      */
     public function theConversationIsEnrichedByANewPair(): void
     {
-        Assert::assertGreaterThan($this->nbPair, $this->conversation->getNbPair());
+        Assert::assertGreaterThan($this->numberOfPairs, $this->conversation->getNbPair());
     }
 }

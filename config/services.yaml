@@ -28,12 +28,7 @@ services:
       $repository: '@conversation.repository'
       $contextrepository: '@context.repository'
       $factory: '@conversation.factory'
-  
-  Chatbot\Infrastructure\Api\V1\ChatBotSwitchController:
-    autowire: true
-    arguments:
-      $repository: '@conversation.repository'
-      
+
 
   Chatbot\Infrastructure\Api\V1\ChatBotMakeContext:
     autowire: true

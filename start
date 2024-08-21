@@ -1,7 +1,23 @@
 #!/bin/bash
 
-function start_docker_compose() {
-    (cd docker && docker compose up -d)
+source install-lib/load-env.sh
+
+function init_docker_userid_groupid() {
+    USERID=$(id -u)
+    export USERID
+    GROUPID=$(id -g)
+    export GROUPID
 }
 
-start_docker_compose
+function start_docker_compose() {
+    if [ -z "$1" ]; then
+        docker compose up -d
+    else
+        HOST_IP=${1}
+        HOST_IP=$HOST_IP docker compose up -d
+    fi
+}
+
+init_docker_userid_groupid
+load_env
+start_docker_compose "$1"

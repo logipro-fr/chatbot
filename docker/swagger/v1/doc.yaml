@@ -56,24 +56,26 @@ paths:
                     type: boolean
                     description: Indicates if the conversation was create
                     example: true
-                  statusCode:
-                    type: integer
-                    description: HTTP status code of the response
-                    example: 200
                   data:
                     type: object
                     properties:
-                      postId:
+                      conversationId:
                         type: string
                         description: The ID of the conversation
-                        example: con_664c50f9c95cb
-                    description: Data returned by the publication service
-                  message:
-                    type: string
-                    description: Message associated with the response
-                    example: "How can I help you today ?"
-        '400':
-          description: Bad request
+                        example: con_66c58c7ee6c58
+                      numberOfPairs:
+                        type: int
+                        description: The number of pair in the conversation
+                        example: 1
+                      botMessage:
+                        type: string
+                        description: ChatGPT's response.
+                        example: Bonjour! Comment puis-je vous aider aujourd'hui?
+
+                    description: Data returned by the make conversation service
+          
+        '500':
+          description: Internal Server Error
           content:
             application/json:
               schema:
@@ -83,17 +85,10 @@ paths:
                     type: boolean
                     description: Indicates whether the conversation was created
                     example: false
-                  statusCode:
-                    type: integer
-                    description: HTTP status code of the response
-                    example: 400
-                  data:
-                    type: object
-                    description: Data returned by the conversation service
-                  message:
+                  error:
                     type: string
-                    description: Message associated with the response
-                    example: Invalid request
+                    description: The message error
+                    example: NoIdException
   /conversations/Continue:
     post:
       tags:
@@ -121,7 +116,7 @@ paths:
                   example: GPTModel
 
       responses:
-        '201':
+        '200':
           description: Successful response
           content:
             application/json:
@@ -132,101 +127,24 @@ paths:
                     type: boolean
                     description: Indicates whether the publication was successful
                     example: true
-                  statusCode:
-                    type: integer
-                    description: HTTP status code of the response
-                    example: 200
                   data:
                     type: object
                     properties:
-                      postId:
-                        type: string
-                        description: The ID of the conversation
-                        example: con_664c50f9c95cb
-                    description: Data returned by the publication service
-                  message:
-                    type: string
-                    description: Message associated with the response
-                    example: "How can I help you today ?"
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    description: Indicates whether the conversation was created
-                    example: false
-                  statusCode:
-                    type: integer
-                    description: HTTP status code of the response
-                    example: 400
-                  data:
-                    type: object
-                    description: Data returned by the conversation service
-                  message:
-                    type: string
-                    description: Message associated with the response
-                    example: Invalid request
-  /conversations/SwitchContext:
-    post:
-      tags:
-        - Conversations
-      summary: Switch a context of conversation
-      operationId: switchcontextConversation
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                ConversationId:
-                  type: string
-                  description: The ID of the conversation where I want to switch the context.
-                  example: con_66b49782713ab
-                ContextId:
-                  type: string
-                  description: The new context ID
-                  example: id_modified
-                
-
-      responses:
-        '201':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    description: Indicate whether the context was changed
-                    example: true
-                  statusCode:
-                    type: integer
-                    description: HTTP status code of the response
-                    example: 200
-                  data:
-                    type: object
-                    properties:
-                      newId:
-                        type: string
-                        description: The Id of new Context
-                        example: con_664c50f9c95cb
                       conversationId:
                         type: string
-                        description: The Id of the conversation
-                        example: con_664c50f9c95cb
-                    description: Data returned by the conversation service
-                  message:
-                    type: string
-                    description: Message associated with the response
-                    example: "How can I help you today ?"
-        '400':
-          description: Bad request
+                        description: The ID of the conversation
+                        example: con_66c58c7ee6c58
+                      numberOfPairs:
+                        type: int
+                        description: The number of pair in the conversation
+                        example: 1
+                      botMessage:
+                        type: string
+                        description: ChatGPT's response.
+                        example: Bonjour! Comment puis-je vous aider aujourd'hui?
+                  description: Data returned by the make conversation service
+        '500':
+          description: Internal Server Error
           content:
             application/json:
               schema:
@@ -236,17 +154,10 @@ paths:
                     type: boolean
                     description: Indicates whether the conversation was created
                     example: false
-                  statusCode:
-                    type: integer
-                    description: HTTP status code of the response
-                    example: 400
-                  data:
-                    type: object
-                    description: Data returned by the conversation service
-                  message:
+                  error:
                     type: string
-                    description: Message associated with the response
-                    example: Invalid request
+                    description: The message error
+                    example: NoIdException
   /context/Make:
     post:
       tags:
@@ -276,23 +187,18 @@ paths:
                 properties:
                   success:
                     type: boolean
-                    description: indicate whether the context was created
+                    description: Indicate whether the context was changed
                     example: true
-                  statusCode:
-                    type: integer
-                    description: HTTP status code of the response
-                    example: 200
                   data:
                     type: object
                     properties:
                       contextId:
                         type: string
-                        description: The ID of the context
-                        example: cot_664c50f9c95cb
-                    description: Data returned by the publication service
-                
-        '400':
-          description: Bad request
+                        description: The Id of created Context
+                        example: con_664c50f9c95cb
+                    description: Data returned by the conversation service
+        '500':
+          description: Internal Server Error
           content:
             application/json:
               schema:
@@ -302,40 +208,31 @@ paths:
                     type: boolean
                     description: Indicates whether the conversation was created
                     example: false
-                  statusCode:
-                    type: integer
-                    description: HTTP status code of the response
-                    example: 400
-                  data:
-                    type: object
-                    description: Data returned by the conversation service
-                  message:
+                  error:
                     type: string
-                    description: Message associated with the response
-                    example: Invalid request
-  /context/View:
-    post:
+                    description: The message error
+                    example: EmptyString
+  /contexts:
+    get:
       tags:
           - Context
       summary: View a context
       operationId: viewContext
-      requestBody:
+      parameters:
+      - name: Id
+        in: query
         required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                Id:
-                  type: string
-                  description: The context you want to view, if you provide the context of a conversation, they will find the relevant context.
-                  example: cot_66b46fefe29d5
-                IdType:
-                  type: string
-                  description: Determine whether the given ID is a context ID or a conversation ID.
-                  example: context
-                
-
+        schema:
+          type: string
+          example: cot_66b46fefe29d5
+        description: The context you want to view. If you provide a conversation ID, it will retrieve the relevant context.
+      - name: IdType
+        in: query
+        required: true
+        schema:
+          type: string
+          example: context
+        description: Specify whether the given ID is a context ID or a conversation ID.
       responses:
         '200':
           description: Successful response
@@ -346,23 +243,19 @@ paths:
                 properties:
                   success:
                     type: boolean
-                    description: indicate whether the context was created
+                    description: Indicate whether the context was changed
                     example: true
-                  statusCode:
-                    type: integer
-                    description: HTTP status code of the response
-                    example: 200
                   data:
                     type: object
                     properties:
-                      contextId:
+                      contextMessage:
                         type: string
-                        description: The ID of the context
-                        example: cot_664c50f9c95cb
-                    description: Data returned by the publication service
-                
-        '400':
-          description: Bad request
+                        description: The context message of id selected
+                        example: I'm a context
+                    description: Data returned by the conversation service
+
+        '500':
+          description: Internal Server Error
           content:
             application/json:
               schema:
@@ -372,22 +265,14 @@ paths:
                     type: boolean
                     description: Indicates whether the conversation was created
                     example: false
-                  statusCode:
-                    type: integer
-                    description: HTTP status code of the response
-                    example: 400
-                  data:
-                    type: object
-                    description: Data returned by the conversation service
-                  message:
+                  error:
                     type: string
-                    description: Message associated with the response
-                    example: Invalid request          
-  /context/Edit:
-    post:
+                    description: The message error
+                    example: NoIdException     
+    patch:
       tags:
           - Context
-      summary: Edit a context
+      summary: Modify a context message
       operationId: editContext
       requestBody:
         required: true
@@ -416,27 +301,22 @@ paths:
                 properties:
                   success:
                     type: boolean
-                    description: indicate whether the context was created
+                    description: Indicate whether the context was changed
                     example: true
-                  statusCode:
-                    type: integer
-                    description: HTTP status code of the response
-                    example: 200
                   data:
                     type: object
                     properties:
-                      Id:
+                      contextId:
                         type: string
-                        description: The ID of the context
-                        example: cot_664c50f9c95cb
-                      context:
+                        description: The Id of Context
+                        example: con_664c50f9c95cb
+                      contextMessage:
                         type: string
-                        description: The new message context
-                        example: cot_664c50f9c95cb
-                    description: Data returned by the context service
-                
-        '400':
-          description: Bad request
+                        description: The new message for the context
+                        example: I'm new context
+                    description: Data returned by the conversation service
+        '500':
+          description: Internal Server Error
           content:
             application/json:
               schema:
@@ -446,19 +326,11 @@ paths:
                     type: boolean
                     description: Indicates whether the conversation was created
                     example: false
-                  statusCode:
-                    type: integer
-                    description: HTTP status code of the response
-                    example: 400
-                  data:
-                    type: object
-                    description: Data returned by the conversation service
-                  message:
+                  error:
                     type: string
-                    description: Message associated with the response
-                    example: Invalid request
-  /context/Delete:
-    post:
+                    description: The message error
+                    example: NoIdException
+    delete:
       tags:
           - Context
       summary: Delete a context
@@ -487,20 +359,18 @@ paths:
                 properties:
                   success:
                     type: boolean
-                    description: indicate whether the context was created
+                    description: Indicate whether the context was changed
                     example: true
-                  statusCode:
-                    type: integer
-                    description: HTTP status code of the response
-                    example: 200
                   data:
                     type: object
                     properties:
-                      "The context was be deleted"
-                    description: Data returned by the context service
-                
-        '400':
-          description: Bad request
+                      message:
+                        type: string
+                        description: Message explaining whether the context has been removed or not.
+                        example: the context was deleted
+                    
+        '500':
+          description: Internal Server Error
           content:
             application/json:
               schema:
@@ -510,14 +380,7 @@ paths:
                     type: boolean
                     description: Indicates whether the conversation was created
                     example: false
-                  statusCode:
-                    type: integer
-                    description: HTTP status code of the response
-                    example: 400
-                  data:
-                    type: object
-                    description: Data returned by the conversation service
-                  message:
+                  error:
                     type: string
-                    description: Message associated with the response
-                    example: Invalid request
+                    description: The message error
+                    example: NoIdException

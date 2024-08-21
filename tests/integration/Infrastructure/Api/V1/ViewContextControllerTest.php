@@ -43,7 +43,7 @@ class ViewContextControllerTest extends WebTestCase
         /** @var array<mixed,array<mixed>> */
         $responseContent = json_decode($data, true);
         /** @var string */
-        $id = $responseContent['data']['id'];
+        $id = $responseContent['data']['contextId'];
         $this->contextId = $id;
 
         $this->client->request(
@@ -66,59 +66,53 @@ class ViewContextControllerTest extends WebTestCase
         /** @var array<mixed,array<mixed>> */
         $responseContent = json_decode($data, true);
         /** @var string */
-        $id = $responseContent['data']['id'];
+        $id = $responseContent['data']['conversationId'];
         $this->conversationId = $id;
     }
 
     public function testControllerRouting(): void
     {
         $this->client->request(
-            "POST",
-            "/api/v1/context/View",
-            [],
+            "GET",
+            "/api/v1/contexts",
+            [
+                "Id" => $this->contextId,
+                "IdType" => "contexts",
+            ],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode(
-                [
-                "IdType" => "contexts",
-                "Id" => $this->contextId,
-                ]
-            )
         );
-        /** @var string */
-        $responseContent = $this->client->getResponse()->getContent();
+       /** @var string */
+        $data = $this->client->getResponse()->getContent();
         $responseCode = $this->client->getResponse()->getStatusCode();
+       /** @var array<mixed,array<mixed>> */
+        $responseContent = json_decode($data, true);
 
-        $this->assertResponseIsSuccessful();
-        $this->assertStringContainsString('"success":true', $responseContent);
+        $this->assertTrue($responseContent["success"]);
         $this->assertEquals(200, $responseCode);
-        $this->assertStringContainsString('"context":', $responseContent);
-        $this->assertStringContainsString('"message":"', $responseContent);
+        $this->assertArrayHasKey("contextMessage", $responseContent["data"]);
     }
 
     public function testConversationId(): void
     {
         $this->client->request(
-            "POST",
-            "/api/v1/context/View",
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            json_encode(
-                [
+            "GET",
+            "/api/v1/contexts",
+            [
                 "IdType" => "conversations",
                 "Id" => $this->conversationId,
-                ]
-            )
+            ],
+            [],
+            ['CONTENT_TYPE' => 'application/json']
         );
         /** @var string */
-        $responseContent = $this->client->getResponse()->getContent();
+        $data = $this->client->getResponse()->getContent();
         $responseCode = $this->client->getResponse()->getStatusCode();
+        /** @var array<mixed,array<mixed>> */
+        $responseContent = json_decode($data, true);
 
-        $this->assertResponseIsSuccessful();
-        $this->assertStringContainsString('"success":true', $responseContent);
+        $this->assertTrue($responseContent["success"]);
         $this->assertEquals(200, $responseCode);
-        $this->assertStringContainsString('"context":"', $responseContent);
-        $this->assertStringContainsString('"message":"', $responseContent);
+        $this->assertArrayHasKey("contextMessage", $responseContent["data"]);
     }
 }

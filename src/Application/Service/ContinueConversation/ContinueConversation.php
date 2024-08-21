@@ -29,7 +29,6 @@ class ContinueConversation
         $pair = $conversation->getPair($conversation->getNbPair() - 1);
         $this->response = new ContinueConversationResponse(
             $conversation->getId(),
-            $pair,
             $conversation->getNbPair(),
             $pair->getAnswer()->getMessage()
         );

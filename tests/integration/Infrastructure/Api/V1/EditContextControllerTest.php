@@ -43,15 +43,15 @@ class EditContextControllerTest extends WebTestCase
         /** @var array<mixed,array<mixed>> */
         $responseContent = json_decode($data, true);
         /** @var string */
-        $id = $responseContent['data']['id'];
+        $id = $responseContent['data']['contextId'];
         $this->contextId = $id ;
     }
 
     public function testControllerRouting(): void
     {
         $this->client->request(
-            "POST",
-            "/api/v1/context/Edit",
+            "PATCH",
+            "/api/v1/contexts",
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -63,14 +63,16 @@ class EditContextControllerTest extends WebTestCase
             )
         );
         /** @var string */
-        $responseContent = $this->client->getResponse()->getContent();
+        $data = $this->client->getResponse()->getContent();
         $responseCode = $this->client->getResponse()->getStatusCode();
+        /** @var array<mixed,array<mixed>> */
+        $responseContent = json_decode($data, true);
 
-        $this->assertResponseIsSuccessful();
-        $this->assertStringContainsString('"success":true', $responseContent);
+        $this->assertTrue($responseContent["success"]);
         $this->assertEquals(200, $responseCode);
-        $this->assertStringContainsString('"Id":"', $responseContent);
-        $this->assertStringContainsString('"context":"', $responseContent);
-        $this->assertStringContainsString('"message":"', $responseContent);
+
+
+        $this->assertArrayHasKey("contextId", $responseContent["data"]);
+        $this->assertArrayHasKey("contextMessage", $responseContent["data"]);
     }
 }

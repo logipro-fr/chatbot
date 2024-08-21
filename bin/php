@@ -1,23 +1,27 @@
 #!/bin/bash
 
-PHP_CONTAINER_NAME=chatbot-php
+PHP_IMAGE_NAME=chatbot-php
+CHAIN_CONTAINED_IN_PHP_CONTAINER_NAME=$PHP_IMAGE_NAME
+USER_ID=$(id -u)
+GROUP_ID=$(id -g)
 
-if docker ps --format '{{.Names}}' | grep -q "^$PHP_CONTAINER_NAME\$";  then
+container_name=$(docker ps --filter "ancestor=$CHAIN_CONTAINED_IN_PHP_CONTAINER_NAME" --format "{{.Names}}" | head -n 1)
+
+if [ -n "$container_name" ]; then
 docker exec \
     -ti \
     -e APP_ENV=test \
-    $PHP_CONTAINER_NAME php $@
+    "$container_name" php $@
 else
 ## execution de PHP de manière autonome (pas besoin d'un environnement de containers)
 docker run \
     --init \
     --rm \
     -ti \
-    --name "$PHP_CONTAINER_NAME-running-script" \
-    -v "$(pwd)/bin/docker/php/php.ini:/usr/local/etc/php/php.ini" \
+    --name "$PHP_IMAGE_NAME-running-script" \
     -v "$PWD":"$PWD" \
-    --user 1000:1000 \
+    --user "$USER_ID:$GROUP_ID" \
     -w "$PWD" \
-    $PHP_CONTAINER_NAME php $@
+    $PHP_IMAGE_NAME php $@
 fi
 

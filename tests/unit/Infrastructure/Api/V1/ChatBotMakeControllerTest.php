@@ -3,6 +3,7 @@
 namespace Chatbot\Tests\Infrastructure\Api\V1;
 
 use Chatbot\Infrastructure\Api\V1\ChatBotMakeController;
+use Chatbot\Infrastructure\Exception\NoIdException;
 use Chatbot\Infrastructure\LanguageModel\ModelFactory;
 use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryInMemory;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
@@ -16,6 +17,7 @@ use function Safe\json_encode;
 class ChatBotMakeControllerTest extends WebTestCase
 {
     use DoctrineRepositoryTesterTrait;
+    use AssertResponseTrait;
 
     private KernelBrowser $client;
 
@@ -71,7 +73,7 @@ class ChatBotMakeControllerTest extends WebTestCase
         $data = $this->client->getResponse()->getContent();
         /** @var array<mixed,array<mixed>> */
         $responseContent = json_decode($data, true);
-        $contextid = $responseContent['data']['id'];
+        $contextid = $responseContent['data']['contextId'];
 
         $this->client->request(
             "POST",
@@ -87,16 +89,16 @@ class ChatBotMakeControllerTest extends WebTestCase
             ])
         );
         /** @var string */
-        $responseContent = $this->client->getResponse()->getContent();
+        $data = $this->client->getResponse()->getContent();
         $responseCode = $this->client->getResponse()->getStatusCode();
+       /** @var array<mixed,array<mixed>> */
+        $responseContent = json_decode($data, true);
 
-        $this->assertStringContainsString('"success":true', $responseContent);
+        $this->assertTrue($responseContent["success"]);
         $this->assertEquals(200, $responseCode);
-        $this->assertStringContainsString('"id":"con_', $responseContent);
-        $this->assertStringContainsString('"nbPair":', $responseContent);
-        $this->assertStringContainsString('"lastPair":', $responseContent);
-        $this->assertStringContainsString('"Answer":"Chien', $responseContent);
-        $this->assertStringContainsString('"message":"', $responseContent);
+        $this->assertArrayHasKey("conversationId", $responseContent["data"]);
+        $this->assertArrayHasKey("numberOfPairs", $responseContent["data"]);
+        $this->assertArrayHasKey("botMessage", $responseContent["data"]);
     }
 
 
@@ -118,11 +120,10 @@ class ChatBotMakeControllerTest extends WebTestCase
         /** @var string */
         $responseContent = $this->client->getResponse()->getContent();
         $responseCode = $this->client->getResponse()->getStatusCode();
-        $this->assertResponseIsSuccessful();
 
-        $this->assertStringContainsString('"success":false', $responseContent);
-        $this->assertEquals(200, $responseCode);
-        $this->assertStringContainsString('"data":"', $responseContent);
-        $this->assertStringContainsString('"message":"', $responseContent);
+        $this->assertResponseFailure(
+            $this->client->getResponse(),
+            (new \ReflectionClass(NoIdException::class))->getShortName()
+        );
     }
 }

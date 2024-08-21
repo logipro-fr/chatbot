@@ -19,7 +19,7 @@ class DeleteContext
         $conversation = $this->convrepo->findByContextId($request->id);
         if (false == $conversation) {
             $this->repository->removeContext($request->id);
-            $this->response = new DeleteContextResponse("The conversation was deleted");
+            $this->response = new DeleteContextResponse("The context was deleted");
         } else {
             $this->response = new DeleteContextResponse(
                 "the context can't be deleted because is associate to " . $conversation->getId() . "conversation"

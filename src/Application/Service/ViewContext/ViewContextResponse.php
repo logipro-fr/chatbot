@@ -7,7 +7,7 @@ use Chatbot\Domain\Model\Context\ContextMessage;
 class ViewContextResponse
 {
     public function __construct(
-        public readonly ContextMessage $contextMessage,
+        public readonly string $contextMessage,
     ) {
     }
 }

@@ -1,6 +1,14 @@
 #!/bin/bash
 
 source install-lib/database-functions.sh
+source install-lib/load-env.sh
+
+function init_docker_userid_groupid() {
+    USERID=$(id -u)
+    export USERID
+    GROUPID=$(id -g)
+    export GROUPID
+}
 
 # Create the var directory if it does not exist
 function create_var_directory() {
@@ -10,12 +18,24 @@ function create_var_directory() {
     fi
 }
 
+# Create the var directory if it does not exist
+function create_data_directory() {
+    DIR_VAR=$1
+    if [ ! -d "$DIR_VAR" ]; then
+        mkdir --parent $DIR_VAR
+    fi
+}
+
 function build_docker_images() {
     (
-        cd docker || exit;
+        USERID=$(id -u)
+        export USERID
+        GROUPID=$(id -g)
+        export GROUPID
         docker compose build
     )
 }
+
 
 
 echo "-------------Step 1: Create some directories-----------------------------------------------------"
@@ -35,5 +55,5 @@ echo "-------------Step 4: Composer tool will install php components in vendor d
 echo "-------------Step 4: Done!"
 
 echo "-------------Step 5: Create database if no database exists---------------------------------------"
-create_database_in_container "docker/mariadb/db.env" "chatbot-mariadb"
+create_database_in_container "docker/mariadb/db.env" "chatbot-mariadb-1" "chatbot-php-1"
 echo "-------------Step 5: Done!"

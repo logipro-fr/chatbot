@@ -18,55 +18,27 @@ use Throwable;
 
 use function Safe\json_decode;
 
-class ChatBotEditContextController
+class ChatBotEditContextController extends AbstractController
 {
     public function __construct(
         private ContextRepositoryInterface $repository,
         private EntityManagerInterface $entityManager
     ) {
     }
-    #[Route('api/v1/context/Edit', 'editContext', methods: ['POST'])]
+    #[Route('api/v1/contexts', 'editContext', methods: ['PATCH'])]
     public function editContext(Request $request): Response
     {
         $request = $this->buildEditContextRequest($request);
         $context = new EditContext($this->repository);
         try {
             $context->execute($request);
-            $this->entityManager->flush();
+            $eventFlush = new EventFlush($this->entityManager);
+            $eventFlush->flushAndDistribute();
         } catch (Exception $e) {
             return $this->writeUnSuccessFulResponse($e);
         }
         $response = $context->getResponse();
         return $this->writeSuccessfulResponse($response);
-    }
-
-    private function writeSuccessfulResponse(EditContextResponse $response): JsonResponse
-    {
-        return new JsonResponse(
-            [
-                'success' => true,
-                'errorCode' => "",
-                'data' => [
-                    'Id' => $response->contextId->__toString() ,
-                    'context' => $response->contextMessage->getMessage(),
-                ],
-                    'message' => "",
-            ],
-            200
-        );
-    }
-
-    private function writeUnSuccessFulResponse(Throwable $e): JsonResponse
-    {
-        $className = (new \ReflectionClass($e))->getShortName();
-        return new JsonResponse(
-            [
-                'success' => false,
-                'ErrorCode' => $className,
-                'data' => '',
-                'message' => $e->getMessage(),
-            ],
-        );
     }
 
     private function buildEditContextRequest(Request $request): EditContextRequest

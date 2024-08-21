@@ -19,7 +19,7 @@ use Throwable;
 
 use function Safe\json_decode;
 
-class ChatBotViewContextController
+class ChatBotViewContextController extends AbstractController
 {
     public function __construct(
         private ContextRepositoryInterface $repository,
@@ -27,14 +27,15 @@ class ChatBotViewContextController
         private EntityManagerInterface $entityManager
     ) {
     }
-    #[Route('api/v1/context/View', 'viewContext', methods: ['POST'])]
+    #[Route('api/v1/contexts', 'viewContext', methods: ['GET'])]
     public function viewContext(Request $request): Response
     {
         $request = $this->buildViewContextRequest($request);
         $context = new viewContext($this->repository, $this->convrepository);
         try {
             $context->execute($request);
-            $this->entityManager->flush();
+            $eventFlush = new EventFlush($this->entityManager);
+            $eventFlush->flushAndDistribute();
         } catch (Exception $e) {
             return $this->writeUnSuccessFulResponse($e);
         }
@@ -42,43 +43,12 @@ class ChatBotViewContextController
         return $this->writeSuccessfulResponse($response);
     }
 
-    private function writeSuccessfulResponse(ViewContextResponse $contextResponse): JsonResponse
-    {
-        return new JsonResponse(
-            [
-                'success' => true,
-                'errorCode' => "",
-                'data' => [
-                    'context' => $contextResponse->contextMessage->getMessage(),
-                ],
-                    'message' => "",
-            ],
-            200
-        );
-    }
-
-    private function writeUnSuccessFulResponse(Throwable $e): JsonResponse
-    {
-        $className = (new \ReflectionClass($e))->getShortName();
-        return new JsonResponse(
-            [
-                'success' => false,
-                'ErrorCode' => $className,
-                'data' => '',
-                'message' => $e->getMessage(),
-            ],
-        );
-    }
-
     private function buildViewContextRequest(Request $request): ViewContextRequest
     {
-
-        $content = $request->getContent();
-        /** @var array<string> $data */
-        $data = json_decode($content, true);
         /** @var string */
-        $context = $data['Id'];
-        $type = $data['IdType'];
+        $context = $request->query->get('Id');
+        /** @var string */
+        $type = $request->query->get('IdType');
 
         return new ViewContextRequest($context, $type);
     }

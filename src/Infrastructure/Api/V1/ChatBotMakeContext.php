@@ -17,7 +17,7 @@ use Throwable;
 
 use function Safe\json_decode;
 
-class ChatBotMakeContext
+class ChatBotMakeContext extends AbstractController
 {
     public function __construct(
         private ContextRepositoryInterface $repository,
@@ -31,7 +31,8 @@ class ChatBotMakeContext
         $context = new MakeContext($this->repository);
         try {
             $context->execute($request);
-            $this->entityManager->flush();
+            $eventFlush = new EventFlush($this->entityManager);
+            $eventFlush->flushAndDistribute();
         } catch (Exception $e) {
             return $this->writeUnSuccessFulResponse($e);
         }
@@ -39,33 +40,6 @@ class ChatBotMakeContext
         return $this->writeSuccessfulResponse($response);
     }
 
-    private function writeSuccessfulResponse(MakeContextResponse $contextResponse): JsonResponse
-    {
-        return new JsonResponse(
-            [
-                'success' => true,
-                'errorCode' => "",
-                'data' => [
-                    'id' => $contextResponse->contextId->__toString(),
-                ],
-                    'message' => "",
-            ],
-            200
-        );
-    }
-
-    private function writeUnSuccessFulResponse(Throwable $e): JsonResponse
-    {
-        $className = (new \ReflectionClass($e))->getShortName();
-        return new JsonResponse(
-            [
-                'success' => false,
-                'ErrorCode' => $className,
-                'data' => '',
-                'message' => $e->getMessage(),
-            ],
-        );
-    }
 
     private function buildMakeContextRequest(Request $request): MakeContextRequest
     {

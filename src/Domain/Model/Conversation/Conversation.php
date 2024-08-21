@@ -55,9 +55,4 @@ class Conversation
     {
         return $this->context;
     }
-
-    public function switchContext(ContextId $contextId): void
-    {
-        $this->context = $contextId;
-    }
 }

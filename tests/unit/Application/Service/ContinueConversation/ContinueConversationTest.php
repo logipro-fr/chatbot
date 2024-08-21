@@ -57,6 +57,5 @@ class ContinueConversationtest extends TestCase
         $lastPair = $conversation->getPair($conversation->getNbPair() - 1);
         $this->assertGreaterThan($token1, $token2);
         $this->assertInstanceOf(ContinueConversationResponse::class, $service->getResponse());
-        $this->assertEquals($lastPair, $service->getResponse()->pair);
     }
 }

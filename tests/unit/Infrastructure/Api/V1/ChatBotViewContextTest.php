@@ -2,6 +2,7 @@
 
 namespace Chatbot\Tests\Infrastructure\Api\V1;
 
+use Chatbot\Application\Service\Exception\BadTypeNameException;
 use Chatbot\Infrastructure\Api\V1\ChatBotViewContextController;
 use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryInMemory;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
@@ -15,6 +16,7 @@ use function Safe\json_encode;
 class ChatBotViewContextTest extends WebTestCase
 {
     use DoctrineRepositoryTesterTrait;
+    use AssertResponseTrait;
 
     private KernelBrowser $client;
 
@@ -34,16 +36,13 @@ class ChatBotViewContextTest extends WebTestCase
         $convrepo = new ConversationRepositoryInMemory();
         $controller = new ChatBotViewContextController($contextrepo, $convrepo, $this->getEntityManager());
         $request = Request::create(
-            "/api/v1/conversation/View",
-            "POST",
-            [],
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            json_encode([
+            "GET",
+            "/api/v1/contexts",
+            [
                 "Id" => "base",
                 "IdType" => "contexts",
-            ])
+            ],
+            ['CONTENT_TYPE' => 'application/json'],
         );
         $response = $controller->viewContext($request);
         /** @var string */
@@ -69,51 +68,50 @@ class ChatBotViewContextTest extends WebTestCase
         $data = $this->client->getResponse()->getContent();
         /** @var array<mixed,array<mixed>> */
         $responseContent = json_decode($data, true);
-        $contextid = $responseContent['data']['id'];
+        $contextId = $responseContent['data']['contextId'];
 
         $this->client->request(
-            "POST",
-            "/api/v1/context/View",
-            [],
+            "GET",
+            "/api/v1/contexts",
+            [
+                "Id" => $contextId,
+                "IdType" => "contexts",
+            ],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode([
-                "Id" => $contextid,
-                "IdType" => "contexts",
-            ])
         );
         /** @var string */
-        $responseContent = $this->client->getResponse()->getContent();
+        $data = $this->client->getResponse()->getContent();
         $responseCode = $this->client->getResponse()->getStatusCode();
+        /** @var array<mixed,array<mixed>> */
+        $responseContent = json_decode($data, true);
 
-        $this->assertStringContainsString('"success":true', $responseContent);
+        $this->assertTrue($responseContent["success"]);
         $this->assertEquals(200, $responseCode);
-        $this->assertStringContainsString('"context":"je suis un context', $responseContent);
-        $this->assertStringContainsString('"message":"', $responseContent);
+        $this->assertArrayHasKey("contextMessage", $responseContent["data"]);
     }
 
 
     public function testControllerException(): void
     {
         $this->client->request(
-            "POST",
-            "/api/v1/context/View",
-            [],
+            "GET",
+            "/api/v1/contexts",
+            [
+                "Id" => "Je n'existe pas",
+                "IdType" => "context",
+            ],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode([
-              "Id" => "je n'existe pas",
-              "IdType" => "context",
-            ])
         );
-        /** @var string */
-        $responseContent = $this->client->getResponse()->getContent();
-        $responseCode = $this->client->getResponse()->getStatusCode();
-        $this->assertResponseIsSuccessful();
 
-        $this->assertStringContainsString('"success":false', $responseContent);
-        $this->assertEquals(200, $responseCode);
-        $this->assertStringContainsString('"data":"', $responseContent);
-        $this->assertStringContainsString('"message":"', $responseContent);
+        /** @var string */
+        $data = $this->client->getResponse()->getContent();
+        $responseCode = $this->client->getResponse()->getStatusCode();
+
+        $this->assertResponseFailure(
+            $this->client->getResponse(),
+            (new \ReflectionClass(BadTypeNameException::class))->getShortName()
+        );
     }
 }

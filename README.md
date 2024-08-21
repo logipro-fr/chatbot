@@ -4,8 +4,17 @@ Chatbot is a project to answer the user question
 
 # Install
 
+If you have SSH Key use 
 ```console
-git clone git@github.com:logipro-fr/chatbot.git or use git clone https://github.com/logipro-fr/chatbot.git
+git clone git@github.com:logipro-fr/chatbot.git
+```
+else use
+
+```console
+git clone https://github.com/logipro-fr/chatbot.git
+```
+
+```console
 cd chatbot
 ./install
 ```
@@ -16,6 +25,7 @@ cd chatbot
 
 * docker >=24.0.6
 * git
+*ChatGPT API key
 
 
 ## Unit test
@@ -25,6 +35,12 @@ bin/phpunit
 ```
 
 Using Test-Driven Development (TDD) principles (thanks to Kent Beck and others), following good practices (thanks to Uncle Bob and others) and the great book 'DDD in PHP' by C. Buenosvinos, C. Soronellas, K. Akbary
+
+## Integration test
+
+```console
+bin/phpunit-integration
+```
 
 ## Manual tests
 
