@@ -11,7 +11,7 @@ class MakeConversationRequest
     public function __construct(
         public readonly Prompt $prompt,
         public readonly string $lmname,
-        public readonly ContextId $context
+        public readonly ContextId $contextId
     ) {
     }
 }

@@ -32,7 +32,9 @@ class ModelFactory extends LanguageModelAbstractFactory
             case "ParrotTranslate":
                 return new ParrotTranslate($context);
             default:
-                throw new BadLanguageModelName();
+                throw new BadLanguageModelName(
+                    'Please enter "GPTModel" , "GPTModelTranslate", "Parrot" or "ParrotTranslate" you enter "' . $lmName . '"'
+                );
         }
     }
 }
