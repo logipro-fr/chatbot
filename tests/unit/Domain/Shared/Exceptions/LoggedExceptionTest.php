@@ -10,15 +10,6 @@ use function Safe\file_get_contents;
 
 class LoggedExceptionTest extends TestCase
 {
-    protected string $exceptionClass;
-    protected string $exceptionType;
-
-    public function setUp(): void
-    {
-        $this->exceptionClass = LoggedException::class;
-        $this->exceptionType = "exception";
-    }
-
     public function testCreate(): void
     {
         $error = new LoggedException("Test exception", 1);
