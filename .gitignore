@@ -1,3 +1,4 @@
+/log/
 /var/
 /vendor/
 /src/Infrastructure/Shared/Symfony/.env.local
