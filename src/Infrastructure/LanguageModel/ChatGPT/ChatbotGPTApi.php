@@ -9,9 +9,13 @@ use Chatbot\Application\Service\Exception\ExcesRequestException;
 use Chatbot\Application\Service\Exception\OtherException;
 use Chatbot\Application\Service\Exception\UnhautorizeKeyException;
 use Chatbot\Application\Service\RequestInterface;
+use Chatbot\Domain\Model\Context\ContextRepositoryInterface;
+use Chatbot\Domain\Model\Conversation\Conversation;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 use function Safe\json_decode;
+use function Safe\json_encode;
 
 class ChatbotGPTApi implements ChatbotApiInterface
 {
@@ -42,26 +46,11 @@ class ChatbotGPTApi implements ChatbotApiInterface
             $userprompt = $request->prompt->getUserResquest();
             $context = $request->context->getContext()->getMessage();
 
-            $content = <<<EOF
-            {
-                "model": "gpt-3.5-turbo",
-                "messages": [
-                    {
-                        "role": "system",
-                        "content": "$context"
-                    },
-                    {
-                        "role": "user",
-                        "content": "$userprompt"
-                    }
-                ]
-            }
-            EOF;
 
             $response = $this->client->request(
                 'POST',
                 'https://api.openai.com/v1/chat/completions',
-                $this->paramsHeader($content)
+                $this->paramsHeader($this->createContent($request->conversation, $context, $userprompt))
             );
             $code = $response->getStatusCode();
             if ($code == 200) {
@@ -98,5 +87,23 @@ class ChatbotGPTApi implements ChatbotApiInterface
         ];
 
         return $paramHeader;
+    }
+
+    public function createContent(Conversation $conversation, string $context, string $userprompt): string
+    {
+        $message = [];
+        $message[] = ["role" => "system","content" => $context];
+        for ($i = 0; $i < $conversation->getNbPair(); $i++) {
+            $pair = $conversation->getPair($i);
+            $message[] = ["role" => "user","content" => $pair->getPrompt()->getUserResquest()];
+            $message[] = ["role" => "assistant","content" => $pair->getAnswer()->getMessage()];
+        }
+        $message[] = ["role" => "user","content" => $userprompt];
+        $content = [
+            "model" => "gpt-3.5-turbo",
+            "messages" => $message
+
+        ];
+        return json_encode($content);
     }
 }

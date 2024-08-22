@@ -6,6 +6,7 @@ use Chatbot\Infrastructure\LanguageModel\ChatGPT\GPTModel;
 use Chatbot\Application\Service\MakeConversation\LanguageModelAbstractFactory;
 use Chatbot\Domain\Model\Context\Context;
 use Chatbot\Domain\Model\Context\ContextMessage;
+use Chatbot\Domain\Model\Conversation\Conversation;
 use Chatbot\Domain\Model\Conversation\LanguageModelInterface;
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\GPTModelTranslate;
 use Chatbot\Infrastructure\LanguageModel\Exception\BadLanguageModelName;
@@ -18,14 +19,14 @@ class ModelFactory extends LanguageModelAbstractFactory
     {
     }
 
-    public function create(string $lmName, string $context): LanguageModelInterface
+    public function create(string $lmName, string $context, Conversation $conversation): LanguageModelInterface
     {
 
         switch ($lmName) {
             case "GPTModel":
-                return new GPTModel($this->client, new Context(new ContextMessage($context)));
+                return new GPTModel($this->client, new Context(new ContextMessage($context)), $conversation);
             case "GPTModelTranslate":
-                return new GPTModelTranslate($this->client, $context);
+                return new GPTModelTranslate($this->client, $context, $conversation);
             case "Parrot":
                 return new Parrot();
             case "ParrotTranslate":

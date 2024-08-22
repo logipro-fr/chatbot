@@ -23,7 +23,7 @@ class ContinueConversation
 
         /** @var Conversation */
         $conversation = $this->repository->findById($request->convId);
-        $lm = $this->factory->create($request->lmName, $request->prompt->getUserResquest());
+        $lm = $this->factory->create($request->lmName, $request->prompt->getUserResquest(), $conversation);
         $message = (new Ask())->execute(new Prompt($request->prompt->getUserResquest()), $lm);
         $conversation->addPair(new Prompt($request->prompt->getUserResquest()), $message);
         $pair = $conversation->getPair($conversation->getNbPair() - 1);
