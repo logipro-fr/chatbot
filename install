@@ -18,6 +18,13 @@ function create_var_directory() {
     fi
 }
 
+function create_log_directory() {
+    DIR_LOG=log
+    if [ ! -d "$DIR_LOG" ]; then
+        mkdir $DIR_LOG
+    fi
+}
+
 # Create the var directory if it does not exist
 function create_data_directory() {
     DIR_VAR=$1
@@ -40,6 +47,7 @@ function build_docker_images() {
 
 echo "-------------Step 1: Create some directories-----------------------------------------------------"
 create_var_directory
+create_log_directory
 echo "-------------Step 1: Done!"
 
 echo "-------------Step 2: Build docker images---------------------------------------------------------"
