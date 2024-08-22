@@ -6,8 +6,7 @@ use Chatbot\Domain\Model\Context\ContextId;
 use Chatbot\Domain\Model\Conversation\Conversation;
 use Chatbot\Domain\Model\Conversation\ConversationId;
 use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
-use Chatbot\Infrastructure\Exception\ContextAssociatedConversationException;
-use Chatbot\Infrastructure\Exception\NoIdException;
+use Chatbot\Infrastructure\Exception\ConversationNotFoundException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 
@@ -30,7 +29,7 @@ class ConversationRepositoryDoctrine extends EntityRepository implements Convers
     {
         $conversation = $this->getEntityManager()->find(Conversation::class, $conversationId);
         if ($conversation === null) {
-            throw new NoIdException("Id no exist in DataBase");
+            throw new ConversationNotFoundException(sprintf("Conversation '%s' not found", $conversationId));
         }
         return $conversation;
     }

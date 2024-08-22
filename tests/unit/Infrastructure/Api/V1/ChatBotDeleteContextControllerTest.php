@@ -7,7 +7,7 @@ use Chatbot\Domain\Model\Conversation\Conversation;
 use Chatbot\Domain\Model\Conversation\PairArray;
 use Chatbot\Infrastructure\Api\V1\ChatBotDeleteContextController;
 use Chatbot\Infrastructure\Api\V1\ChatBotEditContextController;
-use Chatbot\Infrastructure\Exception\NoIdException;
+use Chatbot\Infrastructure\Exception\ConversationNotFoundException;
 use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryInMemory;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
 use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
@@ -116,7 +116,7 @@ class ChatBotDeleteContextControllerTest extends WebTestCase
 
         $this->assertResponseFailure(
             $this->client->getResponse(),
-            (new \ReflectionClass(NoIdException::class))->getShortName()
+            (new \ReflectionClass(ConversationNotFoundException::class))->getShortName()
         );
     }
 }

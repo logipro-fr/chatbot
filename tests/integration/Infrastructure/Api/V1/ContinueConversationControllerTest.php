@@ -2,6 +2,9 @@
 
 namespace Chatbot\Tests\integration\Infrastructure;
 
+use Chatbot\Domain\Model\Conversation\ConversationId;
+use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryDoctrine;
+use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
 use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -91,8 +94,12 @@ class ContinueConversationControllerTest extends WebTestCase
         $botMessage = $responseContent['data']['botMessage'];
         $this->assertTrue($responseContent["success"]);
         $this->assertArrayHasKey("conversationId", $responseContent["data"]);
-        $this->assertArrayHasKey("numberOfPairs", $responseContent["data"]);
+        $this->assertEquals(2, $responseContent["data"]["numberOfPairs"]);
         $this->assertArrayHasKey("botMessage", $responseContent["data"]);
         $this->assertStringContainsStringIgnoringCase("Marine", $botMessage);
+
+        $repository = new ConversationRepositoryDoctrine($this->getEntityManager());
+        $conversation = $repository->findById(new ConversationId($this->conversationId));
+        $this->assertEquals(2, $conversation->getNbPair());
     }
 }

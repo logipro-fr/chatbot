@@ -3,7 +3,7 @@
 namespace Chatbot\Tests\Infrastructure\Api\V1;
 
 use Chatbot\Infrastructure\Api\V1\ChatBotMakeController;
-use Chatbot\Infrastructure\Exception\NoIdException;
+use Chatbot\Infrastructure\Exception\ConversationNotFoundException;
 use Chatbot\Infrastructure\LanguageModel\ModelFactory;
 use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryInMemory;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
@@ -123,7 +123,7 @@ class ChatBotMakeControllerTest extends WebTestCase
 
         $this->assertResponseFailure(
             $this->client->getResponse(),
-            (new \ReflectionClass(NoIdException::class))->getShortName()
+            (new \ReflectionClass(ConversationNotFoundException::class))->getShortName()
         );
     }
 }

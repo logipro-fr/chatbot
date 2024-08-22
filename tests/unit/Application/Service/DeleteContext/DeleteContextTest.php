@@ -11,7 +11,7 @@ use Chatbot\Domain\Model\Conversation\ConversationId;
 use Chatbot\Domain\Model\Conversation\Pair;
 use Chatbot\Domain\Model\Conversation\PairArray;
 use Chatbot\Infrastructure\Exception\ContextAssociatedConversationException;
-use Chatbot\Infrastructure\Exception\NoIdException;
+use Chatbot\Infrastructure\Exception\ConversationNotFoundException;
 use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryInMemory;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryDoctrine;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
@@ -40,7 +40,7 @@ class DeleteContextTest extends TestCase
 
         //assert / Then
         $this->assertInstanceOf(DeleteContextResponse::class, $response);
-        $this->expectException(NoIdException::class);
+        $this->expectException(ConversationNotFoundException::class);
         $repository->findById(new ContextId("un_context"));
     }
 

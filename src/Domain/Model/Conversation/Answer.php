@@ -4,7 +4,7 @@ namespace Chatbot\Domain\Model\Conversation;
 
 class Answer
 {
-    public function __construct(private string $message, private int $codeStatue)
+    public function __construct(private string $message, private int $codeStatus)
     {
     }
 
@@ -15,7 +15,7 @@ class Answer
 
     public function getCodeStatus(): int
     {
-        return $this->codeStatue;
+        return $this->codeStatus;
     }
 
     public function countToken(): int

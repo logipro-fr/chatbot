@@ -8,11 +8,13 @@ use Chatbot\Application\Service\MakeConversation\MakeConversationRequest;
 use Chatbot\Domain\Model\Context\Context;
 use Chatbot\Domain\Model\Context\ContextId;
 use Chatbot\Domain\Model\Context\ContextMessage;
+use Chatbot\Domain\Model\Conversation\ConversationId;
 use Chatbot\Domain\Model\Conversation\Prompt;
 use Chatbot\Infrastructure\Api\V1\ChatBotContinueController;
-use Chatbot\Infrastructure\Exception\NoIdException;
+use Chatbot\Infrastructure\Exception\ConversationNotFoundException;
 use Chatbot\Infrastructure\LanguageModel\ModelFactory;
 use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryInMemory;
+use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryDoctrine;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
 use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
 use PHPUnit\Framework\TestCase;
@@ -93,7 +95,6 @@ class ChatBotContinueControllerTest extends WebTestCase
         $responseContent = json_decode($data, true);
         $contextid = $responseContent['data']['contextId'];
 
-
         $this->client->request(
             "POST",
             "/api/v1/conversations/Make",
@@ -113,6 +114,10 @@ class ChatBotContinueControllerTest extends WebTestCase
         $responseContent = json_decode($data, true);
 
         $id = $responseContent['data']['conversationId'];
+
+        $repository = new ConversationRepositoryDoctrine($this->getEntityManager());
+        $conversation = $repository->findById(new ConversationId($id));
+        $this->assertEquals(1, $conversation->getNbPair());
 
         $this->client->request(
             "POST",
@@ -136,8 +141,12 @@ class ChatBotContinueControllerTest extends WebTestCase
         $this->assertTrue($responseContent["success"]);
         $this->assertEquals(200, $responseCode);
         $this->assertArrayHasKey("conversationId", $responseContent["data"]);
-        $this->assertArrayHasKey("numberOfPairs", $responseContent["data"]);
+        $this->assertEquals(2, $responseContent["data"]["numberOfPairs"]);
         $this->assertArrayHasKey("botMessage", $responseContent["data"]);
+
+        $repository = new ConversationRepositoryDoctrine($this->getEntityManager());
+        $conversation = $repository->findById(new ConversationId($id));
+        $this->assertEquals(2, $conversation->getNbPair());
     }
 
     public function testControllerException(): void
@@ -163,7 +172,7 @@ class ChatBotContinueControllerTest extends WebTestCase
 
         $this->assertResponseFailure(
             $this->client->getResponse(),
-            (new \ReflectionClass(NoIdException::class))->getShortName()
+            (new \ReflectionClass(ConversationNotFoundException::class))->getShortName()
         );
     }
 }
