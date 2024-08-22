@@ -51,8 +51,8 @@ class ContinueConversationControllerTest extends WebTestCase
             ['CONTENT_TYPE' => 'application/json'],
             json_encode(
                 [
-                "Prompt" => "Chien",
-                "lmName" => "GPTModelTranslate",
+                "Prompt" => "Je m'appelle Marine",
+                "lmName" => "GPTModel",
                 "context" => $contextId,
                 ]
             )
@@ -77,7 +77,7 @@ class ContinueConversationControllerTest extends WebTestCase
             ['CONTENT_TYPE' => 'application/json'],
             json_encode(
                 [
-                "Prompt" => "Tu peux me repeter ce que tu as dit avant ?",
+                "Prompt" => "Comment je m'appelle ?",
                 "convId" => $this->conversationId,
                 "lmName" => "GPTModel",
                 ]
@@ -87,10 +87,12 @@ class ContinueConversationControllerTest extends WebTestCase
         $data = $this->client->getResponse()->getContent();
         /** @var array<mixed,array<mixed>> */
         $responseContent = json_decode($data, true);
-
+        /** @var string */
+        $botMessage = $responseContent['data']['botMessage'];
         $this->assertTrue($responseContent["success"]);
         $this->assertArrayHasKey("conversationId", $responseContent["data"]);
         $this->assertArrayHasKey("numberOfPairs", $responseContent["data"]);
         $this->assertArrayHasKey("botMessage", $responseContent["data"]);
+        $this->assertStringContainsStringIgnoringCase("Marine", $botMessage);
     }
 }

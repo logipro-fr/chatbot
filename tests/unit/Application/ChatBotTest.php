@@ -22,7 +22,12 @@ class ChatBotTest extends TestCase
 {
     public function testConversation(): void
     {
-        $request = new RequestGPT(new Prompt("allo"), new Context(new ContextMessage("tu es un assistant sympa")));
+        $conversation = new Conversation(new PairArray(), new ContextId("base"));
+        $request = new RequestGPT(
+            new Prompt("allo"),
+            new Context(new ContextMessage("tu es un assistant sympa")),
+            $conversation
+        );
         $engine = new LanguageModelFake();
         $engine->add("\n\nBonjour ! Je vais bien merci ! comment puis-je vous aidez aujourd'hui");
         $conversation = new Conversation(new PairArray(), new ContextId());

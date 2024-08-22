@@ -21,9 +21,10 @@ class MakeConversation
     }
     public function execute(MakeConversationRequest $request): void
     {
-        $context = $this->contextrepository->findById($request->context);
-        $lm = $this->factory->create($request->lmname, $context->getContext()->getMessage());
-        $conversation = new Conversation(new PairArray(), $request->context);
+        $context = $this->contextrepository->findById($request->contextId);
+        $conversation = new Conversation(new PairArray(), $request->contextId);
+        $lm = $this->factory->create($request->lmname, $context->getContext()->getMessage(), $conversation);
+
         $message = (new Ask())->execute($request->prompt, $lm);
         $conversation->addPair($request->prompt, $message);
         $this->addToRepository($conversation);
