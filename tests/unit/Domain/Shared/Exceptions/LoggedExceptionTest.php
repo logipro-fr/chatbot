@@ -10,6 +10,23 @@ use function Safe\file_get_contents;
 
 class LoggedExceptionTest extends TestCase
 {
+    protected string $exceptionClass;
+    protected string $exceptionType;
+
+    public function setUp(): void
+    {
+        $this->exceptionClass = LoggedException::class;
+        $this->exceptionType = "exception";
+    }
+
+    public function testCreate(): void
+    {
+        $error = new LoggedException("Test exception", 1);
+        $this->assertInstanceOf(LoggedException::class, $error);
+        $this->assertEquals("Test exception", $error->getMessage());
+        $this->assertEquals(1, $error->getCode());
+    }
+
     public function testLog(): void
     {
         $logFilePath = BaseDir::getPathTo(LoggedException::LOG_FILE);
