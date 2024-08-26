@@ -7,43 +7,48 @@ use Chatbot\Domain\Event\PairAdded;
 use Chatbot\Domain\EventFacade\EventFacade;
 use Chatbot\Domain\Model\Context\ContextId;
 use DateTimeImmutable;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Safe\DateTimeImmutable as SafeDateTimeImmutable;
 
 class Conversation
 {
+    
+    private Collection $pairs;
     public function __construct(
-        private PairArray $pairs,
+      
         private ContextId $context,
-        private ConversationId $id = new ConversationId(),
+        private ConversationId $conversationId = new ConversationId(),
         private readonly DateTimeImmutable $createdAt = new SafeDateTimeImmutable(),
     ) {
-        (new EventFacade())->dispatch(new ConversationCreated($this->id->__toString()));
+        $this->pairs = new ArrayCollection;
+        (new EventFacade())->dispatch(new ConversationCreated($this->conversationId->__toString()));
     }
 
-    public function getTotalToken(): int
-    {
-        return $this->pairs->TotalToken();
-    }
+    //public function getTotalToken(): int
+    //{
+    //    return $this->pairs->TotalToken();
+    //}
 
-    public function getId(): ConversationId
+    public function getConversationId(): ConversationId
     {
-        return $this->id;
+        return $this->conversationId;
     }
 
     public function getPair(int $number): Pair
     {
-        return $this->pairs->getPair($number);
+        return $this->pairs->get($number);
     }
 
     public function getNbPair(): int
     {
-        return $this->pairs->getNB();
+        return $this->pairs->count();
     }
 
     public function addPair(Prompt $prompt, Answer $message): void
     {
         $this->pairs->add(new Pair($prompt, $message));
-        (new EventFacade())->dispatch(new PairAdded($this->id->__toString()));
+        (new EventFacade())->dispatch(new PairAdded($this->conversationId->__toString()));
     }
 
     public function getCreatedAt(): DateTimeImmutable
@@ -54,5 +59,10 @@ class Conversation
     public function getContext(): ContextId
     {
         return $this->context;
+    }
+
+    public function clearPair(): void
+    {
+        $this->pairs->clear;
     }
 }

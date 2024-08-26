@@ -37,7 +37,7 @@ class ChatBotContinueControllerTest extends WebTestCase
     public function setUp(): void
     {
         $this->initDoctrineTester();
-        $this->clearTables(["conversations"]);
+        $this->clearTables(["conversations_pairs","conversations","pairs"]);
         $this->client = static::createClient(["debug" => false]);
     }
 
@@ -91,6 +91,7 @@ class ChatBotContinueControllerTest extends WebTestCase
 
         /** @var string */
         $data = $this->client->getResponse()->getContent();
+        
         /** @var array<mixed,array<mixed>> */
         $responseContent = json_decode($data, true);
         $contextid = $responseContent['data']['contextId'];
@@ -117,6 +118,7 @@ class ChatBotContinueControllerTest extends WebTestCase
 
         $repository = new ConversationRepositoryDoctrine($this->getEntityManager());
         $conversation = $repository->findById(new ConversationId($id));
+        print_r($conversation);
         $this->assertEquals(1, $conversation->getNbPair());
 
         $this->client->request(
@@ -144,8 +146,10 @@ class ChatBotContinueControllerTest extends WebTestCase
         $this->assertEquals(2, $responseContent["data"]["numberOfPairs"]);
         $this->assertArrayHasKey("botMessage", $responseContent["data"]);
 
-        $repository = new ConversationRepositoryDoctrine($this->getEntityManager());
+        
         $conversation = $repository->findById(new ConversationId($id));
+        $this->getEntityManager()->detach($conversation);
+    
         $this->assertEquals(2, $conversation->getNbPair());
     }
 

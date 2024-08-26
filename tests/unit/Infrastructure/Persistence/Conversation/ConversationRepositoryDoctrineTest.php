@@ -12,7 +12,8 @@ class ConversationRepositoryDoctrineTest extends ConversationRepositoryTestBase
     protected function initialize(): void
     {
         $this->initDoctrineTester();
-        $this->clearTables(["conversations"]);
-        $this->repository = new ConversationRepositoryDoctrine($this->getEntityManager());
+        $this->clearTables(["conversations_pairs", "conversations", "pairs"]);
+        
+        $this->repository = new FakeConversationRepositoryDoctrine($this->getEntityManager());
     }
 }

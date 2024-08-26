@@ -6,7 +6,7 @@ use Chatbot\Domain\Model\Context\ContextMessage;
 use Chatbot\Domain\Model\Context\Context;
 use Chatbot\Domain\Model\Context\ContextId;
 use Chatbot\Domain\Model\Conversation\Conversation;
-use Chatbot\Domain\Model\Conversation\PairArray;
+
 use Chatbot\Domain\Model\Conversation\Prompt;
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\GPTModel;
 use PHPUnit\Framework\TestCase;
@@ -19,7 +19,7 @@ class GPTModelTest extends TestCase
 {
     public function testGPTModel(): void
     {
-        $conversation = new Conversation(new PairArray(), new ContextId("base"));
+        $conversation = new Conversation(new ContextId("base"));
         $client = $this->createMockHttpClient('responseGETbonjour.json', 200);
         $service = new GPTModel($client, new Context(new ContextMessage("Your're helpfull assistant")), $conversation);
         $message = $service->generateTextAnswer(new Prompt("Bonjour"));

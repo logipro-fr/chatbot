@@ -4,7 +4,6 @@ namespace Chatbot\Tests\Infrastructure\Api\V1;
 
 use Chatbot\Domain\Model\Context\ContextId;
 use Chatbot\Domain\Model\Conversation\Conversation;
-use Chatbot\Domain\Model\Conversation\PairArray;
 use Chatbot\Infrastructure\Api\V1\ChatBotDeleteContextController;
 use Chatbot\Infrastructure\Api\V1\ChatBotEditContextController;
 use Chatbot\Infrastructure\Exception\ConversationNotFoundException;
@@ -38,7 +37,7 @@ class ChatBotDeleteContextControllerTest extends WebTestCase
 
         $contextrepo = new ContextRepositoryInMemory();
         $conversationrepo = new ConversationRepositoryInMemory();
-        $conversationrepo->add(new Conversation(new PairArray(), new ContextId("english")));
+        $conversationrepo->add(new Conversation(new ContextId("english")));
         $controller = new ChatBotDeleteContextController($contextrepo, $conversationrepo, $this->getEntityManager());
         $request = Request::create(
             "/api/v1/conversation/Delete",

@@ -26,7 +26,7 @@ class ChatBotMakeControllerTest extends WebTestCase
     {
 
         $this->initDoctrineTester();
-        $this->clearTables(["conversations"]);
+        //$this->clearTables(["conversations"]);
         $this->client = static::createClient(["debug" => false]);
     }
 
@@ -71,9 +71,11 @@ class ChatBotMakeControllerTest extends WebTestCase
 
         /** @var string */
         $data = $this->client->getResponse()->getContent();
+        
         /** @var array<mixed,array<mixed>> */
         $responseContent = json_decode($data, true);
         $contextid = $responseContent['data']['contextId'];
+
 
         $this->client->request(
             "POST",
@@ -93,7 +95,6 @@ class ChatBotMakeControllerTest extends WebTestCase
         $responseCode = $this->client->getResponse()->getStatusCode();
        /** @var array<mixed,array<mixed>> */
         $responseContent = json_decode($data, true);
-
         $this->assertTrue($responseContent["success"]);
         $this->assertEquals(200, $responseCode);
         $this->assertArrayHasKey("conversationId", $responseContent["data"]);

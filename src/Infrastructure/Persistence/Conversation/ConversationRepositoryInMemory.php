@@ -18,7 +18,7 @@ class ConversationRepositoryInMemory implements ConversationRepositoryInterface
 
     public function add(Conversation $conversation): void
     {
-        $this->conversations[$conversation->getId()->__toString()] = $conversation;
+        $this->conversations[$conversation->getConversationId()->__toString()] = $conversation;
     }
 
     public function findById(ConversationId $id): Conversation

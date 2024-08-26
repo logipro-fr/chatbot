@@ -26,7 +26,6 @@ services:
     autowire: true
     arguments:
       $repository: '@conversation.repository'
-      $contextrepository: '@context.repository'
       $factory: '@conversation.factory'
 
 

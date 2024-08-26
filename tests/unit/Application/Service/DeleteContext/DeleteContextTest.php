@@ -8,14 +8,9 @@ use Chatbot\Application\Service\DeleteContext\DeleteContextResponse;
 use Chatbot\Domain\Model\Context\ContextId;
 use Chatbot\Domain\Model\Conversation\Conversation;
 use Chatbot\Domain\Model\Conversation\ConversationId;
-use Chatbot\Domain\Model\Conversation\Pair;
-use Chatbot\Domain\Model\Conversation\PairArray;
-use Chatbot\Infrastructure\Exception\ContextAssociatedConversationException;
 use Chatbot\Infrastructure\Exception\ConversationNotFoundException;
 use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryInMemory;
-use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryDoctrine;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
-use ErrorException;
 use PHPUnit\Framework\TestCase;
 
 class DeleteContextTest extends TestCase
@@ -26,7 +21,7 @@ class DeleteContextTest extends TestCase
 
         $conv = new ConversationRepositoryInMemory();
         $conv->add(
-            new Conversation(new PairArray(), new ContextId("un_context"), new ConversationId("conversation_id"))
+            new Conversation(new ContextId("un_context"), new ConversationId("conversation_id"))
         );
         $repository = new ContextRepositoryInMemory();
         $request = new DeleteContextRequest(
@@ -49,7 +44,7 @@ class DeleteContextTest extends TestCase
         // arrange / Given
 
         $conv = new ConversationRepositoryInMemory();
-        $conv->add(new Conversation(new PairArray(), new ContextId("base"), new ConversationId("conversation_id")));
+        $conv->add(new Conversation(new ContextId("base"), new ConversationId("conversation_id")));
         $repository = new ContextRepositoryInMemory();
         $request = new DeleteContextRequest(
             new ContextId("base")

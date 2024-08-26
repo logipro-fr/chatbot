@@ -27,4 +27,5 @@ class ConversationIdTypeTest extends TestCase
         $dbValue = $type->convertToDatabaseValue($id = new ConversationId(), new SqlitePlatform());
         $this->assertEquals($id->__toString(), $dbValue);
     }
+
 }

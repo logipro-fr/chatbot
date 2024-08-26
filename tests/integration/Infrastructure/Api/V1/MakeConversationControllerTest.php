@@ -21,7 +21,9 @@ class MakeConversationControllerTest extends WebTestCase
         $this->initDoctrineTester();
         $dotenv = new Dotenv();
         $dotenv->loadEnv(getcwd() . '/src/Infrastructure/Shared/Symfony/.env.local');
-        $this->clearTables(["conversations"]);
+        $this->clearTables(["conversations_pairs"]);
+        //$this->clearTables(["conversations"]);
+        //$this->clearTables(["pairs"]);
         $this->client = self::createClient(["debug" => false]);
         $this->client->request(
             "POST",
@@ -36,6 +38,7 @@ class MakeConversationControllerTest extends WebTestCase
             )
         );
 
+        
         /** @var string */
         $data = $this->client->getResponse()->getContent();
         /** @var array<mixed,array<mixed>> */

@@ -5,7 +5,7 @@
                           https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
 
-    <entity name="Chatbot\Domain\Model\Context\Context" table="context"
+    <entity name="Chatbot\Domain\Model\Context\Context" table="contexts"
             repository-class="Chatbot\Infrastructure\Persistence\Context\ContextRepositoryDoctrine">
         <id name="id" type="context_id" column="context_id">
             <generator strategy="NONE"/>

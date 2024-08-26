@@ -39,11 +39,11 @@ abstract class ContextRepositoryTestBase extends TestCase
         $found = $this->repository->findById($id);
         /** @var Conversation */
         $found2 = $this->repository->findById(new ContextId("id2"));
-        $idFound = $found->getId();
+        $idFound = $found->getConversationId();
 
-        $this->assertEquals("id2", $found2->getId());
+        $this->assertEquals("id2", $found2->getConversationId());
         $this->assertInstanceOf(Context::class, $found);
-        $this->assertFalse($idFound->equals($found2->getId()));
+        $this->assertFalse($idFound->equals($found2->getConversationId()));
     }
 
     public function testRemove(): void
