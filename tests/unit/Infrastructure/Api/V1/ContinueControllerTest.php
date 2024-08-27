@@ -68,7 +68,7 @@ class ContinueControllerTest extends WebTestCase
 
     public function testControllerRouting(): void
     {
-       $this->initializeConversationWithRouting();
+        $this->initializeConversationWithRouting();
 
         $this->client->request(
             "POST",
@@ -125,19 +125,23 @@ class ContinueControllerTest extends WebTestCase
             (new \ReflectionClass(ConversationNotFoundException::class))->getShortName()
         );
     }
-    
+
     private function initializeAConversation(): void
     {
         $this->factory = new ModelFactory();
         $this->inMemoryConversationRepository = new ConversationRepositoryInMemory();
         $inMemoryContextRepository = new ContextRepositoryInMemory();
-        
+
         $request = new MakeConversationRequest(
             new Prompt("Bonjour"),
             "Parrot",
             new ContextId("base")
         );
-        $service = new MakeConversation($this->inMemoryConversationRepository, $this->factory, $inMemoryContextRepository);
+        $service = new MakeConversation(
+            $this->inMemoryConversationRepository,
+            $this->factory,
+            $inMemoryContextRepository
+        );
         $service->execute($request);
         $response = $service->getResponse();
         $this->convId = $response->conversationId;
@@ -181,6 +185,6 @@ class ContinueControllerTest extends WebTestCase
         /** @var array<mixed,array<mixed>> */
         $responseContent = json_decode($content, true);
 
-        $this->id = $responseContent['data']['conversationId'];
+        $this->id = strval($responseContent['data']['conversationId']);
     }
 }

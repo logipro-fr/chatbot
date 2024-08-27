@@ -2,7 +2,7 @@
 
 namespace Chatbot\Tests\Infrastructure\Api\V1;
 
-use Chatbot\Infrastructure\Api\V1\MakeconversationController;
+use Chatbot\Infrastructure\Api\V1\MakeConversationController;
 use Chatbot\Infrastructure\Exception\ConversationNotFoundException;
 use Chatbot\Infrastructure\LanguageModel\ModelFactory;
 use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryInMemory;
@@ -35,7 +35,7 @@ class MakeConversationControllerTest extends WebTestCase
         $repository = new ConversationRepositoryInMemory();
         $factory = new ModelFactory();
         $contextrepo = new ContextRepositoryInMemory();
-        $controller = new MakeconversationController($repository, $contextrepo, $factory, $this->getEntityManager());
+        $controller = new MakeConversationController($repository, $contextrepo, $factory, $this->getEntityManager());
         $request = Request::create(
             "/api/v1/conversations/make",
             "POST",

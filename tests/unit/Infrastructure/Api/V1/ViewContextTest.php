@@ -101,7 +101,7 @@ class ViewContextTest extends WebTestCase
         );
     }
 
-    private function initializeContextWithRouting():void 
+    private function initializeContextWithRouting(): void
     {
         $this->client->request(
             "POST",
@@ -118,6 +118,6 @@ class ViewContextTest extends WebTestCase
         $data = $this->client->getResponse()->getContent();
         /** @var array<mixed,array<mixed>> */
         $responseContent = json_decode($data, true);
-        $this->contextId = $responseContent['data']['contextId'];
+        $this->contextId = strval($responseContent['data']['contextId']);
     }
 }

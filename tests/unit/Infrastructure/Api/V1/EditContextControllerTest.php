@@ -104,7 +104,7 @@ class EditContextControllerTest extends WebTestCase
         );
     }
 
-    private function initializeAContextWithRouting(): void 
+    private function initializeAContextWithRouting(): void
     {
         $this->client->request(
             "POST",
@@ -121,6 +121,6 @@ class EditContextControllerTest extends WebTestCase
         $data = $this->client->getResponse()->getContent();
         /** @var array<mixed,array<mixed>> */
         $responseContent = json_decode($data, true);
-        $this->contextId = $responseContent['data']['contextId'];
+        $this->contextId = strval($responseContent['data']['contextId']);
     }
 }
