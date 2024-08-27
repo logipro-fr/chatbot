@@ -2,10 +2,8 @@
 
 namespace Chatbot\Domain\Model\Conversation;
 
-
 class Pair
 {
-    
     public function __construct(private Prompt $prompt, private Answer $answer, private PairId $pairId = new PairId())
     {
     }
@@ -25,5 +23,10 @@ class Pair
     public function getAnswer(): Answer
     {
         return $this->answer;
+    }
+
+    public function getPairId(): PairId
+    {
+        return $this->pairId;
     }
 }

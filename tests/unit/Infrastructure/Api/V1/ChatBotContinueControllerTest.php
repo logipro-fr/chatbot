@@ -10,7 +10,7 @@ use Chatbot\Domain\Model\Context\ContextId;
 use Chatbot\Domain\Model\Context\ContextMessage;
 use Chatbot\Domain\Model\Conversation\ConversationId;
 use Chatbot\Domain\Model\Conversation\Prompt;
-use Chatbot\Infrastructure\Api\V1\ChatBotContinueController;
+use Chatbot\Infrastructure\Api\V1\ContinueConversationController;
 use Chatbot\Infrastructure\Exception\ConversationNotFoundException;
 use Chatbot\Infrastructure\LanguageModel\ModelFactory;
 use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryInMemory;
@@ -43,19 +43,23 @@ class ChatBotContinueControllerTest extends WebTestCase
 
     public function testChatBotControllerExecute(): void
     {
-        $repository = new ConversationRepositoryInMemory();
-        $contextrepo = new ContextRepositoryInMemory();
+        $inMemoryConversationRepository = new ConversationRepositoryInMemory();
+        $inMemoryContextRepository = new ContextRepositoryInMemory();
         $factory = new ModelFactory();
         $request = new MakeConversationRequest(
             new Prompt("Bonjour"),
             "Parrot",
             new ContextId("base")
         );
-        $service = new MakeConversation($repository, $factory, $contextrepo);
+        $service = new MakeConversation($inMemoryConversationRepository, $factory, $inMemoryContextRepository);
         $service->execute($request);
         $response = $service->getResponse();
         $this->convId = $response->conversationId;
-        $controller = new ChatBotContinueController($repository, $factory, $this->getEntityManager());
+        $controller = new ContinueConversationController(
+            $inMemoryConversationRepository,
+            $factory,
+            $this->getEntityManager()
+        );
         $request = Request::create(
             "/api/v1/conversations/Continue",
             "POST",
@@ -77,7 +81,6 @@ class ChatBotContinueControllerTest extends WebTestCase
 
     public function testControllerRouting(): void
     {
-
         $this->client->request(
             "POST",
             "/api/v1/context/Make",
@@ -90,10 +93,10 @@ class ChatBotContinueControllerTest extends WebTestCase
         );
 
         /** @var string */
-        $data = $this->client->getResponse()->getContent();
-        
+        $content = $this->client->getResponse()->getContent();
+
         /** @var array<mixed,array<mixed>> */
-        $responseContent = json_decode($data, true);
+        $responseContent = json_decode($content, true);
         $contextid = $responseContent['data']['contextId'];
 
         $this->client->request(
@@ -110,16 +113,11 @@ class ChatBotContinueControllerTest extends WebTestCase
             ])
         );
         /** @var string */
-        $data = $this->client->getResponse()->getContent();
+        $content = $this->client->getResponse()->getContent();
         /** @var array<mixed,array<mixed>> */
-        $responseContent = json_decode($data, true);
+        $responseContent = json_decode($content, true);
 
         $id = $responseContent['data']['conversationId'];
-
-        $repository = new ConversationRepositoryDoctrine($this->getEntityManager());
-        $conversation = $repository->findById(new ConversationId($id));
-        print_r($conversation);
-        $this->assertEquals(1, $conversation->getNbPair());
 
         $this->client->request(
             "POST",
@@ -135,22 +133,19 @@ class ChatBotContinueControllerTest extends WebTestCase
             ])
         );
         /** @var string */
-        $data = $this->client->getResponse()->getContent();
+        $content = $this->client->getResponse()->getContent();
         $responseCode = $this->client->getResponse()->getStatusCode();
         /** @var array<mixed,array<mixed>> */
-        $responseContent = json_decode($data, true);
+        $responseContent = json_decode($content, true);
 
         $this->assertTrue($responseContent["success"]);
         $this->assertEquals(200, $responseCode);
-        $this->assertArrayHasKey("conversationId", $responseContent["data"]);
-        $this->assertEquals(2, $responseContent["data"]["numberOfPairs"]);
-        $this->assertArrayHasKey("botMessage", $responseContent["data"]);
 
-        
-        $conversation = $repository->findById(new ConversationId($id));
-        $this->getEntityManager()->detach($conversation);
-    
-        $this->assertEquals(2, $conversation->getNbPair());
+        $data = $responseContent["data"];
+
+        $this->assertEquals($id, $data["conversationId"]);
+        $this->assertEquals(2, $data["numberOfPairs"]);
+        $this->assertIsString($data["botMessage"]);
     }
 
     public function testControllerException(): void

@@ -93,7 +93,7 @@ class ChatbotGPTApi implements ChatbotApiInterface
     {
         $message = [];
         $message[] = ["role" => "system","content" => $context];
-        for ($i = 0; $i < $conversation->getNbPair(); $i++) {
+        for ($i = 0; $i < $conversation->countPair(); $i++) {
             $pair = $conversation->getPair($i);
             $message[] = ["role" => "user","content" => $pair->getPrompt()->getUserResquest()];
             $message[] = ["role" => "assistant","content" => $pair->getAnswer()->getMessage()];

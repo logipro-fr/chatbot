@@ -6,7 +6,6 @@ use Chatbot\Domain\Model\Context\ContextMessage;
 use Chatbot\Domain\Model\Context\Context;
 use Chatbot\Domain\Model\Context\ContextId;
 use Chatbot\Domain\Model\Conversation\Conversation;
-
 use Chatbot\Domain\Model\Conversation\Prompt;
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\GPTModel;
 use PHPUnit\Framework\TestCase;

@@ -22,7 +22,10 @@ class DeleteContext
             $this->response = new DeleteContextResponse("The context was deleted");
         } else {
             $this->response = new DeleteContextResponse(
-                "the context can't be deleted because is associate to " . $conversation->getConversationId() . "conversation"
+                sprintf(
+                    "the context can't be deleted because is associate to '%s' conversation",
+                    $conversation->getConversationId()
+                )
             );
         }
     }

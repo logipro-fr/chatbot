@@ -57,7 +57,7 @@ class ConversationTest extends TestCase
     public function testConversationHistory(): void
     {
         //arrange /Given
-        $conversation = new Conversation( new ContextId());
+        $conversation = new Conversation(new ContextId());
         $pair1 = new Pair(new Prompt("Bonjour"), new Answer("Bonjour, comment puis-je vous aider", 200));
         $pair2 = new Pair(new Prompt("racontes moi une blague"), new Answer("Je suis une blague", 200));
 
@@ -85,7 +85,7 @@ class ConversationTest extends TestCase
         $conversation->addPair(new Prompt("racontes moi une blague"), new Answer("Une blague", 200));
 
         //assert /then
-        $this->assertEquals(2, $conversation->getNbPair());
+        $this->assertEquals(2, $conversation->countPair());
     }
 
 

@@ -33,7 +33,7 @@ abstract class ConversationRepositoryTestBase extends TestCase
         $conversation2->addPair(new Prompt("prompt 1"), new Answer("answer 1", 5));
         $conversation2->addPair(new Prompt("prompt 2"), new Answer("answer 2", 5));
         $conversation2->addPair(new Prompt("prompt 3"), new Answer("answer 3", 5));
-        var_dump($conversation2);
+
         $this->repository->add($conversation);
         $found = $this->repository->findById($id);
         $this->repository->add($conversation2);
@@ -48,7 +48,7 @@ abstract class ConversationRepositoryTestBase extends TestCase
         $this->assertInstanceOf(Conversation::class, $found);
         $this->assertFalse($idFound->equals($found2->getConversationId()));
 
-        $this->assertEquals(3, $found2->getNbPair());
+        $this->assertEquals(3, $found2->countPair());
     }
 
     public function testConversationNotFoundException(): void

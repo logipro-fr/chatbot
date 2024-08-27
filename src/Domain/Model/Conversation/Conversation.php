@@ -13,22 +13,17 @@ use Safe\DateTimeImmutable as SafeDateTimeImmutable;
 
 class Conversation
 {
-    
+    /** @var Collection<int, Pair> */
     private Collection $pairs;
+
     public function __construct(
-      
         private ContextId $context,
         private ConversationId $conversationId = new ConversationId(),
         private readonly DateTimeImmutable $createdAt = new SafeDateTimeImmutable(),
     ) {
-        $this->pairs = new ArrayCollection;
-        (new EventFacade())->dispatch(new ConversationCreated($this->conversationId->__toString()));
+        $this->pairs = new ArrayCollection();
+        (new EventFacade())->dispatch(new ConversationCreated($this->conversationId));
     }
-
-    //public function getTotalToken(): int
-    //{
-    //    return $this->pairs->TotalToken();
-    //}
 
     public function getConversationId(): ConversationId
     {
@@ -40,7 +35,12 @@ class Conversation
         return $this->pairs->get($number);
     }
 
-    public function getNbPair(): int
+    public function getLastPair(): Pair
+    {
+        return $this->pairs->last();
+    }
+
+    public function countPair(): int
     {
         return $this->pairs->count();
     }
@@ -59,10 +59,5 @@ class Conversation
     public function getContext(): ContextId
     {
         return $this->context;
-    }
-
-    public function clearPair(): void
-    {
-        $this->pairs->clear;
     }
 }

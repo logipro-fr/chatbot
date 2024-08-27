@@ -27,10 +27,10 @@ class MakeConversation
         $message = (new Ask())->execute($request->prompt, $lm);
         $conversation->addPair($request->prompt, $message);
         $this->addToRepository($conversation);
-        $pair = $conversation->getPair($conversation->getNbPair() - 1);
+        $pair = $conversation->getPair($conversation->countPair() - 1);
         $this->response = new MakeConversationResponse(
             $conversation->getConversationId(),
-            $conversation->getNbPair(),
+            $conversation->countPair(),
             $pair->getAnswer()->getMessage()
         );
     }

@@ -4,22 +4,19 @@ namespace Chatbot\Infrastructure\Api\V1;
 
 use Chatbot\Application\Service\ContinueConversation\ContinueConversation;
 use Chatbot\Application\Service\ContinueConversation\ContinueConversationRequest;
-use Chatbot\Application\Service\ContinueConversation\ContinueConversationResponse;
 use Chatbot\Application\Service\MakeConversation\LanguageModelAbstractFactory;
 use Chatbot\Domain\Model\Conversation\ConversationId;
 use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
 use Chatbot\Domain\Model\Conversation\Prompt;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Throwable;
 
 use function Safe\json_decode;
 
-class ChatBotContinueController extends AbstractController
+class ContinueConversationController extends AbstractController
 {
     public function __construct(
         private ConversationRepositoryInterface $repository,
@@ -30,32 +27,31 @@ class ChatBotContinueController extends AbstractController
     #[Route('api/v1/conversations/Continue', 'continueConversation', methods: ['POST'])]
     public function continueConversation(Request $request): Response
     {
-        $request = $this->buildContinueconversationRequest($request);
-        $conversation = new ContinueConversation($this->repository, $this->factory);
         try {
+            $request = $this->buildContinueconversationRequest($request);
+            $conversation = new ContinueConversation($this->repository, $this->factory);
             $conversation->execute($request);
+            $this->entityManager->flush();
+            $response = $conversation->getResponse();
+            $this->entityManager->flush();
             $eventFlush = new EventFlush($this->entityManager);
-            $eventFlush->flushAndDistribute();            
+            $eventFlush->flushAndDistribute();
+            return $this->writeSuccessfulResponse($response);
         } catch (Exception $e) {
             return $this->writeUnSuccessFulResponse($e);
         }
-        $response = $conversation->getResponse();
-        //dd($this->repository->findById($request->convId));
-        return $this->writeSuccessfulResponse($response);
     }
 
     private function buildContinueconversationRequest(Request $request): ContinueConversationRequest
     {
-
         $content = $request->getContent();
-        /** @var array<string> $data */
 
+        /** @var array<string> $data */
         $data = json_decode($content, true);
-        /** @var Prompt */
+
         $prompt = new Prompt($data['Prompt']);
         /** @var string */
         $id = $data["convId"];
-        /** @var ConversationId */
         $convId = new ConversationId($id);
         /** @var string */
         $lmName = $data['lmName'];

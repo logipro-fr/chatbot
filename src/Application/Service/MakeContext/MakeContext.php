@@ -26,7 +26,7 @@ class MakeContext
         }
         $context = new Context($request->message);
         $this->addToRepository($context);
-        $this->response = new MakeContextResponse($context->getId());
+        $this->response = new MakeContextResponse($context->getContextId());
     }
     private function addToRepository(Context $context): void
     {

@@ -24,7 +24,7 @@ class ContextRepositoryInMemory implements ContextRepositoryInterface
     }
     public function add(Context $context): void
     {
-        $this->contexts[$context->getId()->__toString()] = $context;
+        $this->contexts[$context->getContextId()->__toString()] = $context;
     }
 
 

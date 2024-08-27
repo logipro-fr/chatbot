@@ -71,7 +71,7 @@ class ChatBotMakeControllerTest extends WebTestCase
 
         /** @var string */
         $data = $this->client->getResponse()->getContent();
-        
+
         /** @var array<mixed,array<mixed>> */
         $responseContent = json_decode($data, true);
         $contextid = $responseContent['data']['contextId'];

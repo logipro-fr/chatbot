@@ -24,7 +24,7 @@ class ContinueConversationControllerTest extends WebTestCase
         $this->initDoctrineTester();
         $dotenv = new Dotenv();
         $dotenv->loadEnv(getcwd() . '/src/Infrastructure/Shared/Symfony/.env.local');
-        $this->clearTables(["conversations"]);
+        $this->clearTables(["conversations_pairs", "pairs", "conversations"]);
         $this->client = self::createClient(["debug" => false]);
 
         $this->client->request(
@@ -93,13 +93,19 @@ class ContinueConversationControllerTest extends WebTestCase
         /** @var string */
         $botMessage = $responseContent['data']['botMessage'];
         $this->assertTrue($responseContent["success"]);
-        $this->assertArrayHasKey("conversationId", $responseContent["data"]);
-        $this->assertEquals(2, $responseContent["data"]["numberOfPairs"]);
+        $data = $responseContent["data"];
+        $this->assertArrayHasKey("conversationId", $data);
+        $this->assertEquals(2, $data["numberOfPairs"]);
         $this->assertArrayHasKey("botMessage", $responseContent["data"]);
         $this->assertStringContainsStringIgnoringCase("Marine", $botMessage);
 
-        $repository = new ConversationRepositoryDoctrine($this->getEntityManager());
-        $conversation = $repository->findById(new ConversationId($this->conversationId));
-        $this->assertEquals(2, $conversation->getNbPair());
+        $this->assertConversationPairCountInRepository(2);
+    }
+
+    private function assertConversationPairCountInRepository(int $expectedCount): void
+    {
+        $conversationRepository = new ConversationRepositoryDoctrine($this->getEntityManager());
+        $conversation = $conversationRepository->findById(new ConversationId($this->conversationId));
+        $this->assertEquals($expectedCount, $conversation->countPair());
     }
 }

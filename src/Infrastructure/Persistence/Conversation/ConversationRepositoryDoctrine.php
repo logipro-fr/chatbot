@@ -22,17 +22,12 @@ class ConversationRepositoryDoctrine extends EntityRepository implements Convers
 
     public function add(Conversation $conversation): void
     {
-       $this->getEntityManager()->persist($conversation);
+        $this->getEntityManager()->persist($conversation);
     }
 
     public function findById(ConversationId $conversationId): Conversation
     {
-        try {
-            $conversation = $this->getEntityManager()->find(Conversation::class, $conversationId);
-        }
-         catch(\Exception $e) {
-            dd($e);
-         }
+        $conversation = $this->getEntityManager()->find(Conversation::class, $conversationId);
         if ($conversation === null) {
             throw new ConversationNotFoundException(sprintf("Conversation '%s' not found", $conversationId));
         }
@@ -40,8 +35,7 @@ class ConversationRepositoryDoctrine extends EntityRepository implements Convers
     }
 
     public function findByContextId(ContextId $contextId): Conversation|false
-    {   
-        throw new \Exception("Stop COUCOU");
+    {
         $conversations = $this->findBy(["context" => $contextId]);
         foreach ($conversations as $conversation) {
             if ($conversation->getContext()->equals($contextId)) {

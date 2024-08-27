@@ -20,7 +20,6 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
 
-
 use function Safe\file_get_contents;
 use function Safe\json_encode;
 

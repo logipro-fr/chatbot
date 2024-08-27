@@ -56,7 +56,7 @@ class DeleteContextTest extends TestCase
         $response = $service->getResponse();
         $this->assertInstanceOf(DeleteContextResponse::class, $response);
         $this->assertStringContainsString(
-            "the context can't be deleted because is associate to conversation_idconversation",
+            "the context can't be deleted because is associate to 'conversation_id' conversation",
             $response->message
         );
     }

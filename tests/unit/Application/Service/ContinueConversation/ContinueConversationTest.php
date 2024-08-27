@@ -21,10 +21,10 @@ use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemo
 use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
 use PHPUnit\Framework\TestCase;
 
-
 class ContinueConversationtest extends TestCase
 {
     use DoctrineRepositoryTesterTrait;
+
     private ConversationRepositoryInterface $repository;
     private ConversationId $convid;
     private LanguageModelAbstractFactory $factory;
@@ -55,12 +55,12 @@ class ContinueConversationtest extends TestCase
         $prompt = new ContinueConversationRequest(new Prompt("Bonsoir"), $this->convid, "Parrot");
         $service = new ContinueConversation($this->repository, $this->factory);
         //act / When
-        $nbPair = $this->repository->findById($this->convid)->getNbPair();
+        $nbPair = $this->repository->findById($this->convid)->countPair();
         $this->assertEquals(1, $nbPair);
         $service->execute($prompt);
         //assert /Then
         $conversation = $this->repository->findById($this->convid);
-        $nbPair2 = $conversation->getNbPair();
+        $nbPair2 = $conversation->countPair();
         $this->assertEquals(2, $nbPair2);
         $this->assertInstanceOf(ContinueConversationResponse::class, $service->getResponse());
     }
@@ -71,13 +71,13 @@ class ContinueConversationtest extends TestCase
         $prompt = new ContinueConversationRequest(new Prompt("Bonsoir"), $this->convid, "Parrot");
         $service = new ContinueConversation($this->repository, $this->factory);
         //act / When
-        $nbPair = $this->repository->findById($this->convid)->getNbPair();
+        $nbPair = $this->repository->findById($this->convid)->countPair();
         $this->assertEquals(1, $nbPair);
         $service->execute($prompt);
         $service->execute($prompt);
         //assert /Then
         $conversation = $this->repository->findById($this->convid);
-        $nbPair2 = $conversation->getNbPair();
+        $nbPair2 = $conversation->countPair();
         $this->assertEquals(3, $nbPair2);
         $this->assertInstanceOf(ContinueConversationResponse::class, $service->getResponse());
     }
