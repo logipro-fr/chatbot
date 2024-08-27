@@ -3,7 +3,7 @@
 namespace Chatbot\Tests\Infrastructure\Api\V1;
 
 use Chatbot\Application\Service\Exception\BadTypeNameException;
-use Chatbot\Infrastructure\Api\V1\ChatBotViewContextController;
+use Chatbot\Infrastructure\Api\V1\ViewContextController;
 use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryInMemory;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
 use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
@@ -13,12 +13,13 @@ use Symfony\Component\HttpFoundation\Request;
 
 use function Safe\json_encode;
 
-class ChatBotViewContextTest extends WebTestCase
+class ViewContextTest extends WebTestCase
 {
     use DoctrineRepositoryTesterTrait;
     use AssertResponseTrait;
 
     private KernelBrowser $client;
+    private string $contextId;
 
 
     public function setUp(): void
@@ -34,7 +35,7 @@ class ChatBotViewContextTest extends WebTestCase
 
         $contextrepo = new ContextRepositoryInMemory();
         $convrepo = new ConversationRepositoryInMemory();
-        $controller = new ChatBotViewContextController($contextrepo, $convrepo, $this->getEntityManager());
+        $controller = new ViewContextController($contextrepo, $convrepo, $this->getEntityManager());
         $request = Request::create(
             "GET",
             "/api/v1/contexts",
@@ -53,28 +54,13 @@ class ChatBotViewContextTest extends WebTestCase
     public function testControllerRouting(): void
     {
 
-        $this->client->request(
-            "POST",
-            "/api/v1/context/Make",
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            json_encode([
-                "ContextMessage" => "je suis un context",
-            ])
-        );
-
-        /** @var string */
-        $data = $this->client->getResponse()->getContent();
-        /** @var array<mixed,array<mixed>> */
-        $responseContent = json_decode($data, true);
-        $contextId = $responseContent['data']['contextId'];
+        $this->initializeContextWithRouting();
 
         $this->client->request(
             "GET",
             "/api/v1/contexts",
             [
-                "Id" => $contextId,
+                "Id" => $this->contextId,
                 "IdType" => "contexts",
             ],
             [],
@@ -113,5 +99,25 @@ class ChatBotViewContextTest extends WebTestCase
             $this->client->getResponse(),
             (new \ReflectionClass(BadTypeNameException::class))->getShortName()
         );
+    }
+
+    private function initializeContextWithRouting():void 
+    {
+        $this->client->request(
+            "POST",
+            "/api/v1/context/Make",
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode([
+                "ContextMessage" => "je suis un context",
+            ])
+        );
+
+        /** @var string */
+        $data = $this->client->getResponse()->getContent();
+        /** @var array<mixed,array<mixed>> */
+        $responseContent = json_decode($data, true);
+        $this->contextId = $responseContent['data']['contextId'];
     }
 }

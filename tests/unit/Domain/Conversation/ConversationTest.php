@@ -9,6 +9,8 @@ use Chatbot\Domain\Model\Context\ContextId;
 use Chatbot\Domain\Model\Conversation\Answer;
 use Chatbot\Domain\Model\Conversation\Conversation;
 use Chatbot\Domain\Model\Conversation\ConversationId;
+use Chatbot\Domain\Model\Conversation\Exceptions\LastPairDoesntExistException;
+use Chatbot\Domain\Model\Conversation\Exceptions\PairOutOfRangeException;
 use Chatbot\Domain\Model\Conversation\Pair;
 use Chatbot\Domain\Model\Conversation\Prompt;
 use DateTimeImmutable;
@@ -117,5 +119,25 @@ class ConversationTest extends TestCase
         $creationTime = SafeDateTimeImmutable::createFromFormat('d/m/Y H:i:s', "12/03/2022 15:32:45");
         $conversation = new Conversation(new ContextId(), createdAt: $creationTime);
         $this->assertEquals($creationTime, $conversation->getCreatedAt());
+    }
+
+    public function testPairOutOfRangeException(): void
+    {
+        $this->expectException(PairOutOfRangeException::class);
+        $this->expectExceptionMessage("Index '1' out of range, pair cannot be found");
+        $conversation = new Conversation(new ContextId());
+        $conversation->getPair(1);
+
+        //act /When
+    }
+
+    public function testLastPairDoesntExistException(): void
+    {
+        $this->expectException(LastPairDoesntExistException::class);
+        $this->expectExceptionMessage("The last pair cannot be found");
+        $conversation = new Conversation(new ContextId());
+        $conversation->getLastPair();
+
+        //act /When
     }
 }

@@ -18,7 +18,7 @@ use Throwable;
 
 use function Safe\json_decode;
 
-class ChatBotDeleteContextController extends AbstractController
+class DeleteContextController extends AbstractController
 {
     public function __construct(
         private ContextRepositoryInterface $repository,

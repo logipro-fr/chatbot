@@ -2,10 +2,8 @@
 
 namespace Chatbot\Tests\Infrastructure\Api\V1;
 
-use Chatbot\Application\Service\Exception\EmptyStringException;
-use Chatbot\Infrastructure\Api\V1\ChatBotMakeContext;
-use Chatbot\Infrastructure\Api\V1\ChatBotMakeController;
-use Chatbot\Infrastructure\LanguageModel\ModelFactory;
+use Chatbot\Infrastructure\Api\V1\EditContextController;
+use Chatbot\Infrastructure\Exception\ConversationNotFoundException;
 use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryInMemory;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
 use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
@@ -15,13 +13,13 @@ use Symfony\Component\HttpFoundation\Request;
 
 use function Safe\json_encode;
 
-class ChatBotMakeContextTest extends WebTestCase
+class EditContextControllerTest extends WebTestCase
 {
     use DoctrineRepositoryTesterTrait;
     use AssertResponseTrait;
 
     private KernelBrowser $client;
-
+    private string $contextId;
 
 
     public function setUp(): void
@@ -32,37 +30,41 @@ class ChatBotMakeContextTest extends WebTestCase
         $this->client = static::createClient(["debug" => false]);
     }
 
-    public function testChatBotControllerExecute(): void
+    public function testEditContextControllerExecute(): void
     {
-        $repository = new ContextRepositoryInMemory();
-        $controller = new ChatBotMakeContext($repository, $this->getEntityManager());
+
+        $contextrepo = new ContextRepositoryInMemory();
+        $controller = new EditContextController($contextrepo, $this->getEntityManager());
         $request = Request::create(
-            "/api/v1/context/make",
-            "POST",
+            "/api/v1/contexts",
+            "PATCH",
             [],
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
             json_encode([
-                "ContextMessage" => "You're helpfull assistant",
+                "Id" => "base",
+                "NewMessage" => "context",
             ])
         );
-        $response = $controller->makeContext($request);
+        $response = $controller->editContext($request);
         /** @var string */
         $responseContent = $response->getContent();
         $this->assertJson($responseContent);
     }
+
     public function testControllerRouting(): void
     {
+        $this->initializeAContextWithRouting();
         $this->client->request(
-            "POST",
-            "/api/v1/context/Make",
+            "PATCH",
+            "/api/v1/contexts",
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
             json_encode([
-
-                "ContextMessage" => "You're helpfull assistant",
+                "Id" => $this->contextId,
+                "NewMessage" => "new context",
             ])
         );
         /** @var string */
@@ -73,10 +75,36 @@ class ChatBotMakeContextTest extends WebTestCase
 
         $this->assertTrue($responseContent["success"]);
         $this->assertEquals(200, $responseCode);
+
+
         $this->assertArrayHasKey("contextId", $responseContent["data"]);
+        $this->assertArrayHasKey("contextMessage", $responseContent["data"]);
     }
 
     public function testControllerException(): void
+    {
+        $this->client->request(
+            "PATCH",
+            "/api/v1/contexts",
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode([
+                "Id" => "Je n'existe pas",
+                "NewMessage" => "new context",
+            ])
+        );
+        /** @var string */
+        $responseContent = $this->client->getResponse()->getContent();
+        $responseCode = $this->client->getResponse()->getStatusCode();
+
+        $this->assertResponseFailure(
+            $this->client->getResponse(),
+            (new \ReflectionClass(ConversationNotFoundException::class))->getShortName()
+        );
+    }
+
+    private function initializeAContextWithRouting(): void 
     {
         $this->client->request(
             "POST",
@@ -85,16 +113,14 @@ class ChatBotMakeContextTest extends WebTestCase
             [],
             ['CONTENT_TYPE' => 'application/json'],
             json_encode([
-
-                "ContextMessage" => "",
+                "ContextMessage" => "je suis un context",
             ])
         );
+
         /** @var string */
-        $responseContent = $this->client->getResponse()->getContent();
-        $responseCode = $this->client->getResponse()->getStatusCode();
-        $this->assertResponseFailure(
-            $this->client->getResponse(),
-            (new \ReflectionClass(EmptyStringException::class))->getShortName()
-        );
+        $data = $this->client->getResponse()->getContent();
+        /** @var array<mixed,array<mixed>> */
+        $responseContent = json_decode($data, true);
+        $this->contextId = $responseContent['data']['contextId'];
     }
 }

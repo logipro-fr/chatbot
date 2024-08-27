@@ -21,7 +21,7 @@ use Throwable;
 
 use function Safe\json_decode;
 
-class ChatBotMakeController extends AbstractController
+class MakeConversationController extends AbstractController
 {
     public function __construct(
         private ConversationRepositoryInterface $repository,

@@ -2,7 +2,7 @@
 
 namespace Chatbot\Tests\Infrastructure\Api\V1;
 
-use Chatbot\Infrastructure\Api\V1\ChatBotMakeController;
+use Chatbot\Infrastructure\Api\V1\MakeconversationController;
 use Chatbot\Infrastructure\Exception\ConversationNotFoundException;
 use Chatbot\Infrastructure\LanguageModel\ModelFactory;
 use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryInMemory;
@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 use function Safe\json_encode;
 
-class ChatBotMakeControllerTest extends WebTestCase
+class MakeConversationControllerTest extends WebTestCase
 {
     use DoctrineRepositoryTesterTrait;
     use AssertResponseTrait;
@@ -35,7 +35,7 @@ class ChatBotMakeControllerTest extends WebTestCase
         $repository = new ConversationRepositoryInMemory();
         $factory = new ModelFactory();
         $contextrepo = new ContextRepositoryInMemory();
-        $controller = new ChatBotMakeController($repository, $contextrepo, $factory, $this->getEntityManager());
+        $controller = new MakeconversationController($repository, $contextrepo, $factory, $this->getEntityManager());
         $request = Request::create(
             "/api/v1/conversations/make",
             "POST",

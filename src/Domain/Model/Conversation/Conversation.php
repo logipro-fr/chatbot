@@ -6,9 +6,12 @@ use Chatbot\Domain\Event\ConversationCreated;
 use Chatbot\Domain\Event\PairAdded;
 use Chatbot\Domain\EventFacade\EventFacade;
 use Chatbot\Domain\Model\Context\ContextId;
+use Chatbot\Domain\Model\Conversation\Exceptions\LastPairDoesntExistException;
+use Chatbot\Domain\Model\Conversation\Exceptions\PairOutOfRangeException;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use OutOfRangeException;
 use Safe\DateTimeImmutable as SafeDateTimeImmutable;
 
 class Conversation
@@ -32,12 +35,25 @@ class Conversation
 
     public function getPair(int $number): Pair
     {
-        return $this->pairs->get($number);
+        $pair = $this->pairs->get($number);
+        if (null === $pair) {
+            throw new PairOutOfRangeException(sprintf(
+                "Index '%d' out of range, pair cannot be found",
+                $number
+            ));
+        }
+        return $pair;
     }
 
     public function getLastPair(): Pair
     {
-        return $this->pairs->last();
+        $pair = $this->pairs->last();
+        if (false === $pair) {
+            throw new LastPairDoesntExistException(
+                "The last pair cannot be found"
+            );
+        }
+        return $pair;
     }
 
     public function countPair(): int

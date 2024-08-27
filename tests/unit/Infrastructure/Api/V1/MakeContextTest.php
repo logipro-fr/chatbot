@@ -2,13 +2,9 @@
 
 namespace Chatbot\Tests\Infrastructure\Api\V1;
 
-use Chatbot\Domain\Model\Context\ContextId;
-use Chatbot\Domain\Model\Conversation\Conversation;
-use Chatbot\Infrastructure\Api\V1\ChatBotDeleteContextController;
-use Chatbot\Infrastructure\Api\V1\ChatBotEditContextController;
-use Chatbot\Infrastructure\Exception\ConversationNotFoundException;
+use Chatbot\Application\Service\Exception\EmptyStringException;
+use Chatbot\Infrastructure\Api\V1\MakeContextController;
 use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryInMemory;
-use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
 use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -16,7 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 use function Safe\json_encode;
 
-class ChatBotDeleteContextControllerTest extends WebTestCase
+class MakeContextTest extends WebTestCase
 {
     use DoctrineRepositoryTesterTrait;
     use AssertResponseTrait;
@@ -24,41 +20,37 @@ class ChatBotDeleteContextControllerTest extends WebTestCase
     private KernelBrowser $client;
 
 
+
     public function setUp(): void
     {
 
         $this->initDoctrineTester();
-        $this->client = static::createClient(["debug" => false]);
         $this->clearTables(["context"]);
+        $this->client = static::createClient(["debug" => false]);
     }
 
-    public function testDeleteContextControllerExecute(): void
+    public function testChatBotControllerExecute(): void
     {
-
-        $contextrepo = new ContextRepositoryInMemory();
-        $conversationrepo = new ConversationRepositoryInMemory();
-        $conversationrepo->add(new Conversation(new ContextId("english")));
-        $controller = new ChatBotDeleteContextController($contextrepo, $conversationrepo, $this->getEntityManager());
+        $repository = new ContextRepositoryInMemory();
+        $controller = new MakeContextController($repository, $this->getEntityManager());
         $request = Request::create(
-            "/api/v1/conversation/Delete",
+            "/api/v1/context/make",
             "POST",
             [],
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
             json_encode([
-                "Id" => "base",
+                "ContextMessage" => "You're helpfull assistant",
             ])
         );
-        $response = $controller->deleteContext($request);
+        $response = $controller->makeContext($request);
         /** @var string */
         $responseContent = $response->getContent();
         $this->assertJson($responseContent);
     }
-
     public function testControllerRouting(): void
     {
-
         $this->client->request(
             "POST",
             "/api/v1/context/Make",
@@ -66,24 +58,8 @@ class ChatBotDeleteContextControllerTest extends WebTestCase
             [],
             ['CONTENT_TYPE' => 'application/json'],
             json_encode([
-                "ContextMessage" => "je suis un context",
-            ])
-        );
 
-        /** @var string */
-        $data = $this->client->getResponse()->getContent();
-        /** @var array<mixed,array<mixed>> */
-        $responseContent = json_decode($data, true);
-        $contextid = $responseContent['data']['contextId'];
-
-        $this->client->request(
-            "DELETE",
-            "/api/v1/contexts",
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            json_encode([
-                "Id" => $contextid,
+                "ContextMessage" => "You're helpfull assistant",
             ])
         );
         /** @var string */
@@ -94,28 +70,28 @@ class ChatBotDeleteContextControllerTest extends WebTestCase
 
         $this->assertTrue($responseContent["success"]);
         $this->assertEquals(200, $responseCode);
-        $this->assertArrayHasKey('message', $responseContent["data"]);
+        $this->assertArrayHasKey("contextId", $responseContent["data"]);
     }
 
     public function testControllerException(): void
     {
         $this->client->request(
-            "DELETE",
-            "/api/v1/contexts",
+            "POST",
+            "/api/v1/context/Make",
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
             json_encode([
-                "Id" => "Je n'existe pas",
+
+                "ContextMessage" => "",
             ])
         );
         /** @var string */
         $responseContent = $this->client->getResponse()->getContent();
         $responseCode = $this->client->getResponse()->getStatusCode();
-
         $this->assertResponseFailure(
             $this->client->getResponse(),
-            (new \ReflectionClass(ConversationNotFoundException::class))->getShortName()
+            (new \ReflectionClass(EmptyStringException::class))->getShortName()
         );
     }
 }

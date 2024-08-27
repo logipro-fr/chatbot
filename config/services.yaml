@@ -14,7 +14,7 @@ services:
     autowire: true
     
 
-  Chatbot\Infrastructure\Api\V1\ChatBotMakeController:
+  Chatbot\Infrastructure\Api\V1\MakeConversationController:
     autowire: true
     arguments:
       $repository: '@conversation.repository'
@@ -22,30 +22,30 @@ services:
       $factory: '@conversation.factory'
       
 
-  Chatbot\Infrastructure\Api\V1\ChatBotContinueController:
+  Chatbot\Infrastructure\Api\V1\ContinueConversationController:
     autowire: true
     arguments:
       $repository: '@conversation.repository'
       $factory: '@conversation.factory'
 
 
-  Chatbot\Infrastructure\Api\V1\ChatBotMakeContext:
+  Chatbot\Infrastructure\Api\V1\MakeContextController:
     autowire: true
     arguments:
       $repository: '@context.repository'
 
-  Chatbot\Infrastructure\Api\V1\ChatBotViewContextController:
+  Chatbot\Infrastructure\Api\V1\ViewContextController:
     autowire: true
     arguments:
       $repository: '@context.repository'
       $convrepository: '@conversation.repository'
 
-  Chatbot\Infrastructure\Api\V1\ChatBotEditContextController:
+  Chatbot\Infrastructure\Api\V1\EditContextController:
     autowire: true
     arguments:
       $repository: '@context.repository'
 
-  Chatbot\Infrastructure\Api\V1\ChatBotDeleteContextController:
+  Chatbot\Infrastructure\Api\V1\DeleteContextController:
     autowire: true
     arguments:
       $repository: '@context.repository'

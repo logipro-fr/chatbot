@@ -2,9 +2,10 @@
 
 namespace Chatbot\Infrastructure\Api\V1;
 
-use Chatbot\Application\Service\MakeContext\MakeContext;
-use Chatbot\Application\Service\MakeContext\MakeContextRequest;
-use Chatbot\Application\Service\MakeContext\MakeContextResponse;
+use Chatbot\Application\Service\EditContext\EditContext;
+use Chatbot\Application\Service\EditContext\EditContextRequest;
+use Chatbot\Application\Service\EditContext\EditContextResponse;
+use Chatbot\Domain\Model\Context\ContextId;
 use Chatbot\Domain\Model\Context\ContextMessage;
 use Chatbot\Domain\Model\Context\ContextRepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -17,18 +18,18 @@ use Throwable;
 
 use function Safe\json_decode;
 
-class ChatBotMakeContext extends AbstractController
+class EditContextController extends AbstractController
 {
     public function __construct(
         private ContextRepositoryInterface $repository,
         private EntityManagerInterface $entityManager
     ) {
     }
-    #[Route('api/v1/context/Make', 'makeContext', methods: ['POST'])]
-    public function makeContext(Request $request): Response
+    #[Route('api/v1/contexts', 'editContext', methods: ['PATCH'])]
+    public function editContext(Request $request): Response
     {
-        $request = $this->buildMakeContextRequest($request);
-        $context = new MakeContext($this->repository);
+        $request = $this->buildEditContextRequest($request);
+        $context = new EditContext($this->repository);
         try {
             $context->execute($request);
             $eventFlush = new EventFlush($this->entityManager);
@@ -40,16 +41,18 @@ class ChatBotMakeContext extends AbstractController
         return $this->writeSuccessfulResponse($response);
     }
 
-
-    private function buildMakeContextRequest(Request $request): MakeContextRequest
+    private function buildEditContextRequest(Request $request): EditContextRequest
     {
 
         $content = $request->getContent();
         /** @var array<string> $data */
         $data = json_decode($content, true);
-        /** @var ContextMessage */
-        $context = new ContextMessage($data['ContextMessage']);
 
-        return new MakeContextRequest($context);
+        /** @var ContextId */
+        $context = new ContextId($data['Id']);
+        /** @var ContextMessage */
+        $message = new ContextMessage($data['NewMessage']);
+
+        return new EditContextRequest($message, $context);
     }
 }
