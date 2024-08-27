@@ -2,9 +2,16 @@
 
 namespace Chatbot\Domain\Model\Conversation;
 
+use DateTimeImmutable;
+use Safe\DateTimeImmutable as SafeDateTimeImmutable;
+
 class Pair
 {
-    public function __construct(private Prompt $prompt, private Answer $answer, private PairId $pairId = new PairId())
+    public function __construct(
+        private Prompt $prompt, 
+        private Answer $answer, 
+        private PairId $pairId = new PairId(),
+        private readonly DateTimeImmutable $createdAt = new SafeDateTimeImmutable(),)
     {
     }
 
