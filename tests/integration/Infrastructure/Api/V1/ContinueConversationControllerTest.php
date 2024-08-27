@@ -2,6 +2,9 @@
 
 namespace Chatbot\Tests\integration\Infrastructure;
 
+use Chatbot\Domain\Model\Conversation\ConversationId;
+use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryDoctrine;
+use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
 use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -21,7 +24,7 @@ class ContinueConversationControllerTest extends WebTestCase
         $this->initDoctrineTester();
         $dotenv = new Dotenv();
         $dotenv->loadEnv(getcwd() . '/src/Infrastructure/Shared/Symfony/.env.local');
-        $this->clearTables(["conversations"]);
+        $this->clearTables(["conversations_pairs", "pairs", "conversations"]);
         $this->client = self::createClient(["debug" => false]);
 
         $this->client->request(
@@ -90,9 +93,19 @@ class ContinueConversationControllerTest extends WebTestCase
         /** @var string */
         $botMessage = $responseContent['data']['botMessage'];
         $this->assertTrue($responseContent["success"]);
-        $this->assertArrayHasKey("conversationId", $responseContent["data"]);
-        $this->assertArrayHasKey("numberOfPairs", $responseContent["data"]);
+        $data = $responseContent["data"];
+        $this->assertArrayHasKey("conversationId", $data);
+        $this->assertEquals(2, $data["numberOfPairs"]);
         $this->assertArrayHasKey("botMessage", $responseContent["data"]);
         $this->assertStringContainsStringIgnoringCase("Marine", $botMessage);
+
+        $this->assertConversationPairCountInRepository(2);
+    }
+
+    private function assertConversationPairCountInRepository(int $expectedCount): void
+    {
+        $conversationRepository = new ConversationRepositoryDoctrine($this->getEntityManager());
+        $conversation = $conversationRepository->findById(new ConversationId($this->conversationId));
+        $this->assertEquals($expectedCount, $conversation->countPair());
     }
 }

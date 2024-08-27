@@ -7,12 +7,24 @@
 
     <entity name="Chatbot\Domain\Model\Conversation\Conversation" table="conversations"
             repository-class="Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryDoctrine">
-        <id name="id" type="conversation_id" column="conversation_id">
+        <id name="conversationId" type="conversation_id" column="conversation_id">
             <generator strategy="NONE"/>
         </id>
         <field name="createdAt" type="datetime_immutable" column="created_at"/>
-        <field name="pairs" type="pairs" column="pairs"/>
         <field name="context" type="context" column="context"/>
+        <many-to-many field="pairs" target-entity="Chatbot\Domain\Model\Conversation\Pair">
+            <cascade>
+                <cascade-all/>
+            </cascade>
+            <join-table name="conversations_pairs">
+                <join-columns>
+                    <join-column name="conversation_id" referenced-column-name="conversation_id" />
+                </join-columns>
+                <inverse-join-columns>
+                    <join-column name="pair_id" referenced-column-name="pair_id" unique="true" />
+                </inverse-join-columns>
+            </join-table>
+        </many-to-many>
     </entity>
 
     

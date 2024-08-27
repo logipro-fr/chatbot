@@ -12,18 +12,13 @@ use Chatbot\Domain\Model\Context\ContextId;
 use Chatbot\Domain\Model\Context\ContextMessage;
 use Chatbot\Domain\Model\Conversation\Answer;
 use Chatbot\Domain\Model\Conversation\Conversation;
-use Chatbot\Domain\Model\Conversation\Pair;
-use Chatbot\Domain\Model\Conversation\PairArray;
 use Chatbot\Domain\Model\Conversation\Prompt;
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\ChatbotGPTApi;
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\RequestGPT;
-use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryInMemory;
 use Chatbot\Tests\RequestGPTFake;
-use Doctrine\DBAL\Types\StringType;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
-use Symfony\Component\HttpFoundation\JsonResponse;
 
 use function Safe\file_get_contents;
 use function Safe\json_encode;
@@ -58,7 +53,7 @@ class ChatbotGPTApiTest extends TestCase
 
     public function testRequest(): void
     {
-        $conversation = new Conversation(new PairArray(), new ContextId("base"));
+        $conversation = new Conversation(new ContextId("base"));
         $client = $this->createMockHttpClient('responseGETblague.json', 200);
         $prompt = new Prompt("raconte moi une blague stp");
         $context = new Context(new ContextMessage(self::CONTEXT));
@@ -79,7 +74,7 @@ class ChatbotGPTApiTest extends TestCase
 
     public function testRequest2(): void
     {
-        $conversation = new Conversation(new PairArray(), new ContextId("base"));
+        $conversation = new Conversation(new ContextId("base"));
         $client = $this->createMockHttpClient('responseGETbonjour.json', 200);
         $chatBotTest = new ChatbotGPTApi($client);
         $prompt = new Prompt("bonjour comment vas tu");
@@ -113,7 +108,7 @@ class ChatbotGPTApiTest extends TestCase
 
     public function testBadKey(): void
     {
-        $conversation = new Conversation(new PairArray(), new ContextId("base"));
+        $conversation = new Conversation(new ContextId("base"));
         $this->expectException(UnhautorizeKeyException::class);
         $this->expectExceptionMessage("Bad Key");
         $client = $this->createMockHttpClient('responseGETblague.json', 401);
@@ -126,7 +121,7 @@ class ChatbotGPTApiTest extends TestCase
 
     public function testBadRequest(): void
     {
-        $conversation = new Conversation(new PairArray(), new ContextId("base"));
+        $conversation = new Conversation(new ContextId("base"));
         $this->expectException(BadRequestException::class);
         $this->expectExceptionMessage("Bad Request");
         $client = $this->createMockHttpClient('responseGETblague.json', 400);
@@ -138,7 +133,7 @@ class ChatbotGPTApiTest extends TestCase
 
     public function testExcesRequest(): void
     {
-        $conversation = new Conversation(new PairArray(), new ContextId("base"));
+        $conversation = new Conversation(new ContextId("base"));
         $this->expectException(ExcesRequestException::class);
         $this->expectExceptionMessage("Exceeded quota");
         $client = $this->createMockHttpClient('responseGETblague.json', 429);
@@ -150,7 +145,7 @@ class ChatbotGPTApiTest extends TestCase
 
     public function testOther(): void
     {
-        $conversation = new Conversation(new PairArray(), new ContextId("base"));
+        $conversation = new Conversation(new ContextId("base"));
         $this->expectException(OtherException::class);
         $this->expectExceptionMessage("Other error");
         $client = $this->createMockHttpClient('responseGETblague.json', 404);
@@ -193,7 +188,7 @@ class ChatbotGPTApiTest extends TestCase
                 ]
             ];
 
-        $conversation = new Conversation(new PairArray(), new ContextId("base"));
+        $conversation = new Conversation(new ContextId("base"));
         $conversation->addPair(
             new Prompt("Je suis le premier prompt"),
             new Answer("Je suis la premiere reponse", 200)

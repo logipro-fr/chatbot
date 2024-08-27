@@ -8,6 +8,6 @@ class ContextRepositoryInMemoryTest extends ContextRepositoryTestBase
 {
     protected function initialize(): void
     {
-        $this->repository = new ContextRepositoryInMemory();
+        $this->contextRepository = new ContextRepositoryInMemory();
     }
 }

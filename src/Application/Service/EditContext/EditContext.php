@@ -15,7 +15,7 @@ class EditContext
     {
         $context = $this->repository->findById($request->id);
         $context->editMessage($request->message);
-        $this->response = new EditContextResponse($context->getId(), $context->getContext());
+        $this->response = new EditContextResponse($context->getContextId(), $context->getContext());
     }
 
     public function getResponse(): EditContextResponse

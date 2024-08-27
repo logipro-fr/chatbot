@@ -7,13 +7,13 @@ use Chatbot\Domain\Model\Context\ContextId;
 use Chatbot\Domain\Model\Context\ContextMessage;
 use Chatbot\Domain\Model\Context\ContextRepositoryInterface;
 use Chatbot\Domain\Model\Conversation\Conversation;
-use Chatbot\Infrastructure\Exception\NoIdException;
+use Chatbot\Infrastructure\Exception\ConversationNotFoundException;
 use ErrorException;
 use PHPUnit\Framework\TestCase;
 
 abstract class ContextRepositoryTestBase extends TestCase
 {
-    protected ContextRepositoryInterface $repository;
+    protected ContextRepositoryInterface $contextRepository;
     protected function setUp(): void
     {
         $this->initialize();
@@ -31,28 +31,28 @@ abstract class ContextRepositoryTestBase extends TestCase
         $context2 = new Context(new ContextMessage(""), new ContextId("id2"));
 
 
-        $this->repository->add($context);
-        $found = $this->repository->findById($id);
-        $this->repository->add($context2);
-        $found2 = $this->repository->findById(new ContextId("id2"));
-        /** @var Conversation */
-        $found = $this->repository->findById($id);
-        /** @var Conversation */
-        $found2 = $this->repository->findById(new ContextId("id2"));
-        $idFound = $found->getId();
+        $this->contextRepository->add($context);
+        $found = $this->contextRepository->findById($id);
+        $this->contextRepository->add($context2);
+        $found2 = $this->contextRepository->findById(new ContextId("id2"));
 
-        $this->assertEquals("id2", $found2->getId());
+        $found = $this->contextRepository->findById($id);
+
+        $found2 = $this->contextRepository->findById(new ContextId("id2"));
+        $idFound = $found->getContextId();
+
+        $this->assertEquals("id2", $found2->getContextId());
         $this->assertInstanceOf(Context::class, $found);
-        $this->assertFalse($idFound->equals($found2->getId()));
+        $this->assertFalse($idFound->equals($found2->getContextId()));
     }
 
     public function testRemove(): void
     {
         $id = new ContextId("base");
         $context = new Context(new ContextMessage(""), $id);
-        $this->repository->add($context);
-        $this->repository->removeContext(($id));
-        $this->expectException(NoIdException::class);
-        $found = $this->repository->findById($id);
+        $this->contextRepository->add($context);
+        $this->contextRepository->removeContext(($id));
+        $this->expectException(ConversationNotFoundException::class);
+        $found = $this->contextRepository->findById($id);
     }
 }

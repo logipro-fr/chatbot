@@ -12,6 +12,6 @@ class ContextRepositoryDoctrineTest extends ContextRepositoryTestBase
     protected function initialize(): void
     {
         $this->initDoctrineTester();
-        $this->repository = new ContextRepositoryDoctrine($this->getEntityManager());
+        $this->contextRepository = new ContextRepositoryDoctrine($this->getEntityManager());
     }
 }

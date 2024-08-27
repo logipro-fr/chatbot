@@ -7,7 +7,7 @@ use Chatbot\Domain\Model\Conversation\Conversation;
 use Chatbot\Domain\Model\Conversation\ConversationId;
 use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
 use Chatbot\Infrastructure\Exception\ContextAssociatedConversationException;
-use SebastianBergmann\Type\FalseType;
+use Chatbot\Infrastructure\Exception\ConversationNotFoundException;
 
 class ConversationRepositoryInMemory implements ConversationRepositoryInterface
 {
@@ -18,12 +18,14 @@ class ConversationRepositoryInMemory implements ConversationRepositoryInterface
 
     public function add(Conversation $conversation): void
     {
-        $this->conversations[$conversation->getId()->__toString()] = $conversation;
+        $this->conversations[$conversation->getConversationId()->__toString()] = $conversation;
     }
 
     public function findById(ConversationId $id): Conversation
     {
-
+        if (!isset($this->conversations[$id->__toString()])) {
+            throw new ConversationNotFoundException(sprintf("Conversation '%s' not found", $id));
+        }
         return $this->conversations[$id->__toString()];
     }
 

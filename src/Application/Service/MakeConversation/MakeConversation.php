@@ -5,7 +5,6 @@ namespace Chatbot\Application\Service\MakeConversation;
 use Chatbot\Domain\Model\Context\ContextRepositoryInterface;
 use Chatbot\Domain\Model\Conversation\Conversation;
 use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
-use Chatbot\Domain\Model\Conversation\PairArray;
 use Chatbot\Domain\Service\Ask\Ask;
 
 class MakeConversation
@@ -22,16 +21,16 @@ class MakeConversation
     public function execute(MakeConversationRequest $request): void
     {
         $context = $this->contextrepository->findById($request->contextId);
-        $conversation = new Conversation(new PairArray(), $request->contextId);
+        $conversation = new Conversation($request->contextId);
         $lm = $this->factory->create($request->lmname, $context->getContext()->getMessage(), $conversation);
 
         $message = (new Ask())->execute($request->prompt, $lm);
         $conversation->addPair($request->prompt, $message);
         $this->addToRepository($conversation);
-        $pair = $conversation->getPair($conversation->getNbPair() - 1);
+        $pair = $conversation->getPair($conversation->countPair() - 1);
         $this->response = new MakeConversationResponse(
-            $conversation->getId(),
-            $conversation->getNbPair(),
+            $conversation->getConversationId(),
+            $conversation->countPair(),
             $pair->getAnswer()->getMessage()
         );
     }

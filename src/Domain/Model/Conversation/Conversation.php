@@ -6,44 +6,65 @@ use Chatbot\Domain\Event\ConversationCreated;
 use Chatbot\Domain\Event\PairAdded;
 use Chatbot\Domain\EventFacade\EventFacade;
 use Chatbot\Domain\Model\Context\ContextId;
+use Chatbot\Domain\Model\Conversation\Exceptions\LastPairDoesntExistException;
+use Chatbot\Domain\Model\Conversation\Exceptions\PairOutOfRangeException;
 use DateTimeImmutable;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use OutOfRangeException;
 use Safe\DateTimeImmutable as SafeDateTimeImmutable;
 
 class Conversation
 {
+    /** @var Collection<int, Pair> */
+    private Collection $pairs;
+
     public function __construct(
-        private PairArray $pairs,
         private ContextId $context,
-        private ConversationId $id = new ConversationId(),
+        private ConversationId $conversationId = new ConversationId(),
         private readonly DateTimeImmutable $createdAt = new SafeDateTimeImmutable(),
     ) {
-        (new EventFacade())->dispatch(new ConversationCreated($this->id->__toString()));
+        $this->pairs = new ArrayCollection();
+        (new EventFacade())->dispatch(new ConversationCreated($this->conversationId));
     }
 
-    public function getTotalToken(): int
+    public function getConversationId(): ConversationId
     {
-        return $this->pairs->TotalToken();
-    }
-
-    public function getId(): ConversationId
-    {
-        return $this->id;
+        return $this->conversationId;
     }
 
     public function getPair(int $number): Pair
     {
-        return $this->pairs->getPair($number);
+        $pair = $this->pairs->get($number);
+        if (null === $pair) {
+            throw new PairOutOfRangeException(sprintf(
+                "Index '%d' out of range, pair cannot be found",
+                $number
+            ));
+        }
+        return $pair;
     }
 
-    public function getNbPair(): int
+    public function getLastPair(): Pair
     {
-        return $this->pairs->getNB();
+        $pair = $this->pairs->last();
+        if (false === $pair) {
+            throw new LastPairDoesntExistException(
+                "The last pair cannot be found"
+            );
+        }
+        return $pair;
+    }
+
+    public function countPair(): int
+    {
+        return $this->pairs->count();
     }
 
     public function addPair(Prompt $prompt, Answer $message): void
     {
         $this->pairs->add(new Pair($prompt, $message));
-        (new EventFacade())->dispatch(new PairAdded($this->id->__toString()));
+        (new EventFacade())->dispatch(new PairAdded($this->conversationId->__toString()));
     }
 
     public function getCreatedAt(): DateTimeImmutable

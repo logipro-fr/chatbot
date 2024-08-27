@@ -6,7 +6,6 @@ use Chatbot\Domain\Model\Context\Context;
 use Chatbot\Domain\Model\Context\ContextId;
 use Chatbot\Domain\Model\Context\ContextMessage;
 use Chatbot\Domain\Model\Conversation\Conversation;
-use Chatbot\Domain\Model\Conversation\PairArray;
 use Chatbot\Domain\Model\Conversation\Prompt;
 use Chatbot\Infrastructure\Api\ChatBot;
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\RequestGPT;
@@ -22,7 +21,7 @@ class ChatBotTest extends TestCase
 {
     public function testConversation(): void
     {
-        $conversation = new Conversation(new PairArray(), new ContextId("base"));
+        $conversation = new Conversation(new ContextId("base"));
         $request = new RequestGPT(
             new Prompt("allo"),
             new Context(new ContextMessage("tu es un assistant sympa")),
@@ -30,7 +29,7 @@ class ChatBotTest extends TestCase
         );
         $engine = new LanguageModelFake();
         $engine->add("\n\nBonjour ! Je vais bien merci ! comment puis-je vous aidez aujourd'hui");
-        $conversation = new Conversation(new PairArray(), new ContextId());
+        $conversation = new Conversation(new ContextId());
         $client = $this->createMockHttpClient('responseGETbonjour.json', 200);
         $chatBot = (new ChatBot($client))->conversation($request);
 

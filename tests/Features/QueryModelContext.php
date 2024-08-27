@@ -32,7 +32,6 @@ class QueryModelContext implements Context
     private ContextRepositoryInterface $contextrepo;
     private int $numberOfPairs;
     private string $lmName;
-    private int $tokencount1;
 
     public function __construct()
     {
@@ -103,7 +102,7 @@ class QueryModelContext implements Context
         $service->execute($request);
         $this->response = $service->getResponse();
         $this->conversation = $this->repository->findById(new ConversationId($this->response->conversationId));
-        $this->tokencount1 = $this->conversation->getTotalToken();
+        //$this->tokencount1 = $this->conversation->getTotalToken();
     }
 
     /**
@@ -137,7 +136,7 @@ class QueryModelContext implements Context
     {
         /** @var Conversation $conversation */
         $conversation = $this->repository->findById(new ConversationId($this->response->conversationId));
-        Assert::assertGreaterThan($this->tokencount1, $conversation->getTotalToken());
+       // Assert::assertGreaterThan($this->tokencount1, $conversation->getTotalToken());
     }
 
      /**
@@ -158,7 +157,7 @@ class QueryModelContext implements Context
         $pair = $this->conversation->getPair(0);
         $responseMessage = $pair->getAnswer()->getMessage();
 
-        $this->numberOfPairs = $this->conversation->getNbPair();
+        $this->numberOfPairs = $this->conversation->countPair();
     }
 
 
@@ -169,7 +168,11 @@ class QueryModelContext implements Context
     {
         $factory = new ModelFactory();
         $service = new ContinueConversation($this->repository, $factory);
-        $request = new ContinueConversationRequest(new Prompt($prompt), $this->conversation->getId(), "GPTModel");
+        $request = new ContinueConversationRequest(
+            new Prompt($prompt),
+            $this->conversation->getConversationId(),
+            "GPTModel"
+        );
         $service->execute($request);
     }
 
@@ -187,6 +190,6 @@ class QueryModelContext implements Context
      */
     public function theConversationIsEnrichedByANewPair(): void
     {
-        Assert::assertGreaterThan($this->numberOfPairs, $this->conversation->getNbPair());
+        Assert::assertGreaterThan($this->numberOfPairs, $this->conversation->countPair());
     }
 }

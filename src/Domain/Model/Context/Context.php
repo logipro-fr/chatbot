@@ -14,10 +14,10 @@ class Context
 {
     public function __construct(
         private ContextMessage $contextmessage,
-        private ContextId $id = new ContextId(),
+        private ContextId $contextId = new ContextId(),
         private readonly DateTimeImmutable $createdAt = new SafeDateTimeImmutable()
     ) {
-        (new EventFacade())->dispatch(new ContextCreated($this->id->__toString(), $this->contextmessage->getMessage()));
+        (new EventFacade())->dispatch(new ContextCreated($this->contextId, $this->contextmessage->getMessage()));
     }
 
     public function getContext(): ContextMessage
@@ -25,9 +25,9 @@ class Context
         return $this->contextmessage;
     }
 
-    public function getId(): ContextId
+    public function getContextId(): ContextId
     {
-        return $this->id;
+        return $this->contextId;
     }
 
     public function getCreatedAt(): DateTimeImmutable
@@ -38,6 +38,6 @@ class Context
     public function editMessage(ContextMessage $context): void
     {
         $this->contextmessage = $context;
-        (new EventFacade())->dispatch(new ContextEdited($this->id->__toString(), $this->contextmessage->getMessage()));
+        (new EventFacade())->dispatch(new ContextEdited($this->contextId, $this->contextmessage->getMessage()));
     }
 }

@@ -24,7 +24,7 @@ class ContextTest extends TestCase
         //act /When
         $context = new Context(new ContextMessage("I'm a context"));
         //assert /then
-        $this->assertStringStartsWith("cot_", $context->getId());
+        $this->assertStringStartsWith("cot_", $context->getContextId());
     }
 
     public function testContextIdInjected(): void
@@ -33,7 +33,7 @@ class ContextTest extends TestCase
         //act /When
         $context = new Context(new ContextMessage(""), new ContextId("absolumentcequejeveut"));
         //assert /then
-        $this->assertEquals("absolumentcequejeveut", $context->getId());
+        $this->assertEquals("absolumentcequejeveut", $context->getContextId());
     }
 
     public function testContextIsCreatedAt(): void

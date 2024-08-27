@@ -4,7 +4,6 @@ namespace ChatBot\Tests\Application\Service\MakeConversation;
 
 use Chatbot\Domain\Model\Context\ContextId;
 use Chatbot\Domain\Model\Conversation\Conversation;
-use Chatbot\Domain\Model\Conversation\PairArray;
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\GPTModel;
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\GPTModelTranslate;
 use Chatbot\Infrastructure\LanguageModel\Exception\BadLanguageModelName;
@@ -21,7 +20,7 @@ class ModelfactoryTest extends TestCase
 {
     public function testCreateModelParrot(): void
     {
-        $conversation = new Conversation(new PairArray(), new ContextId("base"));
+        $conversation = new Conversation(new ContextId("base"));
         $factory = new ModelFactory();
         $model = $factory->create("Parrot", "oui oui baguette", $conversation);
         $this->assertInstanceOf(Parrot::class, $model);
@@ -29,7 +28,7 @@ class ModelfactoryTest extends TestCase
 
     public function testCreateModelGPT(): void
     {
-        $conversation = new Conversation(new PairArray(), new ContextId("base"));
+        $conversation = new Conversation(new ContextId("base"));
         $client = $this->createMockHttpClient("responseGETbonjour.json", 200);
         $factory = new ModelFactory();
 
@@ -49,7 +48,7 @@ class ModelfactoryTest extends TestCase
 
     public function testCreateModelGPTTranslate(): void
     {
-        $conversation = new Conversation(new PairArray(), new ContextId("base"));
+        $conversation = new Conversation(new ContextId("base"));
         $client = $this->createMockHttpClient("responseGETbonjour.json", 200);
         $factory = new ModelFactory();
         $model = $factory->create("GPTModelTranslate", "anglais", $conversation);
@@ -58,7 +57,7 @@ class ModelfactoryTest extends TestCase
 
     public function testCreateModelParotranslate(): void
     {
-        $conversation = new Conversation(new PairArray(), new ContextId("base"));
+        $conversation = new Conversation(new ContextId("base"));
         $client = $this->createMockHttpClient("responseGETbonjour.json", 200);
         $factory = new ModelFactory();
         $model = $factory->create("ParrotTranslate", "anglais", $conversation);
@@ -67,7 +66,7 @@ class ModelfactoryTest extends TestCase
 
     public function testBadLmName(): void
     {
-        $conversation = new Conversation(new PairArray(), new ContextId("base"));
+        $conversation = new Conversation(new ContextId("base"));
         $this->expectException(BadLanguageModelName::class);
         $client = $this->createMockHttpClient("responseGETbonjour.json", 200);
         $factory = new ModelFactory();

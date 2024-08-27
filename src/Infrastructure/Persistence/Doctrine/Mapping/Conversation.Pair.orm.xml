@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                                      http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <entity name="Chatbot\Domain\Model\Conversation\Pair" table="pairs">
+        <id name="pairId" type="pair_id" column="pair_id">
+            <generator strategy="NONE"/>
+        </id>
+        <field name="prompt" type="prompt" column="prompt"/>
+        <field name="answer" type="answer" column="answer"/>
+
+    </entity>
+</doctrine-mapping>

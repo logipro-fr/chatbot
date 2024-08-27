@@ -3,10 +3,12 @@ doctrine:
     url: "%env(resolve:DATABASE_URL)%"
     types:
       conversation_id: Chatbot\Infrastructure\Persistence\Doctrine\Types\ConversationIdType
-      pairs: Chatbot\Infrastructure\Persistence\Doctrine\Types\PairCollectionType
       context: Chatbot\Infrastructure\Persistence\Doctrine\Types\ContextType
       context_id : Chatbot\Infrastructure\Persistence\Doctrine\Types\ContextIdType
       contextmessage : Chatbot\Infrastructure\Persistence\Doctrine\Types\ContextMessageType
+      pair_id: Chatbot\Infrastructure\Persistence\Doctrine\Types\PairIdType
+      prompt : Chatbot\Infrastructure\Persistence\Doctrine\Types\PromptType
+      answer : Chatbot\Infrastructure\Persistence\Doctrine\Types\AnswerType
       
 
   orm:

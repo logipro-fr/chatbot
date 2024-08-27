@@ -4,7 +4,6 @@ namespace Chatbot\Tests\Infrastructure\languageModel\ChatGPT;
 
 use Chatbot\Domain\Model\Context\ContextId;
 use Chatbot\Domain\Model\Conversation\Conversation;
-use Chatbot\Domain\Model\Conversation\PairArray;
 use Chatbot\Domain\Model\Conversation\Prompt;
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\GPTModelTranslate;
 use PHPUnit\Framework\TestCase;
@@ -17,7 +16,7 @@ class GPTModelTranslateTest extends TestCase
 {
     public function testGPTModelTranslate(): void
     {
-        $conversation = new Conversation(new PairArray(), new ContextId("base"));
+        $conversation = new Conversation(new ContextId("base"));
         $client = $this->createMockHttpClient('responseGETHello.json', 200);
         $service = new GPTModelTranslate($client, "english", $conversation);
         $message = $service->generateTextAnswer(new Prompt("Bonjour"));
