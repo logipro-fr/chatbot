@@ -2,13 +2,9 @@
 
 namespace Chatbot\Tests\Infrastructure\Api\V1;
 
-use Chatbot\Domain\Model\Context\ContextId;
-use Chatbot\Domain\Model\Conversation\Conversation;
-use Chatbot\Infrastructure\Api\V1\DeleteContextController;
-use Chatbot\Infrastructure\Api\V1\EditContextController;
-use Chatbot\Infrastructure\Exception\ContextNotFoundException;
+use Chatbot\Application\Service\Exception\BadTypeNameException;
+use Chatbot\Infrastructure\Api\V1\ViewConversationController;
 use Chatbot\Infrastructure\Exception\ConversationNotFoundException;
-use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryInMemory;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
 use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -17,42 +13,36 @@ use Symfony\Component\HttpFoundation\Request;
 
 use function Safe\json_encode;
 
-class DeleteContextControllerTest extends WebTestCase
+class ViewConversationTest extends WebTestCase
 {
     use DoctrineRepositoryTesterTrait;
     use AssertResponseTrait;
 
     private KernelBrowser $client;
+    private string $id;
 
-    private string $contextId;
 
     public function setUp(): void
     {
 
         $this->initDoctrineTester();
-        $this->client = static::createClient(["debug" => false]);
         $this->clearTables(["context"]);
+        $this->client = static::createClient(["debug" => false]);
     }
 
-    public function testDeleteContextControllerExecute(): void
+    public function testViewContextControllerExecute(): void
     {
-
-        $contextrepo = new ContextRepositoryInMemory();
-        $conversationrepo = new ConversationRepositoryInMemory();
-        $conversationrepo->add(new Conversation(new ContextId("english")));
-        $controller = new DeleteContextController($contextrepo, $conversationrepo, $this->getEntityManager());
+        $convrepo = new ConversationRepositoryInMemory();
+        $controller = new ViewConversationController($convrepo, $this->getEntityManager());
         $request = Request::create(
-            "/api/v1/conversation/Delete",
-            "POST",
-            [],
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            json_encode([
+            "GET",
+            "/api/v1/conversations",
+            [
                 "Id" => "base",
-            ])
+            ],
+            ['CONTENT_TYPE' => 'application/json'],
         );
-        $response = $controller->deleteContext($request);
+        $response = $controller->viewConversation($request);
         /** @var string */
         $responseContent = $response->getContent();
         $this->assertJson($responseContent);
@@ -61,17 +51,16 @@ class DeleteContextControllerTest extends WebTestCase
     public function testControllerRouting(): void
     {
 
-        $this->initializeContextWithRouting();
+        $this->initializeConversationWithRouting();
 
         $this->client->request(
-            "DELETE",
-            "/api/v1/contexts",
-            [],
+            "GET",
+            "/api/v1/conversations",
+            [
+                "Id" => $this->id,
+            ],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode([
-                "Id" => $this->contextId,
-            ])
         );
         /** @var string */
         $data = $this->client->getResponse()->getContent();
@@ -81,32 +70,33 @@ class DeleteContextControllerTest extends WebTestCase
 
         $this->assertTrue($responseContent["success"]);
         $this->assertEquals(200, $responseCode);
-        $this->assertArrayHasKey('message', $responseContent["data"]);
+        $this->assertArrayHasKey("contextId", $responseContent["data"]);
     }
+
 
     public function testControllerException(): void
     {
         $this->client->request(
-            "DELETE",
-            "/api/v1/contexts",
-            [],
+            "GET",
+            "/api/v1/conversations",
+            [
+                "Id" => "Je n'existe pas",
+            ],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode([
-                "Id" => "Je n'existe pas",
-            ])
         );
+
         /** @var string */
-        $responseContent = $this->client->getResponse()->getContent();
+        $data = $this->client->getResponse()->getContent();
         $responseCode = $this->client->getResponse()->getStatusCode();
 
         $this->assertResponseFailure(
             $this->client->getResponse(),
-            (new \ReflectionClass(ContextNotFoundException::class))->getShortName()
+            (new \ReflectionClass(ConversationNotFoundException::class))->getShortName()
         );
     }
 
-    private function initializeContextWithRouting(): void
+    private function initializeConversationWithRouting(): void
     {
         $this->client->request(
             "POST",
@@ -120,9 +110,30 @@ class DeleteContextControllerTest extends WebTestCase
         );
 
         /** @var string */
-        $data = $this->client->getResponse()->getContent();
+        $content = $this->client->getResponse()->getContent();
+
         /** @var array<mixed,array<mixed>> */
-        $responseContent = json_decode($data, true);
-        $this->contextId = strval($responseContent['data']['contextId']);
+        $responseContent = json_decode($content, true);
+        $contextid = $responseContent['data']['contextId'];
+
+        $this->client->request(
+            "POST",
+            "/api/v1/conversations/Make",
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode([
+
+                "Prompt" => "Chien",
+                "lmName" => "ParrotTranslate",
+                "context" => $contextid,
+            ])
+        );
+        /** @var string */
+        $content = $this->client->getResponse()->getContent();
+        /** @var array<mixed,array<mixed>> */
+        $responseContent = json_decode($content, true);
+
+        $this->id = strval($responseContent['data']['conversationId']);
     }
 }

@@ -4,6 +4,7 @@ namespace Chatbot\Tests\Infrastructure\Api\V1;
 
 use Chatbot\Application\Service\Exception\BadTypeNameException;
 use Chatbot\Infrastructure\Api\V1\ViewContextController;
+use Chatbot\Infrastructure\Exception\ContextNotFoundException;
 use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryInMemory;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
 use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
@@ -85,7 +86,6 @@ class ViewContextTest extends WebTestCase
             "/api/v1/contexts",
             [
                 "Id" => "Je n'existe pas",
-                "IdType" => "context",
             ],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -97,7 +97,7 @@ class ViewContextTest extends WebTestCase
 
         $this->assertResponseFailure(
             $this->client->getResponse(),
-            (new \ReflectionClass(BadTypeNameException::class))->getShortName()
+            (new \ReflectionClass(ContextNotFoundException::class))->getShortName()
         );
     }
 
