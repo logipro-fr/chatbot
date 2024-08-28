@@ -8,11 +8,11 @@ use Safe\DateTimeImmutable as SafeDateTimeImmutable;
 class Pair
 {
     public function __construct(
-        private Prompt $prompt, 
-        private Answer $answer, 
+        private Prompt $prompt,
+        private Answer $answer,
         private PairId $pairId = new PairId(),
-        private readonly DateTimeImmutable $createdAt = new SafeDateTimeImmutable(),)
-    {
+        private readonly DateTimeImmutable $createdAt = new SafeDateTimeImmutable(),
+    ) {
     }
 
     public function countToken(): int
@@ -35,5 +35,10 @@ class Pair
     public function getPairId(): PairId
     {
         return $this->pairId;
+    }
+
+    public function getCreatedAt(): DateTimeImmutable
+    {
+        return $this->createdAt;
     }
 }

@@ -2,14 +2,13 @@
 
 namespace Chatbot\Tests\Application\Service\ViewContext;
 
-
 use Chatbot\Application\Service\MakeConversation\LanguageModelAbstractFactory;
 use Chatbot\Application\Service\MakeConversation\MakeConversation;
 use Chatbot\Application\Service\MakeConversation\MakeConversationRequest;
 use Chatbot\Application\Service\ViewConversation\ViewConversation;
 use Chatbot\Application\Service\ViewConversation\ViewConversationRequest;
 use Chatbot\Application\Service\ViewConversation\ViewConversationResponse;
-use Chatbot\Domain\Model\Context\ContextId;;
+use Chatbot\Domain\Model\Context\ContextId;
 use Chatbot\Domain\Model\Conversation\ConversationId;
 use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
 use Chatbot\Domain\Model\Conversation\Prompt;
@@ -55,6 +54,5 @@ class ViewConversationTest extends TestCase
         $response = $service->getResponse();
         $this->assertInstanceOf(ViewConversationResponse::class, $response);
         $this->assertIsString($response->contextId);
-
     }
 }

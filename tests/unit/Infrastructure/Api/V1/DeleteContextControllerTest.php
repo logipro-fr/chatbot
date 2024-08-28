@@ -31,7 +31,7 @@ class DeleteContextControllerTest extends WebTestCase
 
         $this->initDoctrineTester();
         $this->client = static::createClient(["debug" => false]);
-        $this->clearTables(["context"]);
+        $this->clearTables(["context", "conversations", "conversations_pairs", "pairs"]);
     }
 
     public function testDeleteContextControllerExecute(): void

@@ -27,7 +27,7 @@ class EditContextControllerTest extends WebTestCase
     {
 
         $this->initDoctrineTester();
-        $this->clearTables(["context"]);
+        $this->clearTables(["context", "conversations", "conversations_pairs", "pairs"]);
         $this->client = static::createClient(["debug" => false]);
     }
 

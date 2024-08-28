@@ -27,7 +27,7 @@ class ViewContextTest extends WebTestCase
     {
 
         $this->initDoctrineTester();
-        $this->clearTables(["context"]);
+        $this->clearTables(["context", "conversations", "conversations_pairs", "pairs"]);
         $this->client = static::createClient(["debug" => false]);
     }
 
@@ -36,7 +36,7 @@ class ViewContextTest extends WebTestCase
 
         $contextrepo = new ContextRepositoryInMemory();
         $convrepo = new ConversationRepositoryInMemory();
-        $controller = new ViewContextController($contextrepo, $convrepo, $this->getEntityManager());
+        $controller = new ViewContextController($contextrepo, $this->getEntityManager());
         $request = Request::create(
             "GET",
             "/api/v1/contexts",

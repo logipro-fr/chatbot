@@ -2,12 +2,12 @@
 
 namespace Chatbot\Application\Service\ViewConversation;
 
-
 use Chatbot\Application\Service\ViewConversation\ViewConversationRequest;
 use Chatbot\Application\Service\ViewConversation\ViewConversationResponse;
 use Chatbot\Domain\Model\Conversation\Conversation;
 use Chatbot\Domain\Model\Conversation\ConversationId;
 use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
+use Chatbot\Domain\Model\Conversation\Pair;
 
 class ViewConversation
 {
@@ -30,11 +30,12 @@ class ViewConversation
         return $this->response;
     }
 
-    public function pairArray(Conversation $conversation):array
+    /** @return array<int, Pair>  */
+    public function pairArray(Conversation $conversation): array
     {
         $pairArray = [];
         $nbPair = $conversation->countPair();
-        for ($i=0; $i < $nbPair ; $i++) { 
+        for ($i = 0; $i < $nbPair; $i++) {
             $pairArray[] = $conversation->getPair($i);
         }
         return $pairArray;

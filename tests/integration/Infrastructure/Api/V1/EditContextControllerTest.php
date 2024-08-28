@@ -22,7 +22,7 @@ class EditContextControllerTest extends WebTestCase
         $this->initDoctrineTester();
         $dotenv = new Dotenv();
         $dotenv->loadEnv(getcwd() . '/src/Infrastructure/Shared/Symfony/.env.local');
-        $this->clearTables(["context"]);
+        $this->clearTables(["context", "conversations", "conversations_pairs", "pairs"]);
         $this->client = self::createClient(["debug" => false]);
 
         $this->client->request(

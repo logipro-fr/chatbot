@@ -27,7 +27,7 @@ class MakeConversationControllerTest extends WebTestCase
     {
 
         $this->initDoctrineTester();
-        //$this->clearTables(["conversations"]);
+        $this->clearTables(["context", "conversations", "conversations_pairs", "pairs"]);
         $this->client = static::createClient(["debug" => false]);
     }
 

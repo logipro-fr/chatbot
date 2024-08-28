@@ -9,12 +9,13 @@ use Symfony\Component\Dotenv\Dotenv;
 
 use function Safe\json_encode;
 
-class MakeConversationControllerTest extends WebTestCase
+class ViewConversationControllerTest extends WebTestCase
 {
     use DoctrineRepositoryTesterTrait;
 
     private KernelBrowser $client;
     private string $contextId;
+    private string $conversationId;
 
     public function setUp(): void
     {
@@ -23,6 +24,7 @@ class MakeConversationControllerTest extends WebTestCase
         $dotenv->loadEnv(getcwd() . '/src/Infrastructure/Shared/Symfony/.env.local');
         $this->clearTables(["context", "conversations", "conversations_pairs", "pairs"]);
         $this->client = self::createClient(["debug" => false]);
+
         $this->client->request(
             "POST",
             "/api/v1/context/Make",
@@ -36,18 +38,14 @@ class MakeConversationControllerTest extends WebTestCase
             )
         );
 
-
         /** @var string */
         $data = $this->client->getResponse()->getContent();
         /** @var array<mixed,array<mixed>> */
         $responseContent = json_decode($data, true);
         /** @var string */
-        $id = $responseContent['data']['contextId'] ;
+        $id = $responseContent['data']['contextId'];
         $this->contextId = $id;
-    }
 
-    public function testControllerRouting(): void
-    {
         $this->client->request(
             "POST",
             "/api/v1/conversations/Make",
@@ -62,16 +60,35 @@ class MakeConversationControllerTest extends WebTestCase
                 ]
             )
         );
+
         /** @var string */
         $data = $this->client->getResponse()->getContent();
-        $responseCode = $this->client->getResponse()->getStatusCode();
         /** @var array<mixed,array<mixed>> */
+        $responseContent = json_decode($data, true);
+        /** @var string */
+        $id = $responseContent['data']['conversationId'];
+        $this->conversationId = $id;
+    }
+
+    public function testControllerRouting(): void
+    {
+        $this->client->request(
+            "GET",
+            "/api/v1/conversations",
+            [
+                "Id" => $this->conversationId,
+            ],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+        );
+       /** @var string */
+        $data = $this->client->getResponse()->getContent();
+        $responseCode = $this->client->getResponse()->getStatusCode();
+       /** @var array<mixed,array<mixed>> */
         $responseContent = json_decode($data, true);
 
         $this->assertTrue($responseContent["success"]);
         $this->assertEquals(200, $responseCode);
-        $this->assertArrayHasKey("conversationId", $responseContent["data"]);
-        $this->assertArrayHasKey("numberOfPairs", $responseContent["data"]);
-        $this->assertArrayHasKey("botMessage", $responseContent["data"]);
+        $this->assertArrayHasKey("contextId", $responseContent["data"]);
     }
 }

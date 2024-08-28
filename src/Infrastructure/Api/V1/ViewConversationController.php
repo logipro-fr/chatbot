@@ -12,7 +12,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-
 class ViewConversationController extends AbstractController
 {
     public function __construct(
@@ -40,7 +39,7 @@ class ViewConversationController extends AbstractController
     {
         /** @var string */
         $conversation = $request->query->get('Id');
-       
+
 
         return new ViewConversationRequest($conversation);
     }

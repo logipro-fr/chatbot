@@ -5,19 +5,16 @@ namespace Chatbot\Infrastructure\Api\V1;
 use Chatbot\Application\Service\ViewContext\ViewContext;
 use Chatbot\Application\Service\ViewContext\ViewContextRequest;
 use Chatbot\Domain\Model\Context\ContextRepositoryInterface;
-use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-
 class ViewContextController extends AbstractController
 {
     public function __construct(
         private ContextRepositoryInterface $repository,
-        private ConversationRepositoryInterface $convrepository,
         private EntityManagerInterface $entityManager
     ) {
     }
@@ -25,7 +22,7 @@ class ViewContextController extends AbstractController
     public function viewContext(Request $request): Response
     {
         $request = $this->buildViewContextRequest($request);
-        $context = new viewContext($this->repository, $this->convrepository);
+        $context = new viewContext($this->repository);
         try {
             $context->execute($request);
             $eventFlush = new EventFlush($this->entityManager);
