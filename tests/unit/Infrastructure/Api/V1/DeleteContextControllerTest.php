@@ -6,6 +6,7 @@ use Chatbot\Domain\Model\Context\ContextId;
 use Chatbot\Domain\Model\Conversation\Conversation;
 use Chatbot\Infrastructure\Api\V1\DeleteContextController;
 use Chatbot\Infrastructure\Api\V1\EditContextController;
+use Chatbot\Infrastructure\Exception\ContextNotFoundException;
 use Chatbot\Infrastructure\Exception\ConversationNotFoundException;
 use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryInMemory;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
@@ -30,7 +31,7 @@ class DeleteContextControllerTest extends WebTestCase
 
         $this->initDoctrineTester();
         $this->client = static::createClient(["debug" => false]);
-        $this->clearTables(["context"]);
+        $this->clearTables(["context", "conversations", "conversations_pairs", "pairs"]);
     }
 
     public function testDeleteContextControllerExecute(): void
@@ -101,7 +102,7 @@ class DeleteContextControllerTest extends WebTestCase
 
         $this->assertResponseFailure(
             $this->client->getResponse(),
-            (new \ReflectionClass(ConversationNotFoundException::class))->getShortName()
+            (new \ReflectionClass(ContextNotFoundException::class))->getShortName()
         );
     }
 

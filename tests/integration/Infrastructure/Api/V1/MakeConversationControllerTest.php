@@ -21,9 +21,7 @@ class MakeConversationControllerTest extends WebTestCase
         $this->initDoctrineTester();
         $dotenv = new Dotenv();
         $dotenv->loadEnv(getcwd() . '/src/Infrastructure/Shared/Symfony/.env.local');
-        $this->clearTables(["conversations_pairs"]);
-        //$this->clearTables(["conversations"]);
-        //$this->clearTables(["pairs"]);
+        $this->clearTables(["conversations_pairs", "pairs", "conversations"]);
         $this->client = self::createClient(["debug" => false]);
         $this->client->request(
             "POST",
@@ -41,6 +39,7 @@ class MakeConversationControllerTest extends WebTestCase
 
         /** @var string */
         $data = $this->client->getResponse()->getContent();
+
         /** @var array<mixed,array<mixed>> */
         $responseContent = json_decode($data, true);
         /** @var string */
@@ -58,8 +57,8 @@ class MakeConversationControllerTest extends WebTestCase
             ['CONTENT_TYPE' => 'application/json'],
             json_encode(
                 [
-                "Prompt" => "Chien",
-                "lmName" => "GPTModelTranslate",
+                "Prompt" => "Bonjour",
+                "lmName" => "GPTModel",
                 "context" => $this->contextId,
                 ]
             )
@@ -69,7 +68,7 @@ class MakeConversationControllerTest extends WebTestCase
         $responseCode = $this->client->getResponse()->getStatusCode();
         /** @var array<mixed,array<mixed>> */
         $responseContent = json_decode($data, true);
-
+        var_dump($data);
         $this->assertTrue($responseContent["success"]);
         $this->assertEquals(200, $responseCode);
         $this->assertArrayHasKey("conversationId", $responseContent["data"]);

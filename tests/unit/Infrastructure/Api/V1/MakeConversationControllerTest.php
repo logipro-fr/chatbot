@@ -3,6 +3,7 @@
 namespace Chatbot\Tests\Infrastructure\Api\V1;
 
 use Chatbot\Infrastructure\Api\V1\MakeConversationController;
+use Chatbot\Infrastructure\Exception\ContextNotFoundException;
 use Chatbot\Infrastructure\Exception\ConversationNotFoundException;
 use Chatbot\Infrastructure\LanguageModel\ModelFactory;
 use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryInMemory;
@@ -26,7 +27,7 @@ class MakeConversationControllerTest extends WebTestCase
     {
 
         $this->initDoctrineTester();
-        //$this->clearTables(["conversations"]);
+        $this->clearTables(["context", "conversations", "conversations_pairs", "pairs"]);
         $this->client = static::createClient(["debug" => false]);
     }
 
@@ -124,7 +125,7 @@ class MakeConversationControllerTest extends WebTestCase
 
         $this->assertResponseFailure(
             $this->client->getResponse(),
-            (new \ReflectionClass(ConversationNotFoundException::class))->getShortName()
+            (new \ReflectionClass(ContextNotFoundException::class))->getShortName()
         );
     }
 }

@@ -4,6 +4,7 @@ namespace Chatbot\Tests\Infrastructure\Api\V1;
 
 use Chatbot\Application\Service\Exception\BadTypeNameException;
 use Chatbot\Infrastructure\Api\V1\ViewContextController;
+use Chatbot\Infrastructure\Exception\ContextNotFoundException;
 use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryInMemory;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
 use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
@@ -26,7 +27,7 @@ class ViewContextTest extends WebTestCase
     {
 
         $this->initDoctrineTester();
-        $this->clearTables(["context"]);
+        $this->clearTables(["context", "conversations", "conversations_pairs", "pairs"]);
         $this->client = static::createClient(["debug" => false]);
     }
 
@@ -35,7 +36,7 @@ class ViewContextTest extends WebTestCase
 
         $contextrepo = new ContextRepositoryInMemory();
         $convrepo = new ConversationRepositoryInMemory();
-        $controller = new ViewContextController($contextrepo, $convrepo, $this->getEntityManager());
+        $controller = new ViewContextController($contextrepo, $this->getEntityManager());
         $request = Request::create(
             "GET",
             "/api/v1/contexts",
@@ -85,7 +86,6 @@ class ViewContextTest extends WebTestCase
             "/api/v1/contexts",
             [
                 "Id" => "Je n'existe pas",
-                "IdType" => "context",
             ],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -97,7 +97,7 @@ class ViewContextTest extends WebTestCase
 
         $this->assertResponseFailure(
             $this->client->getResponse(),
-            (new \ReflectionClass(BadTypeNameException::class))->getShortName()
+            (new \ReflectionClass(ContextNotFoundException::class))->getShortName()
         );
     }
 

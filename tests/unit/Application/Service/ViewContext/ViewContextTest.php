@@ -9,7 +9,6 @@ use Chatbot\Application\Service\ViewContext\ViewContextRequest;
 use Chatbot\Application\Service\ViewContext\ViewContextResponse;
 use Chatbot\Domain\Model\Context\ContextMessage;
 use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryInMemory;
-use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
 use PHPUnit\Framework\TestCase;
 
 use function Safe\file_get_contents;
@@ -21,7 +20,6 @@ class ViewContextTest extends TestCase
         // arrange / Given
 
         $repository = new ContextRepositoryInMemory();
-        $convrepository = new ConversationRepositoryInMemory();
         $request = new MakeContextRequest(
             new ContextMessage("You're helpfull assistant")
         );
@@ -29,8 +27,8 @@ class ViewContextTest extends TestCase
         $service->execute($request);
         $id = $service->getResponse()->contextId;
 
-        $request = new ViewContextRequest($id, "contexts");
-        $service = new ViewContext($repository, $convrepository);
+        $request = new ViewContextRequest($id);
+        $service = new ViewContext($repository);
 
         $service->execute($request);
         $response = $service->getResponse();

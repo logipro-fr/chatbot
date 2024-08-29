@@ -158,6 +158,70 @@ paths:
                     type: string
                     description: The message error
                     example: NoIdException
+  /conversations:
+    get:
+      tags:
+        - Conversations
+      summary: View a conversation
+      operationId: viewConversation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Id:
+                  type: string
+                  description: The conversation Id I want to see
+                  example:con_66cd76e11574
+
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Indicates if the conversation was create
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      conversationId:
+                        type: string
+                        description: The ID of the conversation
+                        example: con_66c58c7ee6c58
+                      numberOfPairs:
+                        type: int
+                        description: The number of pair in the conversation
+                        example: 1
+                      botMessage:
+                        type: string
+                        description: ChatGPT's response.
+                        example: Bonjour! Comment puis-je vous aider aujourd'hui?
+
+                    description: Data returned by the make conversation service
+          
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Indicates whether the conversation was created
+                    example: false
+                  error:
+                    type: string
+                    description: The message error
+                    example: NoIdException
+  
   /context/Make:
     post:
       tags:
@@ -226,13 +290,6 @@ paths:
           type: string
           example: cot_66b46fefe29d5
         description: The context you want to view. If you provide a conversation ID, it will retrieve the relevant context.
-      - name: IdType
-        in: query
-        required: true
-        schema:
-          type: string
-          example: context
-        description: Specify whether the given ID is a context ID or a conversation ID.
       responses:
         '200':
           description: Successful response

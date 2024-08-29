@@ -5,6 +5,7 @@ namespace Chatbot\Infrastructure\Persistence\Context;
 use Chatbot\Domain\Model\Context\Context;
 use Chatbot\Domain\Model\Context\ContextId;
 use Chatbot\Domain\Model\Context\ContextRepositoryInterface;
+use Chatbot\Infrastructure\Exception\ContextNotFoundException;
 use Chatbot\Infrastructure\Exception\ConversationNotFoundException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
@@ -28,7 +29,7 @@ class ContextRepositoryDoctrine extends EntityRepository implements ContextRepos
     {
         $context = $this->getEntityManager()->find(Context::class, $contextId);
         if ($context === null) {
-            throw new ConversationNotFoundException("the context with id = $contextId is not found");
+            throw new ContextNotFoundException("the context with id = $contextId is not found");
         }
         return $context;
     }

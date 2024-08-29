@@ -167,7 +167,7 @@ class ChatbotGPTApiTest extends TestCase
     public function testCreateContent(): void
     {
         $content = [
-            "model" => "gpt-3.5-turbo",
+            "model" => "gpt-4-turbo",
             "messages" => [
                 [
                     "role" => "system",

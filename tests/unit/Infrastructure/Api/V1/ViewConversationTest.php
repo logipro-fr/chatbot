@@ -2,10 +2,9 @@
 
 namespace Chatbot\Tests\Infrastructure\Api\V1;
 
-use Chatbot\Infrastructure\Api\V1\EditContextController;
-use Chatbot\Infrastructure\Exception\ContextNotFoundException;
+use Chatbot\Application\Service\Exception\BadTypeNameException;
+use Chatbot\Infrastructure\Api\V1\ViewConversationController;
 use Chatbot\Infrastructure\Exception\ConversationNotFoundException;
-use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryInMemory;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
 use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -14,13 +13,13 @@ use Symfony\Component\HttpFoundation\Request;
 
 use function Safe\json_encode;
 
-class EditContextControllerTest extends WebTestCase
+class ViewConversationTest extends WebTestCase
 {
     use DoctrineRepositoryTesterTrait;
     use AssertResponseTrait;
 
     private KernelBrowser $client;
-    private string $contextId;
+    private string $id;
 
 
     public function setUp(): void
@@ -31,24 +30,19 @@ class EditContextControllerTest extends WebTestCase
         $this->client = static::createClient(["debug" => false]);
     }
 
-    public function testEditContextControllerExecute(): void
+    public function testViewContextControllerExecute(): void
     {
-
-        $contextrepo = new ContextRepositoryInMemory();
-        $controller = new EditContextController($contextrepo, $this->getEntityManager());
+        $convrepo = new ConversationRepositoryInMemory();
+        $controller = new ViewConversationController($convrepo, $this->getEntityManager());
         $request = Request::create(
-            "/api/v1/contexts",
-            "PATCH",
-            [],
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            json_encode([
+            "GET",
+            "/api/v1/conversations",
+            [
                 "Id" => "base",
-                "NewMessage" => "context",
-            ])
+            ],
+            ['CONTENT_TYPE' => 'application/json'],
         );
-        $response = $controller->editContext($request);
+        $response = $controller->viewConversation($request);
         /** @var string */
         $responseContent = $response->getContent();
         $this->assertJson($responseContent);
@@ -56,17 +50,17 @@ class EditContextControllerTest extends WebTestCase
 
     public function testControllerRouting(): void
     {
-        $this->initializeAContextWithRouting();
+
+        $this->initializeConversationWithRouting();
+
         $this->client->request(
-            "PATCH",
-            "/api/v1/contexts",
-            [],
+            "GET",
+            "/api/v1/conversations",
+            [
+                "Id" => $this->id,
+            ],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode([
-                "Id" => $this->contextId,
-                "NewMessage" => "new context",
-            ])
         );
         /** @var string */
         $data = $this->client->getResponse()->getContent();
@@ -76,36 +70,33 @@ class EditContextControllerTest extends WebTestCase
 
         $this->assertTrue($responseContent["success"]);
         $this->assertEquals(200, $responseCode);
-
-
         $this->assertArrayHasKey("contextId", $responseContent["data"]);
-        $this->assertArrayHasKey("contextMessage", $responseContent["data"]);
     }
+
 
     public function testControllerException(): void
     {
         $this->client->request(
-            "PATCH",
-            "/api/v1/contexts",
-            [],
+            "GET",
+            "/api/v1/conversations",
+            [
+                "Id" => "Je n'existe pas",
+            ],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode([
-                "Id" => "Je n'existe pas",
-                "NewMessage" => "new context",
-            ])
         );
+
         /** @var string */
-        $responseContent = $this->client->getResponse()->getContent();
+        $data = $this->client->getResponse()->getContent();
         $responseCode = $this->client->getResponse()->getStatusCode();
 
         $this->assertResponseFailure(
             $this->client->getResponse(),
-            (new \ReflectionClass(ContextNotFoundException::class))->getShortName()
+            (new \ReflectionClass(ConversationNotFoundException::class))->getShortName()
         );
     }
 
-    private function initializeAContextWithRouting(): void
+    private function initializeConversationWithRouting(): void
     {
         $this->client->request(
             "POST",
@@ -119,9 +110,30 @@ class EditContextControllerTest extends WebTestCase
         );
 
         /** @var string */
-        $data = $this->client->getResponse()->getContent();
+        $content = $this->client->getResponse()->getContent();
+
         /** @var array<mixed,array<mixed>> */
-        $responseContent = json_decode($data, true);
-        $this->contextId = strval($responseContent['data']['contextId']);
+        $responseContent = json_decode($content, true);
+        $contextid = $responseContent['data']['contextId'];
+
+        $this->client->request(
+            "POST",
+            "/api/v1/conversations/Make",
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode([
+
+                "Prompt" => "Chien",
+                "lmName" => "ParrotTranslate",
+                "context" => $contextid,
+            ])
+        );
+        /** @var string */
+        $content = $this->client->getResponse()->getContent();
+        /** @var array<mixed,array<mixed>> */
+        $responseContent = json_decode($content, true);
+
+        $this->id = strval($responseContent['data']['conversationId']);
     }
 }
