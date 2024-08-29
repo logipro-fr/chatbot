@@ -21,7 +21,7 @@ class DeleteContextControllerTest extends WebTestCase
         $this->initDoctrineTester();
         $dotenv = new Dotenv();
         $dotenv->loadEnv(getcwd() . '/src/Infrastructure/Shared/Symfony/.env.local');
-        $this->clearTables(["context", "conversations", "conversations_pairs", "pairs"]);
+        $this->clearTables(["context"]);
         $this->client = self::createClient(["debug" => false]);
 
         $this->client->request(
