@@ -174,7 +174,7 @@ paths:
                 Id:
                   type: string
                   description: The conversation Id I want to see
-                  example:con_66cd76e11574
+                  example: con_66cd76e11574
 
       responses:
         '200':
