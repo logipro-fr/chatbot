@@ -68,7 +68,7 @@ class ChatbotGPTApi implements ChatbotApiInterface
             } elseif ($code == 429) {
                 throw new ExcesRequestException("Exceeded quota");
             }
-                throw new OtherException("Other error $code");
+                throw new OtherException("Other error" . $code);
         } else {
             throw new BadInstanceException("Bad Instance");
         }
