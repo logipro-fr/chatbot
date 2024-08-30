@@ -5,6 +5,7 @@ namespace Chatbot\Infrastructure\Api\V1;
 use Chatbot\Application\Service\ContinueConversation\ContinueConversation;
 use Chatbot\Application\Service\ContinueConversation\ContinueConversationRequest;
 use Chatbot\Application\Service\MakeConversation\LanguageModelAbstractFactory;
+use Chatbot\Domain\Model\Context\ContextRepositoryInterface;
 use Chatbot\Domain\Model\Conversation\ConversationId;
 use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
 use Chatbot\Domain\Model\Conversation\Prompt;
@@ -20,6 +21,7 @@ class ContinueConversationController extends AbstractController
 {
     public function __construct(
         private ConversationRepositoryInterface $repository,
+        private ContextRepositoryInterface $contextRepository,
         private LanguageModelAbstractFactory $factory,
         private EntityManagerInterface $entityManager
     ) {
@@ -29,7 +31,7 @@ class ContinueConversationController extends AbstractController
     {
         try {
             $request = $this->buildContinueconversationRequest($request);
-            $conversation = new ContinueConversation($this->repository, $this->factory);
+            $conversation = new ContinueConversation($this->repository, $this->contextRepository, $this->factory);
             $conversation->execute($request);
             $this->entityManager->flush();
             $response = $conversation->getResponse();

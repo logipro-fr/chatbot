@@ -30,6 +30,7 @@ class ContinueControllerTest extends WebTestCase
     private string $convId;
     private ModelFactory $factory;
     private ConversationRepositoryInMemory $inMemoryConversationRepository;
+    private ContextRepositoryInMemory $inMemoryContextRepository;
     private string $id;
 
     public function setUp(): void
@@ -44,6 +45,7 @@ class ContinueControllerTest extends WebTestCase
         $this->initializeAConversation();
         $controller = new ContinueConversationController(
             $this->inMemoryConversationRepository,
+            $this->inMemoryContextRepository,
             $this->factory,
             $this->getEntityManager()
         );
@@ -130,7 +132,7 @@ class ContinueControllerTest extends WebTestCase
     {
         $this->factory = new ModelFactory();
         $this->inMemoryConversationRepository = new ConversationRepositoryInMemory();
-        $inMemoryContextRepository = new ContextRepositoryInMemory();
+        $this->inMemoryContextRepository = new ContextRepositoryInMemory();
 
         $request = new MakeConversationRequest(
             new Prompt("Bonjour"),
@@ -140,7 +142,7 @@ class ContinueControllerTest extends WebTestCase
         $service = new MakeConversation(
             $this->inMemoryConversationRepository,
             $this->factory,
-            $inMemoryContextRepository
+            $this->inMemoryContextRepository
         );
         $service->execute($request);
         $response = $service->getResponse();

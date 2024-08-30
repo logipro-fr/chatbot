@@ -53,7 +53,7 @@ class ContinueConversationtest extends TestCase
 
         //arrange / Given
         $prompt = new ContinueConversationRequest(new Prompt("Bonsoir"), $this->convid, "Parrot");
-        $service = new ContinueConversation($this->repository, $this->factory);
+        $service = new ContinueConversation($this->repository, $this->contextrepo, $this->factory);
         //act / When
         $nbPair = $this->repository->findById($this->convid)->countPair();
         $this->assertEquals(1, $nbPair);
@@ -69,7 +69,7 @@ class ContinueConversationtest extends TestCase
     {
         //arrange / Given
         $prompt = new ContinueConversationRequest(new Prompt("Bonsoir"), $this->convid, "Parrot");
-        $service = new ContinueConversation($this->repository, $this->factory);
+        $service = new ContinueConversation($this->repository, $this->contextrepo, $this->factory);
         //act / When
         $nbPair = $this->repository->findById($this->convid)->countPair();
         $this->assertEquals(1, $nbPair);

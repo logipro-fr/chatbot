@@ -104,6 +104,7 @@ class ChatbotGPTApi implements ChatbotApiInterface
             "messages" => $message
 
         ];
+
         return json_encode($content);
     }
 }
