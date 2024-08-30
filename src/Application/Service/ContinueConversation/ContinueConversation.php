@@ -3,6 +3,7 @@
 namespace Chatbot\Application\Service\ContinueConversation;
 
 use Chatbot\Application\Service\MakeConversation\LanguageModelAbstractFactory;
+use Chatbot\Domain\Model\Context\ContextRepositoryInterface;
 use Chatbot\Domain\Model\Conversation\Conversation;
 use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
 use Chatbot\Domain\Model\Conversation\Prompt;
@@ -14,6 +15,7 @@ class ContinueConversation
 
     public function __construct(
         private ConversationRepositoryInterface $repository,
+        private ContextRepositoryInterface $repositoryContext,
         private LanguageModelAbstractFactory $factory
     ) {
     }
@@ -23,8 +25,9 @@ class ContinueConversation
 
         /** @var Conversation */
         $conversation = $this->repository->findById($request->convId);
+        $context = $this->repositoryContext->findById($conversation->getContext());
 
-        $lm = $this->factory->create($request->lmName, $request->prompt->getUserResquest(), $conversation);
+        $lm = $this->factory->create($request->lmName, $context->getContext()->getMessage(), $conversation);
         $message = (new Ask())->execute(new Prompt($request->prompt->getUserResquest()), $lm);
 
         $conversation->addPair(new Prompt($request->prompt->getUserResquest()), $message);

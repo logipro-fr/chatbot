@@ -113,7 +113,7 @@ class QueryModelContext implements Context
         $factory = new ModelFactory();
         $id = new ConversationId($this->response->conversationId);
         $request = new ContinueConversationRequest(new Prompt($prompt), $id, "Parrot");
-        $service = new ContinueConversation($this->repository, $factory);
+        $service = new ContinueConversation($this->repository, $this->contextrepo, $factory);
         $service->execute($request);
     }
 
@@ -167,7 +167,7 @@ class QueryModelContext implements Context
     public function iRequest(string $prompt): void
     {
         $factory = new ModelFactory();
-        $service = new ContinueConversation($this->repository, $factory);
+        $service = new ContinueConversation($this->repository, $this->contextrepo, $factory);
         $request = new ContinueConversationRequest(
             new Prompt($prompt),
             $this->conversation->getConversationId(),

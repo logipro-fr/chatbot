@@ -41,7 +41,7 @@ class MakeConversationTest extends TestCase
         $prompt = new Prompt("Ca va super ! Quel temps fait il chez toi ?");
         $id = new ConversationId($response->conversationId) ;
         $request = new ContinueConversationRequest($prompt, $id, "GPTModel");
-        $service = new ContinueConversation($repository, $factory);
+        $service = new ContinueConversation($repository, $contextrepo, $factory);
         $service->execute($request);
         $pair = $conversation->getPair(1);
         $responseMessage = $pair->getAnswer()->getMessage();

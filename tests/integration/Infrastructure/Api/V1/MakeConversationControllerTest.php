@@ -68,7 +68,6 @@ class MakeConversationControllerTest extends WebTestCase
         $responseCode = $this->client->getResponse()->getStatusCode();
         /** @var array<mixed,array<mixed>> */
         $responseContent = json_decode($data, true);
-        var_dump($data);
         $this->assertTrue($responseContent["success"]);
         $this->assertEquals(200, $responseCode);
         $this->assertArrayHasKey("conversationId", $responseContent["data"]);
