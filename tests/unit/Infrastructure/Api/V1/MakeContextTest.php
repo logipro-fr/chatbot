@@ -4,7 +4,6 @@ namespace Chatbot\Tests\Infrastructure\Api\V1;
 
 use Chatbot\Application\Service\Exception\EmptyStringException;
 use Chatbot\Infrastructure\Api\V1\MakeContextController;
-use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryInMemory;
 use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -31,8 +30,7 @@ class MakeContextTest extends WebTestCase
 
     public function testChatBotControllerExecute(): void
     {
-        $repository = new ContextRepositoryInMemory();
-        $controller = new MakeContextController($repository, $this->getEntityManager());
+        $controller = new MakeContextController($this->getEntityManager());
         $request = Request::create(
             "/api/v1/context/make",
             "POST",

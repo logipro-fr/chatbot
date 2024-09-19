@@ -6,9 +6,11 @@ use Chatbot\Application\Service\EditContext\EditContext;
 use Chatbot\Application\Service\EditContext\EditContextRequest;
 use Chatbot\Domain\Model\Context\ContextId;
 use Chatbot\Domain\Model\Context\ContextMessage;
-use Chatbot\Domain\Model\Context\ContextRepositoryInterface;
+use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryDoctrine;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use Phariscope\MultiTenant\Doctrine\DatabaseTools;
+use Phariscope\MultiTenant\Doctrine\EntityManagerResolver;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -17,19 +19,30 @@ use function Safe\json_decode;
 
 class EditContextController extends AbstractController
 {
+    private EntityManagerResolver $entityManagerResolver;
+
     public function __construct(
-        private ContextRepositoryInterface $repository,
-        private EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager
     ) {
+        $this->entityManagerResolver = new EntityManagerResolver($entityManager);
     }
+
     #[Route('api/v1/contexts', 'editContext', methods: ['PATCH'])]
     public function editContext(Request $request): Response
     {
-        $request = $this->buildEditContextRequest($request);
-        $context = new EditContext($this->repository);
+
         try {
+            $entityManager = $this->entityManagerResolver->getEntityManagerByRequest($request);
+            (new DatabaseTools())->createDatabaseIfNotExists($entityManager);
+
+            $request = $this->buildEditContextRequest($request);
+            $context = new EditContext(
+                new ContextRepositoryDoctrine($entityManager)
+            );
+
             $context->execute($request);
-            $eventFlush = new EventFlush($this->entityManager);
+
+            $eventFlush = new EventFlush($entityManager);
             $eventFlush->flushAndDistribute();
         } catch (Exception $e) {
             return $this->writeUnSuccessFulResponse($e);

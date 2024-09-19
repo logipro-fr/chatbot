@@ -2,14 +2,8 @@
 
 namespace Chatbot\Tests\Infrastructure\Api\V1;
 
-use Chatbot\Domain\Model\Context\ContextId;
-use Chatbot\Domain\Model\Conversation\Conversation;
 use Chatbot\Infrastructure\Api\V1\DeleteContextController;
-use Chatbot\Infrastructure\Api\V1\EditContextController;
 use Chatbot\Infrastructure\Exception\ContextNotFoundException;
-use Chatbot\Infrastructure\Exception\ConversationNotFoundException;
-use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryInMemory;
-use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
 use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -36,11 +30,7 @@ class DeleteContextControllerTest extends WebTestCase
 
     public function testDeleteContextControllerExecute(): void
     {
-
-        $contextrepo = new ContextRepositoryInMemory();
-        $conversationrepo = new ConversationRepositoryInMemory();
-        $conversationrepo->add(new Conversation(new ContextId("english")));
-        $controller = new DeleteContextController($contextrepo, $conversationrepo, $this->getEntityManager());
+        $controller = new DeleteContextController($this->getEntityManager());
         $request = Request::create(
             "/api/v1/conversation/Delete",
             "POST",

@@ -4,9 +4,6 @@ namespace Chatbot\Tests\Infrastructure\Api\V1;
 
 use Chatbot\Infrastructure\Api\V1\EditContextController;
 use Chatbot\Infrastructure\Exception\ContextNotFoundException;
-use Chatbot\Infrastructure\Exception\ConversationNotFoundException;
-use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryInMemory;
-use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
 use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -33,9 +30,7 @@ class EditContextControllerTest extends WebTestCase
 
     public function testEditContextControllerExecute(): void
     {
-
-        $contextrepo = new ContextRepositoryInMemory();
-        $controller = new EditContextController($contextrepo, $this->getEntityManager());
+        $controller = new EditContextController($this->getEntityManager());
         $request = Request::create(
             "/api/v1/contexts",
             "PATCH",

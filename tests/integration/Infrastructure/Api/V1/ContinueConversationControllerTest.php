@@ -4,7 +4,6 @@ namespace Chatbot\Tests\integration\Infrastructure;
 
 use Chatbot\Domain\Model\Conversation\ConversationId;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryDoctrine;
-use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
 use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;

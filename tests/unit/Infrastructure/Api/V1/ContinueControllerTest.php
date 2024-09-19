@@ -44,8 +44,6 @@ class ContinueControllerTest extends WebTestCase
     {
         $this->initializeAConversation();
         $controller = new ContinueConversationController(
-            $this->inMemoryConversationRepository,
-            $this->inMemoryContextRepository,
             $this->factory,
             $this->getEntityManager()
         );

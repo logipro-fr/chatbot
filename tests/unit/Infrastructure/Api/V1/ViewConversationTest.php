@@ -2,10 +2,8 @@
 
 namespace Chatbot\Tests\Infrastructure\Api\V1;
 
-use Chatbot\Application\Service\Exception\BadTypeNameException;
 use Chatbot\Infrastructure\Api\V1\ViewConversationController;
 use Chatbot\Infrastructure\Exception\ConversationNotFoundException;
-use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
 use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -32,8 +30,7 @@ class ViewConversationTest extends WebTestCase
 
     public function testViewContextControllerExecute(): void
     {
-        $convrepo = new ConversationRepositoryInMemory();
-        $controller = new ViewConversationController($convrepo, $this->getEntityManager());
+        $controller = new ViewConversationController($this->getEntityManager());
         $request = Request::create(
             "GET",
             "/api/v1/conversations",

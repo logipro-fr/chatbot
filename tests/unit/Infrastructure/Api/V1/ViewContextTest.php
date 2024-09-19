@@ -2,11 +2,9 @@
 
 namespace Chatbot\Tests\Infrastructure\Api\V1;
 
-use Chatbot\Application\Service\Exception\BadTypeNameException;
 use Chatbot\Infrastructure\Api\V1\ViewContextController;
 use Chatbot\Infrastructure\Exception\ContextNotFoundException;
 use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryInMemory;
-use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
 use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -35,8 +33,7 @@ class ViewContextTest extends WebTestCase
     {
 
         $contextrepo = new ContextRepositoryInMemory();
-        $convrepo = new ConversationRepositoryInMemory();
-        $controller = new ViewContextController($contextrepo, $this->getEntityManager());
+        $controller = new ViewContextController($this->getEntityManager());
         $request = Request::create(
             "GET",
             "/api/v1/contexts",

@@ -5,12 +5,14 @@ namespace Chatbot\Infrastructure\Api\V1;
 use Chatbot\Application\Service\ContinueConversation\ContinueConversation;
 use Chatbot\Application\Service\ContinueConversation\ContinueConversationRequest;
 use Chatbot\Application\Service\MakeConversation\LanguageModelAbstractFactory;
-use Chatbot\Domain\Model\Context\ContextRepositoryInterface;
 use Chatbot\Domain\Model\Conversation\ConversationId;
-use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
 use Chatbot\Domain\Model\Conversation\Prompt;
+use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryDoctrine;
+use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryDoctrine;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use Phariscope\MultiTenant\Doctrine\DatabaseTools;
+use Phariscope\MultiTenant\Doctrine\EntityManagerResolver;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -19,25 +21,32 @@ use function Safe\json_decode;
 
 class ContinueConversationController extends AbstractController
 {
+    private EntityManagerResolver $entityManagerResolver;
+
     public function __construct(
-        private ConversationRepositoryInterface $repository,
-        private ContextRepositoryInterface $contextRepository,
         private LanguageModelAbstractFactory $factory,
-        private EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager
     ) {
+        $this->entityManagerResolver = new EntityManagerResolver($entityManager);
     }
+
     #[Route('api/v1/conversations/Continue', 'continueConversation', methods: ['POST'])]
     public function continueConversation(Request $request): Response
     {
         try {
+            $entityManager = $this->entityManagerResolver->getEntityManagerByRequest($request);
+            (new DatabaseTools())->createDatabaseIfNotExists($entityManager);
+
             $request = $this->buildContinueconversationRequest($request);
-            $conversation = new ContinueConversation($this->repository, $this->contextRepository, $this->factory);
+            $conversationRepository = new ConversationRepositoryDoctrine($entityManager);
+            $contextRepository = new ContextRepositoryDoctrine($entityManager);
+            $conversation = new ContinueConversation($conversationRepository, $contextRepository, $this->factory);
             $conversation->execute($request);
-            $this->entityManager->flush();
-            $response = $conversation->getResponse();
-            $this->entityManager->flush();
-            $eventFlush = new EventFlush($this->entityManager);
+
+            $eventFlush = new EventFlush($entityManager);
             $eventFlush->flushAndDistribute();
+
+            $response = $conversation->getResponse();
             return $this->writeSuccessfulResponse($response);
         } catch (Exception $e) {
             return $this->writeUnSuccessFulResponse($e);

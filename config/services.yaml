@@ -9,73 +9,15 @@ services:
     autowire: true # Automatically injects dependencies in your services.
     autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
 
-
   Chatbot\Infrastructure\LanguageModel\ModelFactory:
     autowire: true
-    
-
-  Chatbot\Infrastructure\Api\V1\MakeConversationController:
-    autowire: true
-    arguments:
-      $repository: '@conversation.repository'
-      $contextrepository: '@context.repository'
-      $factory: '@conversation.factory'
-      
-
-  Chatbot\Infrastructure\Api\V1\ContinueConversationController:
-    autowire: true
-    arguments:
-      $repository: '@conversation.repository'
-      $contextrepository: '@context.repository'
-      $factory: '@conversation.factory'
-
-  Chatbot\Infrastructure\Api\V1\ViewConversationController:
-    autowire: true
-    arguments:
-      $repository: '@conversation.repository'
-      $factory: '@conversation.factory'
-
-
-  Chatbot\Infrastructure\Api\V1\MakeContextController:
-    autowire: true
-    arguments:
-      $repository: '@context.repository'
-
-  Chatbot\Infrastructure\Api\V1\ViewContextController:
-    autowire: true
-    arguments:
-      $repository: '@context.repository'
-      $convrepository: '@conversation.repository'
-
-  Chatbot\Infrastructure\Api\V1\EditContextController:
-    autowire: true
-    arguments:
-      $repository: '@context.repository'
-
-  Chatbot\Infrastructure\Api\V1\DeleteContextController:
-    autowire: true
-    arguments:
-      $repository: '@context.repository'
-      $convrepository: '@conversation.repository'
-
-  conversation.repository:
-    public: true
-    autowire: true
-    class: Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryDoctrine
 
   conversation.factory:
     public: true
     autowire: true
     class: Chatbot\Infrastructure\LanguageModel\ModelFactory
-
-  context.repository:
-    public: true
-    autowire: true
-    class: Chatbot\Infrastructure\Persistence\Context\ContextRepositoryDoctrine
        
 
-  Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface: "@conversation.repository"
-  Chatbot\Domain\Model\Context\ContextRepositoryInterface: "@context.repository"
   Chatbot\Application\Service\MakeConversation\LanguageModelAbstractFactory: "@conversation.factory"
 
   
