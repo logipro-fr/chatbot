@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "45920d6341f221d29f0058b756cf077c",
+    "content-hash": "4e8aacfbf602b5f69773ee1ee73ee314",
     "packages": [
         {
             "name": "doctrine/cache",
@@ -1517,22 +1517,22 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/phariscope/MultiTenant.git",
-                "reference": "9fbe632ec21f41d447dea53b4ab27a3699e92431"
+                "reference": "ad3827c8e43e494da88c971d20ec1c8e5c6b2bf3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phariscope/MultiTenant/zipball/9fbe632ec21f41d447dea53b4ab27a3699e92431",
-                "reference": "9fbe632ec21f41d447dea53b4ab27a3699e92431",
+                "url": "https://api.github.com/repos/phariscope/MultiTenant/zipball/ad3827c8e43e494da88c971d20ec1c8e5c6b2bf3",
+                "reference": "ad3827c8e43e494da88c971d20ec1c8e5c6b2bf3",
                 "shasum": ""
             },
             "require": {
-                "doctrine/cache": "^2.2",
+                "doctrine/cache": "^1.11 || ^2.0",
                 "phariscope/safephp": "^1.0",
                 "php": ">=8.2",
-                "symfony/dotenv": "^7.1",
-                "symfony/orm-pack": "^2.4",
-                "symfony/runtime": "^7.1",
-                "symfony/yaml": "^7.1"
+                "symfony/dotenv": "^5.4 || ^6.0 || ^7.0",
+                "symfony/orm-pack": "^2.4 || ^5.4 || ^6.0 || ^7.0",
+                "symfony/runtime": "^5.4 || ^6.0 || ^7.0",
+                "symfony/yaml": "^5.4 || ^6.0 || ^7.0"
             },
             "require-dev": {
                 "infection/extension-installer": "0.1.2",
@@ -1563,7 +1563,6 @@
             "authors": [
                 {
                     "name": "Frédéric Royet",
-                    "email": "frederic.royet@logipro.com",
                     "homepage": "https://www.linkedin.com/in/frederic-royet-42568566/",
                     "role": "Project Founder"
                 }
@@ -1577,9 +1576,9 @@
             ],
             "support": {
                 "issues": "https://github.com/phariscope/MultiTenant/issues",
-                "source": "https://github.com/phariscope/MultiTenant/tree/main"
+                "source": "https://github.com/phariscope/MultiTenant/tree/0.0.1-rc"
             },
-            "time": "2024-09-19T07:30:59+00:00"
+            "time": "2024-09-19T09:35:43+00:00"
         },
         {
             "name": "phariscope/safephp",
@@ -8145,7 +8144,7 @@
         }
     ],
     "aliases": [],
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "stability-flags": {
         "phariscope/multitenant": 20
     },

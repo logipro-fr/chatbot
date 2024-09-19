@@ -1,11 +1,21 @@
 {
     "name": "logipro/chatbot",
-    "type": "app",
-    "description": "start a new PHP project with a simple base structure",
-    "keywords": ["php", "DDT"],
-    "homepage": "https://github.com/frederic100/chatbot",
-    "license": "Copyrighted",
-    "minimum-stability": "dev",
+    "type": "project",
+    "description": "conversations api based on llms",
+    "keywords": ["chatbot", "conversation"],
+    "homepage": "https://github.com/logipro-fr/chatbot",
+    "authors": [
+        {
+            "name": "Marine-Bernard",
+            "homepage": "https://github.com/Marine-Bernard/"
+        },
+        {
+            "name": "Frédéric Royet",
+            "homepage": "https://www.linkedin.com/in/frederic-royet-42568566/"
+        }
+    ],
+    "license": "MIT",
+    "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
         "php": ">=8.3",
@@ -52,7 +62,7 @@
     "extra": {
         "symfony": {
             "allow-contrib": true,
-            "require": "6.3.*"
+            "require": "7.0.*"
         },
         "runtime": {
             "dotenv_path": "src/Infrastructure/Shared/Symfony/.env"
