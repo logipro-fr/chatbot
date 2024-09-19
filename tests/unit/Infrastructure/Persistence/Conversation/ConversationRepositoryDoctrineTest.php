@@ -7,7 +7,6 @@ use Chatbot\Domain\Model\Conversation\Answer;
 use Chatbot\Domain\Model\Conversation\Conversation;
 use Chatbot\Domain\Model\Conversation\ConversationId;
 use Chatbot\Domain\Model\Conversation\Prompt;
-use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryDoctrine;
 use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
 
 class ConversationRepositoryDoctrineTest extends ConversationRepositoryTestBase

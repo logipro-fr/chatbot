@@ -10,8 +10,10 @@ USER_ID=$(id -u)
 GROUP_ID=$(id -g)
 
 docker run ${moinsit} --rm \
-  --volume $PWD:/app \
+  --volume $PWD:$PWD \
+  --volume $PWD/../../phariscope/MultiTenant:$PWD/../../phariscope/MultiTenant \
   --user $USER_ID:$GROUP_ID \
   --name composer-running-script \
   -v "$PWD":/usr/src \
+  --workdir $PWD \
   composer:2.6.6 composer $@

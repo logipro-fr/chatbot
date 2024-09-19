@@ -36,11 +36,6 @@ services:
       $factory: '@conversation.factory'
 
 
-  Chatbot\Infrastructure\Api\V1\MakeContextController:
-    autowire: true
-    arguments:
-      $repository: '@context.repository'
-
   Chatbot\Infrastructure\Api\V1\ViewContextController:
     autowire: true
     arguments:
@@ -67,15 +62,9 @@ services:
     public: true
     autowire: true
     class: Chatbot\Infrastructure\LanguageModel\ModelFactory
-
-  context.repository:
-    public: true
-    autowire: true
-    class: Chatbot\Infrastructure\Persistence\Context\ContextRepositoryDoctrine
        
 
   Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface: "@conversation.repository"
-  Chatbot\Domain\Model\Context\ContextRepositoryInterface: "@context.repository"
   Chatbot\Application\Service\MakeConversation\LanguageModelAbstractFactory: "@conversation.factory"
 
   

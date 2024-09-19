@@ -36,7 +36,7 @@ class MakeConversationControllerTest extends WebTestCase
         $repository = new ConversationRepositoryInMemory();
         $factory = new ModelFactory();
         $contextrepo = new ContextRepositoryInMemory();
-        $controller = new MakeConversationController($repository, $contextrepo, $factory, $this->getEntityManager());
+        $controller = new MakeConversationController($repository, $factory, $this->getEntityManager(), $contextrepo);
         $request = Request::create(
             "/api/v1/conversations/make",
             "POST",

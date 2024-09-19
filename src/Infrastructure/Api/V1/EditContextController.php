@@ -6,7 +6,7 @@ use Chatbot\Application\Service\EditContext\EditContext;
 use Chatbot\Application\Service\EditContext\EditContextRequest;
 use Chatbot\Domain\Model\Context\ContextId;
 use Chatbot\Domain\Model\Context\ContextMessage;
-use Chatbot\Domain\Model\Context\ContextRepositoryInterface;
+use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryDoctrine;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,7 +18,6 @@ use function Safe\json_decode;
 class EditContextController extends AbstractController
 {
     public function __construct(
-        private ContextRepositoryInterface $repository,
         private EntityManagerInterface $entityManager
     ) {
     }
@@ -26,7 +25,9 @@ class EditContextController extends AbstractController
     public function editContext(Request $request): Response
     {
         $request = $this->buildEditContextRequest($request);
-        $context = new EditContext($this->repository);
+        $context = new EditContext(
+            new ContextRepositoryDoctrine($this->entityManager)
+        );
         try {
             $context->execute($request);
             $eventFlush = new EventFlush($this->entityManager);

@@ -6,7 +6,6 @@ use Chatbot\Domain\Model\Context\Context;
 use Chatbot\Domain\Model\Context\ContextId;
 use Chatbot\Domain\Model\Context\ContextRepositoryInterface;
 use Chatbot\Infrastructure\Exception\ContextNotFoundException;
-use Chatbot\Infrastructure\Exception\ConversationNotFoundException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 

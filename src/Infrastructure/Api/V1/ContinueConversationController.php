@@ -5,10 +5,10 @@ namespace Chatbot\Infrastructure\Api\V1;
 use Chatbot\Application\Service\ContinueConversation\ContinueConversation;
 use Chatbot\Application\Service\ContinueConversation\ContinueConversationRequest;
 use Chatbot\Application\Service\MakeConversation\LanguageModelAbstractFactory;
-use Chatbot\Domain\Model\Context\ContextRepositoryInterface;
 use Chatbot\Domain\Model\Conversation\ConversationId;
-use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
 use Chatbot\Domain\Model\Conversation\Prompt;
+use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryDoctrine;
+use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryDoctrine;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,8 +20,6 @@ use function Safe\json_decode;
 class ContinueConversationController extends AbstractController
 {
     public function __construct(
-        private ConversationRepositoryInterface $repository,
-        private ContextRepositoryInterface $contextRepository,
         private LanguageModelAbstractFactory $factory,
         private EntityManagerInterface $entityManager
     ) {
@@ -31,7 +29,10 @@ class ContinueConversationController extends AbstractController
     {
         try {
             $request = $this->buildContinueconversationRequest($request);
-            $conversation = new ContinueConversation($this->repository, $this->contextRepository, $this->factory);
+
+            $conversationRepository = new ConversationRepositoryDoctrine($this->entityManager);
+            $contextRepository = new ContextRepositoryDoctrine($this->entityManager);
+            $conversation = new ContinueConversation($conversationRepository, $contextRepository, $this->factory);
             $conversation->execute($request);
             $this->entityManager->flush();
             $response = $conversation->getResponse();
