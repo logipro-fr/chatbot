@@ -4,29 +4,40 @@ namespace Chatbot\Infrastructure\Api\V1;
 
 use Chatbot\Application\Service\ViewConversation\ViewConversation;
 use Chatbot\Application\Service\ViewConversation\ViewConversationRequest;
-use Chatbot\Domain\Model\Context\ContextRepositoryInterface;
-use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
+use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryDoctrine;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use Phariscope\MultiTenant\Doctrine\DatabaseTools;
+use Phariscope\MultiTenant\Doctrine\EntityManagerResolver;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ViewConversationController extends AbstractController
 {
+    private EntityManagerResolver $entityManagerResolver;
+
     public function __construct(
-        private ConversationRepositoryInterface $convRepository,
-        private EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager
     ) {
+        $this->entityManagerResolver = new EntityManagerResolver($entityManager);
     }
+
     #[Route('api/v1/conversations', 'viewConversations', methods: ['GET'])]
     public function viewConversation(Request $request): Response
     {
-        $request = $this->buildViewConversationRequest($request);
-        $context = new ViewConversation($this->convRepository);
         try {
+            $entityManager = $this->entityManagerResolver->getEntityManagerByRequest($request);
+            (new DatabaseTools())->createDatabaseIfNotExists($entityManager);
+
+            $request = $this->buildViewConversationRequest($request);
+            $context = new ViewConversation(
+                new ConversationRepositoryDoctrine($entityManager)
+            );
+
             $context->execute($request);
-            $eventFlush = new EventFlush($this->entityManager);
+
+            $eventFlush = new EventFlush($entityManager);
             $eventFlush->flushAndDistribute();
         } catch (Exception $e) {
             return $this->writeUnSuccessFulResponse($e);

@@ -11,8 +11,10 @@ use Chatbot\Domain\Model\Context\ContextRepositoryInterface;
 use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
 use Chatbot\Domain\Model\Conversation\Prompt;
 use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryDoctrine;
+use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryDoctrine;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use Phariscope\MultiTenant\Doctrine\DatabaseTools;
 use Phariscope\MultiTenant\Doctrine\EntityManagerResolver;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,31 +24,32 @@ use function Safe\json_decode;
 
 class MakeConversationController extends AbstractController
 {
-    private EntityManagerResolver $entityManagerResolover;
+    private EntityManagerResolver $entityManagerResolver;
 
     public function __construct(
-        private ConversationRepositoryInterface $repository,
         private LanguageModelAbstractFactory $factory,
         EntityManagerInterface $entityManager,
-        private ?ContextRepositoryInterface $contextRepository = null,
     ) {
-        $this->entityManagerResolover = new EntityManagerResolver($entityManager);
+        $this->entityManagerResolver = new EntityManagerResolver($entityManager);
     }
 
     #[Route('api/v1/conversations/Make', 'makeConversation', methods: ['POST'])]
     public function makeConversation(Request $request): Response
     {
         try {
-            $request = $this->buildMakeconversationRequest($request);
+            $entityManager = $this->entityManagerResolver->getEntityManagerByRequest($request);
+            (new DatabaseTools())->createDatabaseIfNotExists($entityManager);
 
-            $multiTenanEntityManager = $this->entityManagerResolover->getEntityManager();
+            $makeConversationRequest = $this->buildMakeconversationRequest($request);
 
-            /** @var ContextRepositoryDoctrine */
-            $contextRepository = $this->contextRepository ?? $multiTenanEntityManager->getRepository(Context::class);
+            $conversation = new MakeConversation(
+                new ConversationRepositoryDoctrine($entityManager),
+                $this->factory,
+                new ContextRepositoryDoctrine($entityManager)
+            );
+            $conversation->execute($makeConversationRequest);
 
-            $conversation = new MakeConversation($this->repository, $this->factory, $contextRepository);
-            $conversation->execute($request);
-            $eventFlush = new EventFlush($multiTenanEntityManager);
+            $eventFlush = new EventFlush($entityManager);
             $eventFlush->flushAndDistribute();
         } catch (Exception $e) {
             return $this->writeUnSuccessFulResponse($e);

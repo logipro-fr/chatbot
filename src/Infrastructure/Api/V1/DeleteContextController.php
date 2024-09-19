@@ -9,6 +9,8 @@ use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryDoctrine;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryDoctrine;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use Phariscope\MultiTenant\Doctrine\DatabaseTools;
+use Phariscope\MultiTenant\Doctrine\EntityManagerResolver;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -17,21 +19,31 @@ use function Safe\json_decode;
 
 class DeleteContextController extends AbstractController
 {
+    private EntityManagerResolver $entityManagerResolver;
+
     public function __construct(
-        private EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager
     ) {
+        $this->entityManagerResolver = new EntityManagerResolver($entityManager);
     }
+
     #[Route('api/v1/contexts', 'deleteContext', methods: ['DELETE'])]
     public function deleteContext(Request $request): Response
     {
-        $request = $this->buildDeleteContextRequest($request);
-        $context = new DeleteContext(
-            new ContextRepositoryDoctrine($this->entityManager),
-            new ConversationRepositoryDoctrine($this->entityManager)
-        );
+
         try {
+            $entityManager = $this->entityManagerResolver->getEntityManagerByRequest($request);
+            (new DatabaseTools())->createDatabaseIfNotExists($entityManager);
+
+            $request = $this->buildDeleteContextRequest($request);
+            $context = new DeleteContext(
+                new ContextRepositoryDoctrine($entityManager),
+                new ConversationRepositoryDoctrine($entityManager)
+            );
+
             $context->execute($request);
-            $eventFlush = new EventFlush($this->entityManager);
+
+            $eventFlush = new EventFlush($entityManager);
             $eventFlush->flushAndDistribute();
         } catch (Exception $e) {
             return $this->writeUnSuccessFulResponse($e);

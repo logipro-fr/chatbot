@@ -36,7 +36,7 @@ class ContinueConversationController extends AbstractController
         try {
             $entityManager = $this->entityManagerResolver->getEntityManagerByRequest($request);
             (new DatabaseTools())->createDatabaseIfNotExists($entityManager);
-            
+
             $request = $this->buildContinueconversationRequest($request);
             $conversationRepository = new ConversationRepositoryDoctrine($entityManager);
             $contextRepository = new ContextRepositoryDoctrine($entityManager);

@@ -25,6 +25,7 @@ class MakeContextController extends AbstractController
     ) {
         $this->entityManagerResolver = new EntityManagerResolver($entityManager);
     }
+
     #[Route('api/v1/context/Make', 'makeContext', methods: ['POST'])]
     public function makeContext(Request $request): Response
     {
