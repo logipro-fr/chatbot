@@ -1,4 +1,4 @@
-FROM mariadb:10.11.5
+FROM mariadb:10.11.10
 
 # Définir le fuseau horaire
 ENV TZ=Europe/Paris

@@ -34,13 +34,7 @@ function create_data_directory() {
 }
 
 function build_docker_images() {
-    (
-        USERID=$(id -u)
-        export USERID
-        GROUPID=$(id -g)
-        export GROUPID
-        docker compose build
-    )
+    docker compose build
 }
 
 
@@ -51,6 +45,7 @@ create_log_directory
 echo "-------------Step 1: Done!"
 
 echo "-------------Step 2: Build docker images---------------------------------------------------------"
+init_docker_userid_groupid
 build_docker_images
 echo "-------------Step 2: Done!"
 
