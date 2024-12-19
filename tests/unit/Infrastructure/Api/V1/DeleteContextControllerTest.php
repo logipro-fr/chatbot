@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
 
 use function Safe\json_encode;
+use function SafePHP\strval;
 
 class DeleteContextControllerTest extends WebTestCase
 {

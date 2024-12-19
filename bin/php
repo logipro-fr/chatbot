@@ -21,6 +21,7 @@ docker run \
     --name "$PHP_IMAGE_NAME-running-script" \
     -v "$PWD":"$PWD" \
     --user "$USER_ID:$GROUP_ID" \
+    --volume ./docker/php/php.ini:/usr/local/etc/php/php.ini \
     -w "$PWD" \
     $PHP_IMAGE_NAME php $@
 fi
