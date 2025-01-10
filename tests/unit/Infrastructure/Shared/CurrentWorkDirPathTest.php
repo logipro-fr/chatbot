@@ -15,8 +15,12 @@ class CurrentWorkDirPathTest extends TestCase
 
     public function setUp(): void
     {
-        $this->d_env = isset($_ENV['PWD']) ? $_ENV['PWD'] : null;
-        $this->env = getenv('PWD') == false ? null : getenv('PWD');
+        /** @var ?string $d_env */
+        $d_env = isset($_ENV['PWD']) ? $_ENV['PWD'] : null;
+        $this->d_env = $d_env;
+        /** @var ?string $d_env */
+        $env = getenv('PWD') == false ? null : (string)(getenv('PWD'));
+        $this->env = $env;
     }
 
     public function tearDown(): void

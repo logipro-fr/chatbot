@@ -26,6 +26,7 @@ class ChatbotGPTApi implements ChatbotApiInterface
         ?string $apiKey = null
     ) {
         if ($apiKey == null) {
+            /** @var string $apiKey */
             $apiKey = $_ENV["CHATBOT_API_KEY"];
         }
         $this->CHATBOT_KEY_API = $apiKey;
@@ -55,7 +56,7 @@ class ChatbotGPTApi implements ChatbotApiInterface
             $code = $response->getStatusCode();
             if ($code == 200) {
                 $contentJson = $response->getContent();
-                /** @var \stdClass{"choices": array<int,\stdClass>} $content */
+                /** @var object{"choices": array<int,object{message: object{content: string|bool|int|null}}>} $content */
                 $content = json_decode($contentJson);
                 $choices = $content->choices;
                 $messageContent = $choices[0]->message->content ;

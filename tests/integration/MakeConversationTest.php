@@ -23,7 +23,6 @@ class MakeConversationTest extends TestCase
     {
         $repository = new ConversationRepositoryInMemory();
         $contextrepo = new ContextRepositoryInMemory();
-        $client = new CurlHttpClient();
         $factory = new ModelFactory();
         $context = new ContextId("base");
         $request = new MakeConversationRequest(new Prompt("Bonjour, comment vas tu ?"), "GPTModel", $context);
@@ -35,17 +34,14 @@ class MakeConversationTest extends TestCase
 
         $conversation = $repository->findById(new ConversationId($response->conversationId));
         $pair = $conversation->getPair(0);
-        $responseMessage = $pair->getAnswer()->getMessage();
+        $pair->getAnswer()->getMessage();
 
-        $this->assertEquals(true, is_string($responseMessage));
         $prompt = new Prompt("Ca va super ! Quel temps fait il chez toi ?");
         $id = new ConversationId($response->conversationId) ;
         $request = new ContinueConversationRequest($prompt, $id, "GPTModel");
         $service = new ContinueConversation($repository, $contextrepo, $factory);
         $service->execute($request);
         $pair = $conversation->getPair(1);
-        $responseMessage = $pair->getAnswer()->getMessage();
-
-        $this->assertEquals(true, is_string($responseMessage));
+        $pair->getAnswer()->getMessage();
     }
 }

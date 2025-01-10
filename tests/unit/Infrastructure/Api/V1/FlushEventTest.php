@@ -7,6 +7,7 @@ use Chatbot\Infrastructure\Api\V1\EventFlush;
 use Chatbot\Tests\Domain\EventFacade\EventFake;
 use Doctrine\ORM\EntityManager;
 use Phariscope\Event\Tools\SpyListener;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class FlushEventTest extends TestCase
@@ -18,9 +19,9 @@ class FlushEventTest extends TestCase
         $facade = new EventFacade();
         $facade->subscribe($spy);
         $facade->dispatch($event);
+        /** @var EntityManager&MockObject $em */
         $em = $this->createMock(EntityManager::class);
 
-        /** @var EntityManager $em */
         $sut = new EventFlush($em);
         $sut->flushAndDistribute();
 
@@ -31,18 +32,19 @@ class FlushEventTest extends TestCase
     {
         $em = $this->createMock(EntityManager::class);
         $em->expects($this->atLeastOnce())->method('flush');
-        /** @var EntityManager $em */
+        /** @var EntityManager&MockObject $em */
         $sut = new EventFlush($em);
         $sut->flushAndDistribute();
     }
 
     public function testFlushISDoneEvenIfDistributeFail(): void
     {
+        /** @var EntityManager&MockObject $em */
         $em = $this->createMock(EntityManager::class);
         $em->expects($this->atLeastOnce())->method('flush');
 
-        /** @var EntityManager $em */
 
+        /** @var EventFacade&MockObject $facade */
         $facade = $this->createMock(EventFacade::class);
         $facade->method('distribute')->willReturnCallback(function () {
             throw new \Exception();
@@ -56,13 +58,14 @@ class FlushEventTest extends TestCase
     {
         $callOrder = [];
 
+        /** @var EntityManager&MockObject $em */
         $em = $this->createMock(EntityManager::class);
         $em->expects($this->any())->method('flush')->willReturnCallback(function () use (&$callOrder) {
             $callOrder[] = 'flush';
         });
 
-        /** @var EntityManager $em */
 
+        /** @var EventFacade&MockObject $facade */
         $facade = $this->createMock(EventFacade::class);
         $facade->method('distribute')->willReturnCallback(function () use (&$callOrder) {
             $callOrder[] = 'distribute';

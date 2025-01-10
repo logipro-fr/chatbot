@@ -11,8 +11,6 @@ use Chatbot\Domain\Model\Context\ContextMessage;
 use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryInMemory;
 use PHPUnit\Framework\TestCase;
 
-use function Safe\file_get_contents;
-
 class ViewContextTest extends TestCase
 {
     public function testFindContextWithContextId(): void
@@ -35,7 +33,6 @@ class ViewContextTest extends TestCase
 
         //assert / Then
         $this->assertInstanceOf(ViewContextResponse::class, $response);
-        $this->assertIsString($response->contextMessage);
         $this->assertEquals("You're helpfull assistant", $response->contextMessage);
     }
 }

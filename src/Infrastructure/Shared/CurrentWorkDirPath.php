@@ -9,11 +9,13 @@ class CurrentWorkDirPath
     public static function getPath(): string
     {
         if (isset($_ENV["PWD"])) {
-            return $_ENV["PWD"];
+            /** @var string $env */
+            $env = $_ENV["PWD"];
+            return $env;
         }
 
         if (getenv('PWD') !== false) {
-            return getenv('PWD');
+            return strval(getenv('PWD'));
         }
         throw new NoPWDException("Env var PWD no found");
     }
