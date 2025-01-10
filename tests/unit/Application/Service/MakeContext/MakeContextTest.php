@@ -10,7 +10,6 @@ use Chatbot\Domain\Model\Context\ContextMessage;
 use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryInMemory;
 use PHPUnit\Framework\TestCase;
 
-
 class MakeContextTest extends TestCase
 {
     public function testSomeoneCreateAContext(): void
