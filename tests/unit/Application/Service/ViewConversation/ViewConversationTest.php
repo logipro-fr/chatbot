@@ -18,8 +18,6 @@ use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryDoctri
 use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
 use PHPUnit\Framework\TestCase;
 
-use function Safe\file_get_contents;
-
 class ViewConversationTest extends TestCase
 {
     use DoctrineRepositoryTesterTrait;
@@ -53,6 +51,5 @@ class ViewConversationTest extends TestCase
         $service->execute(new ViewConversationRequest($this->convid));
         $response = $service->getResponse();
         $this->assertInstanceOf(ViewConversationResponse::class, $response);
-        $this->assertIsString($response->contextId);
     }
 }

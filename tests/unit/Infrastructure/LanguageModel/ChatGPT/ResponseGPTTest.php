@@ -27,7 +27,7 @@ class ResponseGPTTest extends TestCase
         $chatBotTest = new ChatbotGPTApi($client);
         $requestGPT = new RequestGPT($prompt, $context, $conversation);
         $response = $chatBotTest->request($requestGPT);
-        $this->assertEquals(true, is_int($response->statusCode));
+        $this->assertEquals(200, $response->statusCode);
     }
 
     private function createMockHttpClient(string $filename, int $code): MockHttpClient

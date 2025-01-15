@@ -18,7 +18,7 @@ class ConversationIdTypeTest extends TestCase
     {
         $type = new ConversationIdType();
         $id = $type->convertToPHPValue("con_", new SqlitePlatform());
-        $this->assertEquals(true, $id instanceof ConversationId);
+        $this->assertEquals(new ConversationId("con_"), $id);
     }
 
     public function testConvertToDatabaseValue(): void

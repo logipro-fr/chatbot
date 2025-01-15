@@ -9,6 +9,7 @@ use Chatbot\Domain\Model\Conversation\Conversation;
 use Chatbot\Domain\Model\Conversation\Prompt;
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\ChatbotGPTApi;
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\RequestGPT;
+use Chatbot\Infrastructure\LanguageModel\ChatGPT\ResponseGPT;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\HttpClient\CurlHttpClient;
@@ -30,8 +31,7 @@ class ChatbotGPTApiTest extends TestCase
         $context = new Context(new ContextMessage("You're a sarcastic assistant named Marvin"));
         $requestGPT = new RequestGPT($prompt, $context, $conversation);
         $response = $chatBotTest->request($requestGPT);
-
-        $this->assertEquals(true, is_string($response->message));
+        $this->assertInstanceOf(ResponseGPT::class, $response);
     }
 
     public function testTranslate(): void
@@ -44,6 +44,6 @@ class ChatbotGPTApiTest extends TestCase
         $context = new Context(new ContextMessage($sentence));
         $requestGPT = new RequestGPT($prompt, $context, $conversation);
         $response = $chatBotTest->request($requestGPT);
-        $this->assertEquals(true, is_string($response->message));
+        $this->assertInstanceOf(ResponseGPT::class, $response);
     }
 }

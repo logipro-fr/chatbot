@@ -66,7 +66,6 @@ class MakeContextControllerWithTenantTest extends WebTestCase
         $em = (new EntityManagerResolver($this->getEntityManager()))->getEntityManager($tenantId);
         $repository = new ContextRepositoryDoctrine($em);
         $contextId = strval($responseContent["data"]["contextId"]);
-        $context = $repository->findById(new ContextId($contextId));
-        $this->assertIsObject($context);
+        $repository->findById(new ContextId($contextId));
     }
 }
