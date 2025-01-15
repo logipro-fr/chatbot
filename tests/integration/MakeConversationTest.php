@@ -42,6 +42,7 @@ class MakeConversationTest extends TestCase
         $service = new ContinueConversation($repository, $contextrepo, $factory);
         $service->execute($request);
         $pair = $conversation->getPair(1);
-        $pair->getAnswer()->getMessage();
+        $answerMessage = $pair->getAnswer()->getMessage();
+        $this->assertNotEmpty($answerMessage);
     }
 }
