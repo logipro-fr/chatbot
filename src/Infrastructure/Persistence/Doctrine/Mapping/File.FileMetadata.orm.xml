@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                  http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Chatbot\Domain\Model\File\FileMetadata" table="files">
+        <id name="fileId" type="file_id" length="255">
+            <generator strategy="NONE"/>
+        </id>
+        
+        <field name="originalFilename" type="string" length="255" nullable="false"/>
+        <field name="purpose" type="string" length="50" nullable="false"/>
+        <field name="size" type="integer" nullable="false"/>
+        <field name="createdAt" type="datetime" nullable="false"/>
+    </entity>
+
+</doctrine-mapping> 

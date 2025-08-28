@@ -1,0 +1,78 @@
+post:
+  tags:
+    - Assistant
+  summary: Create a conversation with an assistant
+  operationId: assistantConversation
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            assistant_id:
+              type: string
+              description: The ID of the assistant (required)
+              example: "assistant_abc123"
+            message:
+              type: string
+              description: The message to send to the assistant
+              example: "Peux-tu m'aider à documenter cette fonction PHP ?"
+          required:
+            - assistant_id
+            - message
+  responses:
+    '200':
+      description: Conversation created successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                description: Indicates if the conversation was created
+                example: true
+              data:
+                type: object
+                properties:
+                  conversationId:
+                    type: string
+                    description: The ID of the created conversation
+                    example: "con_abc123"
+                  assistantMessage:
+                    type: string
+                    description: The assistant's response
+                    example: "Bien sûr ! Je peux vous aider à documenter votre fonction PHP. Pouvez-vous me montrer le code ?"
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: InvalidArgumentException
+              error_message:
+                type: string
+                example: L'ID de l'assistant est requis
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: Exception
+              error_message:
+                type: string
+                example: API Error 

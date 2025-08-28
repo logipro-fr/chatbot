@@ -1,0 +1,79 @@
+get:
+  tags:
+    - Files
+  summary: Get file information from OpenAI
+  operationId: getFile
+  parameters:
+    - name: fileId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: The OpenAI file ID
+      example: file-abc123
+  responses:
+    '200':
+      description: File information retrieved successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                description: Indicates if the file information was retrieved
+                example: true
+              data:
+                type: object
+                properties:
+                  file:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        description: The OpenAI file ID
+                        example: file-abc123
+                      filename:
+                        type: string
+                        description: The filename
+                        example: document.pdf
+                      purpose:
+                        type: string
+                        description: The purpose of the file
+                        example: assistants
+                      bytes:
+                        type: integer
+                        description: The file size in bytes
+                        example: 1024
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: InvalidArgumentException
+              error_message:
+                type: string
+                example: File ID is required
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: Exception
+              error_message:
+                type: string
+                example: API Error 

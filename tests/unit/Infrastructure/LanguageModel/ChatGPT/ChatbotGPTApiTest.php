@@ -5,6 +5,7 @@ namespace Chatbot\Tests\Infrastructure\LanguageModel\ChatGPT;
 use Chatbot\Application\Service\Exception\BadInstanceException;
 use Chatbot\Application\Service\Exception\BadRequestException;
 use Chatbot\Application\Service\Exception\ExcesRequestException;
+use Chatbot\Application\Service\Exception\MissingChatbotKeyApiException;
 use Chatbot\Application\Service\Exception\OtherException;
 use Chatbot\Application\Service\Exception\UnhautorizeKeyException;
 use Chatbot\Domain\Model\Context\Context;
@@ -53,13 +54,18 @@ class ChatbotGPTApiTest extends TestCase
 
     public function testRequest(): void
     {
+        // Arrange
         $conversation = new Conversation(new ContextId("base"));
         $client = $this->createMockHttpClient('responseGETblague.json', 200);
         $prompt = new Prompt("raconte moi une blague stp");
         $context = new Context(new ContextMessage(self::CONTEXT));
         $chatBotTest = new ChatbotGPTApi($client);
         $requestGPT = new RequestGPT($prompt, $context, $conversation);
+
+        // Act
         $response = $chatBotTest->request($requestGPT);
+
+        // Assert
         $this->assertEquals("\n\nchats contre internet: souris gagnantes", $response->message);
     }
 
@@ -93,7 +99,7 @@ class ChatbotGPTApiTest extends TestCase
         $response = (new ChatbotGPTApi($client))->paramsHeader($this->content);
         $this->assertEquals(
             ['Content-Type' => 'application/json',
-            'Authorization' => 'Bearer ' . getenv("CHATBOT_API_KEY")
+            'Authorization' => 'Bearer ' . getenv("CHATBOT_KEY_API")
             ],
             $response["headers"]
         );
@@ -203,5 +209,16 @@ class ChatbotGPTApiTest extends TestCase
             json_encode($content),
             $response
         );
+    }
+
+    public function testMissingChatbotKeyApiException(): void
+    {
+        $this->expectException(MissingChatbotKeyApiException::class);
+        $this->expectExceptionMessage("La variable d'environnement CHATBOT_KEY_API est manquante");
+        
+        unset($_ENV['CHATBOT_KEY_API']);
+        $client = $this->createMockHttpClient('responseGETblague.json', 200);
+        
+        new ChatbotGPTApi($client);
     }
 }

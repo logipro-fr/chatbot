@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="https://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="https://doctrine-project.org/schemas/orm/doctrine-mapping
+                          https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Chatbot\Domain\Model\Thread\Thread" table="threads"
+            repository-class="Chatbot\Infrastructure\Persistence\Thread\ThreadRepositoryDoctrine">
+        <id name="threadId" type="thread_id" column="thread_id">
+            <generator strategy="NONE"/>
+        </id>
+        <field name="assistantId" type="assistant_id" column="assistant_id"/>
+        <field name="openAiThreadId" type="string" column="openai_thread_id"/>
+        <field name="createdAt" type="datetime_immutable" column="created_at"/>
+    </entity>
+</doctrine-mapping> 

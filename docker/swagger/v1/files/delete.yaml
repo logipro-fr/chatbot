@@ -1,0 +1,68 @@
+delete:
+  tags:
+    - Files
+  summary: Delete a file from OpenAI
+  operationId: deleteFile
+  parameters:
+    - name: fileId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: The OpenAI file ID
+      example: file-abc123
+  responses:
+    '200':
+      description: File deleted successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                description: Indicates if the file was deleted
+                example: true
+              data:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message
+                    example: File deleted successfully
+                  file_id:
+                    type: string
+                    description: The deleted file ID
+                    example: file-abc123
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: InvalidArgumentException
+              error_message:
+                type: string
+                example: File ID is required
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: Exception
+              error_message:
+                type: string
+                example: API Error 

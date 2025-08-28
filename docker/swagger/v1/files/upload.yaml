@@ -1,0 +1,84 @@
+post:
+  tags:
+    - Files
+  summary: Upload a file to OpenAI
+  operationId: uploadFile
+  requestBody:
+    required: true
+    content:
+      multipart/form-data:
+        schema:
+          type: object
+          properties:
+            file:
+              type: string
+              format: binary
+              description: The file to upload (PDF, TXT, DOCX, etc.)
+            purpose:
+              type: string
+              description: The purpose of the file (assistants only)
+              enum: [assistants]
+              default: assistants
+  responses:
+    '200':
+      description: File uploaded successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                description: Indicates if the file was uploaded
+                example: true
+              data:
+                type: object
+                properties:
+                  file_id:
+                    type: string
+                    description: The OpenAI file ID
+                    example: file-abc123
+                  filename:
+                    type: string
+                    description: The original filename
+                    example: document.pdf
+                  purpose:
+                    type: string
+                    description: The purpose of the file
+                    example: assistants
+                  size:
+                    type: integer
+                    description: The file size in bytes
+                    example: 1024
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: InvalidArgumentException
+              error_message:
+                type: string
+                example: No file uploaded
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: Exception
+              error_message:
+                type: string
+                example: API Error 

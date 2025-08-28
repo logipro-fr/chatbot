@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="https://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="https://doctrine-project.org/schemas/orm/doctrine-mapping
+                          https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Chatbot\Domain\Model\Assistant\Assistant" table="assistants"
+            repository-class="Chatbot\Infrastructure\Persistence\Assistant\AssistantRepositoryDoctrine">
+        <id name="assistantId" type="assistant_id" column="assistant_id">
+            <generator strategy="NONE"/>
+        </id>
+        <field name="name" type="string" column="name"/>
+        <field name="instructions" type="text" column="instructions"/>
+        <field name="openAiAssistantId" type="string" column="openai_assistant_id"/>
+        <field name="fileIds" type="json" column="file_ids"/>
+        <field name="createdAt" type="datetime_immutable" column="created_at"/>
+    </entity>
+</doctrine-mapping> 

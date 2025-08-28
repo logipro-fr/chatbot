@@ -22,7 +22,7 @@ class ChatbotGPTApiTest extends TestCase
         $dotenv->loadEnv(getcwd() . '/src/Infrastructure/Shared/Symfony/.env.local');
     }
 
-    public function testRequest(): void
+    public function testRequestToRefacto(): void
     {
         $client = new CurlHttpClient();
         $conversation = new Conversation(new ContextId("base"));

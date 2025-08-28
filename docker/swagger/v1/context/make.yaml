@@ -1,0 +1,53 @@
+post:
+  tags:
+      - Context
+  summary: Make a context
+  operationId: makeContext
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            ContextMessage:
+              type: string
+              description: The context you want to create to personalize the chatbot's responses.
+              example: Respond like a nextSign salesperson using a formal tone and short sentences.
+            
+
+  responses:
+    '200':
+      description: Successful response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                description: Indicate whether the context was changed
+                example: true
+              data:
+                type: object
+                properties:
+                  contextId:
+                    type: string
+                    description: The Id of created Context
+                    example: con_664c50f9c95cb
+                description: Data returned by the conversation service
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                description: Indicates whether the conversation was created
+                example: false
+              error:
+                type: string
+                description: The message error
+                example: EmptyString 

@@ -20,9 +20,19 @@ services:
 
   Chatbot\Application\Service\MakeConversation\LanguageModelAbstractFactory: "@conversation.factory"
 
+  Chatbot\Infrastructure\LanguageModel\ChatGPT\Assistant\FileApi:
+    autowire: true
+
+  Chatbot\Domain\Model\File\FileMetadataRepositoryInterface:
+    class: Chatbot\Infrastructure\Persistence\File\FileMetadataRepositoryDoctrine
   
   Chatbot\Infrastructure\Api\V1\:
     resource: "../src/Infrastructure/Api/V1/"
+    tags: ["controller.service_arguments"]
+    exclude: "../src/Infrastructure/Api/V1/File/"
+
+  Chatbot\Infrastructure\Api\V1\File\:
+    resource: "../src/Infrastructure/Api/V1/File/"
     tags: ["controller.service_arguments"]
     
 

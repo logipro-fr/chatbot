@@ -1,0 +1,85 @@
+put:
+  tags:
+    - Assistant
+  summary: Update files for an existing assistant
+  operationId: updateAssistantFiles
+  parameters:
+    - name: assistant_id
+      in: path
+      required: true
+      schema:
+        type: string
+      description: The ID of the assistant
+      example: "assistant_abc123"
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            file_ids:
+              type: array
+              items:
+                type: string
+              description: Array of OpenAI file IDs to replace all files for the assistant. Use empty array [] to remove all files.
+              example: ["file_789", "file_101"]
+          required:
+            - file_ids
+  responses:
+    '200':
+      description: Files updated successfully (replaced all files)
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                description: Indicates if the files were updated
+                example: true
+              data:
+                type: object
+                properties:
+                  assistantId:
+                    type: string
+                    description: The assistant ID
+                    example: "assistant_abc123"
+                  fileIds:
+                    type: array
+                    items:
+                      type: string
+                    description: All file IDs attached to the assistant
+                    example: ["file_789", "file_101"]
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: InvalidArgumentException
+              error_message:
+                type: string
+                example: L'ID de l'assistant est requis
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: Exception
+              error_message:
+                type: string
+                example: API Error 

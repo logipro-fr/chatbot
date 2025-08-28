@@ -6,12 +6,11 @@ use Chatbot\Application\Service\ChatbotApiInterface;
 use Chatbot\Application\Service\Exception\BadInstanceException;
 use Chatbot\Application\Service\Exception\BadRequestException;
 use Chatbot\Application\Service\Exception\ExcesRequestException;
+use Chatbot\Application\Service\Exception\MissingChatbotKeyApiException;
 use Chatbot\Application\Service\Exception\OtherException;
 use Chatbot\Application\Service\Exception\UnhautorizeKeyException;
 use Chatbot\Application\Service\RequestInterface;
-use Chatbot\Domain\Model\Context\ContextRepositoryInterface;
 use Chatbot\Domain\Model\Conversation\Conversation;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 use function Safe\json_decode;
@@ -26,12 +25,14 @@ class ChatbotGPTApi implements ChatbotApiInterface
         ?string $apiKey = null
     ) {
         if ($apiKey == null) {
+            if (!isset($_ENV["CHATBOT_KEY_API"])) {
+                throw new MissingChatbotKeyApiException("La variable d'environnement CHATBOT_KEY_API est manquante");
+            }
             /** @var string $apiKey */
-            $apiKey = $_ENV["CHATBOT_API_KEY"];
+            $apiKey = $_ENV["CHATBOT_KEY_API"];
         }
         $this->CHATBOT_KEY_API = $apiKey;
     }
-
 
     /**
      * @param RequestInterface $request

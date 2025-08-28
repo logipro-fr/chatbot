@@ -1,0 +1,79 @@
+post:
+  tags:
+    - Assistant
+  summary: Create an OpenAI Assistant from an existing context
+  operationId: createAssistantFromContext
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            context_id:
+              type: string
+              description: The ID of the existing context
+              example: "cot_abc123"
+            file_ids:
+              type: array
+              items:
+                type: string
+              description: Array of OpenAI file IDs to attach to the assistant (optional)
+              example: ["file_123", "file_456"]
+          required:
+            - context_id
+  responses:
+    '200':
+      description: Assistant created successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                description: Indicates if the assistant was created
+                example: true
+              data:
+                type: object
+                properties:
+                  assistantId:
+                    type: string
+                    description: The internal assistant ID
+                    example: "assistant_abc123"
+                  openAiAssistantId:
+                    type: string
+                    description: The OpenAI Assistant ID
+                    example: "asst_xyz789"
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: InvalidArgumentException
+              error_message:
+                type: string
+                example: L'ID du contexte est requis
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: Exception
+              error_message:
+                type: string
+                example: API Error 
