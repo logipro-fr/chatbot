@@ -1,6 +1,6 @@
 <?php
 
-namespace Chatbot\Tests\integration;
+namespace Chatbot\Tests\integration\Infrastructure\LanguageModel\ChatGPT;
 
 use Chatbot\Domain\Model\Context\Context;
 use Chatbot\Domain\Model\Context\ContextId;
@@ -10,16 +10,18 @@ use Chatbot\Domain\Model\Conversation\Prompt;
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\ChatbotGPTApi;
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\RequestGPT;
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\ResponseGPT;
-use PHPUnit\Framework\TestCase;
+use Chatbot\Tests\Infrastructure\LanguageModel\ChatGPT\ChatbotGPTApiTest as ChatGPTChatbotGPTApiTest;
 use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\HttpClient\CurlHttpClient;
 
-class ChatbotGPTApiTest extends TestCase
+class ChatbotGPTApiTest extends ChatGPTChatbotGPTApiTest
 {
     public function setUp(): void
     {
         $dotenv = new Dotenv();
         $dotenv->loadEnv(getcwd() . '/src/Infrastructure/Shared/Symfony/.env.local');
+
+        $this->client = new CurlHttpClient();
     }
 
     public function testRequestToRefacto(): void
@@ -31,7 +33,7 @@ class ChatbotGPTApiTest extends TestCase
         $context = new Context(new ContextMessage("You're a sarcastic assistant named Marvin"));
         $requestGPT = new RequestGPT($prompt, $context, $conversation);
         $response = $chatBotTest->request($requestGPT);
-        $this->assertInstanceOf(ResponseGPT::class, $response);
+        $this->assertStringContainsString("Marvin", $response->message);
     }
 
     public function testTranslate(): void

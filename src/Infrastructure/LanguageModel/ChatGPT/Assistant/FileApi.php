@@ -4,9 +4,10 @@ namespace Chatbot\Infrastructure\LanguageModel\ChatGPT\Assistant;
 
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Chatbot\Application\Service\Exception\BadRequestException;
-use Chatbot\Application\Service\Exception\ExcesRequestException;
+use Chatbot\Application\Service\Exception\TooManyRequestException;
 use Chatbot\Application\Service\Exception\OtherException;
 use Chatbot\Application\Service\Exception\UnhautorizeKeyException;
+use Chatbot\Application\Service\Exception\MissingChatbotKeyApiException;
 
 use function Safe\json_decode;
 
@@ -18,7 +19,16 @@ class FileApi
         private HttpClientInterface $client,
         ?string $apiKey = null
     ) {
-        $this->CHATBOT_KEY_API = $apiKey ?? $_ENV["CHATBOT_KEY_API"];
+        if ($apiKey == null) {
+            if (!isset($_ENV["CHATBOT_KEY_API"])) {
+                throw new MissingChatbotKeyApiException(
+                    "Missing environment variable: CHATBOT_KEY_API is required to initialize FileApi."
+                );
+            }
+            /** @var string $apiKey */
+            $apiKey = $_ENV["CHATBOT_KEY_API"];
+        }
+        $this->CHATBOT_KEY_API = $apiKey;
     }
 
     public function upload(string $filePath, string $purpose = 'assistants'): string
@@ -27,18 +37,15 @@ class FileApi
             throw new BadRequestException("Le fichier n'existe pas: " . $filePath);
         }
 
+        $body = [
+            'file' => fopen($filePath, 'r'),
+            'purpose' => $purpose
+        ];
+
         $response = $this->client->request(
             'POST',
             'https://api.openai.com/v1/files',
-            [
-                'headers' => [
-                    'Authorization' => 'Bearer ' . $this->CHATBOT_KEY_API,
-                ],
-                'body' => [
-                    'file' => fopen($filePath, 'r'),
-                    'purpose' => $purpose
-                ]
-            ]
+            $this->paramsHeader($body, false)
         );
 
         $this->handleResponse($response);
@@ -51,11 +58,7 @@ class FileApi
         $response = $this->client->request(
             'DELETE',
             "https://api.openai.com/v1/files/{$fileId}",
-            [
-                'headers' => [
-                    'Authorization' => 'Bearer ' . $this->CHATBOT_KEY_API,
-                ]
-            ]
+            $this->paramsHeader([], false)
         );
         $this->handleResponse($response);
     }
@@ -65,11 +68,7 @@ class FileApi
         $response = $this->client->request(
             'GET',
             'https://api.openai.com/v1/files',
-            [
-                'headers' => [
-                    'Authorization' => 'Bearer ' . $this->CHATBOT_KEY_API,
-                ]
-            ]
+            $this->paramsHeader([], false)
         );
         $this->handleResponse($response);
         $content = json_decode($response->getContent(), true);
@@ -81,15 +80,37 @@ class FileApi
         $response = $this->client->request(
             'GET',
             "https://api.openai.com/v1/files/{$fileId}",
-            [
-                'headers' => [
-                    'Authorization' => 'Bearer ' . $this->CHATBOT_KEY_API,
-                ]
-            ]
+            $this->paramsHeader([], false)
         );
         $this->handleResponse($response);
         $content = json_decode($response->getContent(), true);
         return $content;
+    }
+
+    /**  @return  array<string, array<string, string>|array<string, mixed>> */
+    private function paramsHeader(array $data, bool $isJson = true): array
+    {
+        $headers = [
+            'Authorization' => 'Bearer ' . $this->CHATBOT_KEY_API
+        ];
+
+        if ($isJson) {
+            $headers['Content-Type'] = 'application/json';
+        }
+
+        $params = [
+            'headers' => $headers
+        ];
+
+        if (!empty($data)) {
+            if ($isJson) {
+                $params['json'] = $data;
+            } else {
+                $params['body'] = $data;
+            }
+        }
+
+        return $params;
     }
 
     private function handleResponse($response): void
@@ -98,13 +119,17 @@ class FileApi
         if ($code === 200 || $code === 201) {
             return;
         } elseif ($code === 401) {
-            throw new UnhautorizeKeyException("Bad Key");
+            $content = $response->getContent();
+            throw new UnhautorizeKeyException("Unauthorized: Invalid or missing API key.");
         } elseif ($code === 400) {
-            throw new BadRequestException("Bad Request");
+            $content = $response->getContent();
+            throw new BadRequestException("Bad Request: The request was invalid or cannot be processed.");
         } elseif ($code === 429) {
-            throw new ExcesRequestException("Exceeded quota");
+            $content = $response->getContent();
+            throw new TooManyRequestException("Too Many Requests: You have exceeded your request quota.");
         } else {
-            throw new OtherException("Other error: " . $code);
+            $content = $response->getContent();
+            throw new OtherException("Unexpected error: received HTTP status code " . $code . ". " . $content);
         }
     }
 }
