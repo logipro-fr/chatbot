@@ -7,6 +7,7 @@ use Chatbot\Infrastructure\LanguageModel\ChatGPT\Assistant\FileApi;
 use Chatbot\Domain\Model\File\FileId;
 use Chatbot\Domain\Model\File\FileMetadata;
 use Chatbot\Domain\Model\File\FileMetadataRepositoryInterface;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
@@ -33,7 +34,9 @@ class UploadFileController extends AbstractController
                 );
             }
 
-            $purpose = $request->request->get('purpose', 'assistants');
+            /** @var UploadedFile $uploadedFile */
+
+            $purpose = (string) $request->request->get('purpose', 'assistants');
 
             if ($purpose !== 'assistants') {
                 return $this->writeUnsuccessfulResponse(

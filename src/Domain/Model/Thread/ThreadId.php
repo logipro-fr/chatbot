@@ -8,7 +8,7 @@ class ThreadId
 
     public function __construct(?string $id = null)
     {
-        $this->id = $id ?? uniqid('thread_', true);
+        $this->id = $id ?? uniqid('thr_', true);
     }
 
     public function getId(): string

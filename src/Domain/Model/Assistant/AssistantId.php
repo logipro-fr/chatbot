@@ -8,7 +8,7 @@ class AssistantId implements \JsonSerializable
 
     public function __construct(?string $id = null)
     {
-        $this->id = $id ?? uniqid('assistant_', true);
+        $this->id = $id ?? uniqid('ast_', true);
     }
 
     public function getId(): string

@@ -8,16 +8,13 @@ use Chatbot\Application\Service\ContinueConversation\ContinueConversationRespons
 use Chatbot\Application\Service\MakeConversation\LanguageModelAbstractFactory;
 use Chatbot\Application\Service\MakeConversation\MakeConversation;
 use Chatbot\Application\Service\MakeConversation\MakeConversationRequest;
-use Chatbot\Domain\Model\Context\Context;
 use Chatbot\Domain\Model\Context\ContextId;
-use Chatbot\Domain\Model\Context\ContextMessage;
 use Chatbot\Domain\Model\Conversation\ConversationId;
 use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
 use Chatbot\Domain\Model\Conversation\Prompt;
 use Chatbot\Infrastructure\LanguageModel\ModelFactory;
 use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryInMemory;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryDoctrine;
-use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
 use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
 use PHPUnit\Framework\TestCase;
 
@@ -51,14 +48,11 @@ class ContinueConversationtest extends TestCase
     public function testSomeoneContinueAConversation(): void
     {
 
-        //arrange / Given
         $prompt = new ContinueConversationRequest(new Prompt("Bonsoir"), $this->convid, "Parrot");
         $service = new ContinueConversation($this->repository, $this->contextrepo, $this->factory);
-        //act / When
         $nbPair = $this->repository->findById($this->convid)->countPair();
         $this->assertEquals(1, $nbPair);
         $service->execute($prompt);
-        //assert /Then
         $conversation = $this->repository->findById($this->convid);
         $nbPair2 = $conversation->countPair();
         $this->assertEquals(2, $nbPair2);
@@ -67,15 +61,12 @@ class ContinueConversationtest extends TestCase
 
     public function testConversationWithThreePairs(): void
     {
-        //arrange / Given
         $prompt = new ContinueConversationRequest(new Prompt("Bonsoir"), $this->convid, "Parrot");
         $service = new ContinueConversation($this->repository, $this->contextrepo, $this->factory);
-        //act / When
         $nbPair = $this->repository->findById($this->convid)->countPair();
         $this->assertEquals(1, $nbPair);
         $service->execute($prompt);
         $service->execute($prompt);
-        //assert /Then
         $conversation = $this->repository->findById($this->convid);
         $nbPair2 = $conversation->countPair();
         $this->assertEquals(3, $nbPair2);

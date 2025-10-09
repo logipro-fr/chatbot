@@ -2,7 +2,6 @@
 
 namespace Chatbot\Application\Service\UpdateAssistantFiles;
 
-use Chatbot\Domain\Model\Assistant\Assistant;
 use Chatbot\Domain\Model\Assistant\AssistantRepositoryInterface;
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\Assistant\AssistantApi;
 
@@ -11,8 +10,7 @@ class UpdateAssistantFiles
     private UpdateAssistantFilesResponse $response;
 
     public function __construct(
-        private AssistantRepositoryInterface $assistantRepository,
-        private AssistantApi $assistantApi
+        private AssistantRepositoryInterface $assistantRepository
     ) {
     }
 
@@ -20,7 +18,7 @@ class UpdateAssistantFiles
     {
         $assistant = $this->assistantRepository->findById($request->assistantId);
         if ($assistant === null) {
-            throw new \InvalidArgumentException("Assistant non trouvé: " . $request->assistantId->getId());
+            throw new \InvalidArgumentException("Assistant not found: " . $request->assistantId->getId());
         }
 
         $currentFileIds = $assistant->getFileIds();

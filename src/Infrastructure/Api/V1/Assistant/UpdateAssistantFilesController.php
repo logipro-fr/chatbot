@@ -6,7 +6,6 @@ use Chatbot\Application\Service\UpdateAssistantFiles\UpdateAssistantFiles;
 use Chatbot\Application\Service\UpdateAssistantFiles\UpdateAssistantFilesRequest;
 use Chatbot\Domain\Model\Assistant\AssistantId;
 use Chatbot\Infrastructure\Api\V1\AbstractController;
-use Chatbot\Infrastructure\LanguageModel\ChatGPT\Assistant\AssistantApi;
 use Chatbot\Infrastructure\Persistence\Assistant\AssistantRepositoryDoctrine;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,20 +18,18 @@ use function Safe\json_decode;
 class UpdateAssistantFilesController extends AbstractController
 {
     public function __construct(
-        private HttpClientInterface $client,
         private EntityManagerInterface $entityManager
     ) {
     }
 
-    #[Route('api/v1/assistant/{assistant_id}/files', 'updateAssistantFiles', methods: ['PUT'])]
-    public function updateAssistantFiles(Request $request, string $assistant_id): Response
+    #[Route('api/v1/assistant/{ast_id}', 'updateAssistantFiles', methods: ['PUT'])]
+    public function updateAssistantFiles(Request $request, string $ast_id): Response
     {
         try {
-            $updateFilesRequest = $this->buildUpdateFilesRequest($request, $assistant_id);
+            $updateFilesRequest = $this->buildUpdateFilesRequest($request, $ast_id);
 
             $service = new UpdateAssistantFiles(
-                new AssistantRepositoryDoctrine($this->entityManager),
-                new AssistantApi($this->client)
+                new AssistantRepositoryDoctrine($this->entityManager)
             );
             $service->execute($updateFilesRequest);
             $this->entityManager->flush();
@@ -50,7 +47,16 @@ class UpdateAssistantFilesController extends AbstractController
         /** @var array<string, mixed> $data */
         $data = json_decode($content, true);
 
-        $fileIds = $data['file_ids'] ?? [];
+        $fileIdsArray = (array) ($data['file_ids'] ?? []);
+        /** @var array<string> $fileIds */
+        $fileIds = [];
+        foreach ($fileIdsArray as $fileId) {
+            if (is_string($fileId)) {
+                $fileIds[] = $fileId;
+            } elseif (is_scalar($fileId)) {
+                $fileIds[] = (string) $fileId;
+            }
+        }
 
         if (empty($assistantId)) {
             throw new \InvalidArgumentException("L'ID de l'assistant est requis");

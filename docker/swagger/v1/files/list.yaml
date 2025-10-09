@@ -1,7 +1,7 @@
 get:
   tags:
     - Files
-  summary: List all files from OpenAI
+  summary: List all files from external service
   operationId: listFiles
   responses:
     '200':
@@ -25,8 +25,8 @@ get:
                       properties:
                         id:
                           type: string
-                          description: The OpenAI file ID
-                          example: file-abc123
+                          description: The external file ID
+                          example: fil-abc123
                         filename:
                           type: string
                           description: The filename

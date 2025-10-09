@@ -38,6 +38,8 @@ class ChatbotGPTApiTest extends TestCase
     {
         $this->saveChatbotApiKeyEnv();
 
+        $_ENV['CHATBOT_KEY_API'] = 'test-api-key';
+
         $this->content = <<<EOF
         {
             "model": "gpt-3.5-turbo",
@@ -61,16 +63,21 @@ class ChatbotGPTApiTest extends TestCase
     {
         $this->savedChatbotApiKeyEnv = null;
         if (isset($_ENV['CHATBOT_KEY_API'])) {
-            $this->savedChatbotApiKeyEnv = $_ENV['CHATBOT_KEY_API'];
+            $envValue = $_ENV['CHATBOT_KEY_API'];
+            if (is_string($envValue)) {
+                $this->savedChatbotApiKeyEnv = $envValue;
+            }
         }
     }
 
     protected function tearDown(): void
     {
         if ($this->savedChatbotApiKeyEnv !== null) {
-            $_ENV['CHATBOT_API_KEY'] = $this->savedChatbotApiKeyEnv;
-            $this->savedChatbotApiKeyEnv = null;
+            $_ENV['CHATBOT_KEY_API'] = $this->savedChatbotApiKeyEnv;
+        } else {
+            unset($_ENV['CHATBOT_KEY_API']);
         }
+        $this->savedChatbotApiKeyEnv = null;
     }
 
     public function testRequest(): void
@@ -89,16 +96,25 @@ class ChatbotGPTApiTest extends TestCase
     private function createMockHttpClientSeveralPossibleResponses(): MockHttpClient
     {
         $responses = [
-            'marvin' => new MockResponse(file_get_contents(__DIR__ . '/../../../ressources/responseGETMarvin.json'), ['http_code' => 200]),
-            'blague' => new MockResponse(file_get_contents(__DIR__ . '/../../../ressources/responseGETblague.json'), ['http_code' => 200]),
-            'bonjour' => new MockResponse(file_get_contents(__DIR__ . '/../../../ressources/responseGETbonjour.json'), ['http_code' => 200]),
+            'marvin' => new MockResponse(
+                file_get_contents(__DIR__ . '/../../../ressources/responseGETMarvin.json'),
+                ['http_code' => 200]
+            ),
+            'blague' => new MockResponse(
+                file_get_contents(__DIR__ . '/../../../ressources/responseGETblague.json'),
+                ['http_code' => 200]
+            ),
+            'bonjour' => new MockResponse(
+                file_get_contents(__DIR__ . '/../../../ressources/responseGETbonjour.json'),
+                ['http_code' => 200]
+            ),
         ];
 
         $chooseResponse = function (string $method, string $url, array $options = []) use ($responses) {
             $body = $options['body'] ?? '';
 
             foreach ($responses as $keyword => $response) {
-                if (str_contains($body, $keyword)) {
+                if (is_string($body) && str_contains($body, $keyword)) {
                     return $response;
                 }
             }
@@ -106,7 +122,10 @@ class ChatbotGPTApiTest extends TestCase
             return reset($responses);
         };
 
-        return new MockHttpClient($chooseResponse, 'https://api.openai.com/v1/chat/completion');
+        return new MockHttpClient(
+            $chooseResponse,
+            'https://api.openai.com/v1/chat/completion'
+        );
     }
 
 
@@ -131,7 +150,7 @@ class ChatbotGPTApiTest extends TestCase
         $this->assertEquals(
             [
                 'Content-Type' => 'application/json',
-                'Authorization' => 'Bearer ' . getenv("CHATBOT_KEY_API")
+                'Authorization' => 'Bearer test-api-key'
             ],
             $response["headers"]
         );
@@ -250,10 +269,20 @@ class ChatbotGPTApiTest extends TestCase
     public function testMissingChatbotKeyApiException(): void
     {
         $this->expectException(MissingChatbotKeyApiException::class);
-        $this->expectExceptionMessage("Missing environment variable: CHATBOT_KEY_API is required to initialize ChatbotGPTApi.");
+        $this->expectExceptionMessage(
+            "Missing environment variable: CHATBOT_KEY_API is required to initialize ChatbotGPTApi."
+        );
+
+        $savedKey = $_ENV['CHATBOT_KEY_API'] ?? null;
 
         unset($_ENV['CHATBOT_KEY_API']);
 
-        new ChatbotGPTApi($this->client);
+        try {
+            new ChatbotGPTApi($this->client);
+        } finally {
+            if ($savedKey !== null) {
+                $_ENV['CHATBOT_KEY_API'] = $savedKey;
+            }
+        }
     }
 }

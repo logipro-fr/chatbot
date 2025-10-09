@@ -1,7 +1,7 @@
 post:
   tags:
     - Files
-  summary: Upload a file to OpenAI
+  summary: Upload a file to external service
   operationId: uploadFile
   requestBody:
     required: true
@@ -36,8 +36,8 @@ post:
                 properties:
                   file_id:
                     type: string
-                    description: The OpenAI file ID
-                    example: file-abc123
+                    description: The external file ID
+                    example: fil-abc123
                   filename:
                     type: string
                     description: The original filename

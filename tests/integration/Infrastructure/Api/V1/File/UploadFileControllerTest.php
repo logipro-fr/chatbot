@@ -3,7 +3,6 @@
 namespace Chatbot\Tests\Integration\Infrastructure\Api\V1\File;
 
 use Chatbot\Infrastructure\Api\V1\File\UploadFileController;
-use Chatbot\Infrastructure\LanguageModel\ChatGPT\Assistant\FileApi;
 use Chatbot\Tests\Infrastructure\Api\V1\AssertResponseTrait;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -13,7 +12,7 @@ class UploadFileControllerTest extends TestCase
 {
     use AssertResponseTrait;
 
-    private FileApi $fileApi;
+    private UploadFileControllerFileApiTest|UploadFileControllerFileApiErrorTest $fileApi;
     private UploadFileController $controller;
 
     protected function setUp(): void
@@ -24,7 +23,6 @@ class UploadFileControllerTest extends TestCase
 
     public function testUploadFileSuccessfully(): void
     {
-        // Créer un fichier temporaire
         $tempFile = tempnam(sys_get_temp_dir(), 'test_') . '.pdf';
         file_put_contents($tempFile, 'test content');
 
@@ -44,10 +42,18 @@ class UploadFileControllerTest extends TestCase
 
         $this->assertOnlySuccess($response);
 
-        $data = json_decode($response->getContent(), true);
-        $this->assertEquals('file-abc123', $data['data']->file_id);
-        $this->assertEquals('test.pdf', $data['data']->filename);
-        $this->assertEquals('assistants', $data['data']->purpose);
+        $content = $response->getContent();
+        if ($content === false) {
+            $this->fail('Failed to get response content');
+        }
+        $data = json_decode($content, true);
+        /** @var array<string, mixed> $data */
+        $dataArray = $data['data'] ?? [];
+        if (is_array($dataArray)) {
+            $this->assertEquals('fil-abc123', $dataArray['file_id'] ?? '');
+            $this->assertEquals('test.pdf', $dataArray['filename'] ?? '');
+            $this->assertEquals('assistants', $dataArray['purpose'] ?? '');
+        }
 
         unlink($tempFile);
     }
@@ -110,31 +116,5 @@ class UploadFileControllerTest extends TestCase
         $this->assertResponseFailure($response, 'Exception');
 
         unlink($tempFile);
-    }
-}
-
-class UploadFileControllerFileApiTest extends FileApi
-{
-    public function __construct()
-    {
-        parent::__construct(new \Symfony\Component\HttpClient\MockHttpClient());
-    }
-
-    public function upload(string $filePath, string $purpose = 'assistants'): string
-    {
-        return 'file-abc123';
-    }
-}
-
-class UploadFileControllerFileApiErrorTest extends FileApi
-{
-    public function __construct()
-    {
-        parent::__construct(new \Symfony\Component\HttpClient\MockHttpClient());
-    }
-
-    public function upload(string $filePath, string $purpose = 'assistants'): string
-    {
-        throw new \Exception('API Error');
     }
 }

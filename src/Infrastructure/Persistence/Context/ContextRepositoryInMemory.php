@@ -41,4 +41,14 @@ class ContextRepositoryInMemory implements ContextRepositoryInterface
     {
         unset($this->contexts[$contextId->__toString()]);
     }
+
+    public function findByMessage(string $message): ?Context
+    {
+        foreach ($this->contexts as $context) {
+            if ($context->getContext()->getMessage() === $message) {
+                return $context;
+            }
+        }
+        return null;
+    }
 }

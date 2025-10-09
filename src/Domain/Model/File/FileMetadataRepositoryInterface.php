@@ -8,9 +8,15 @@ interface FileMetadataRepositoryInterface
 
     public function findById(FileId $fileId): ?FileMetadata;
 
+    /**
+     * @return array<FileMetadata>
+     */
     public function findAll(): array;
 
     public function delete(FileId $fileId): void;
 
+    /**
+     * @return array<FileMetadata>
+     */
     public function findByPurpose(string $purpose): array;
 }

@@ -6,11 +6,12 @@
 
     <entity name="Chatbot\Domain\Model\Thread\Thread" table="threads"
             repository-class="Chatbot\Infrastructure\Persistence\Thread\ThreadRepositoryDoctrine">
-        <id name="threadId" type="thread_id" column="thread_id">
+        <id name="threadId" type="thr_id" column="thread_id">
             <generator strategy="NONE"/>
         </id>
-        <field name="assistantId" type="assistant_id" column="assistant_id"/>
-        <field name="openAiThreadId" type="string" column="openai_thread_id"/>
+        <field name="assistantId" type="ast_id" column="assistant_id"/>
+        <field name="externalThreadId" type="string" column="external_thread_id"/>
+        <field name="conversationId" type="conversation_id" column="conversation_id"/>
         <field name="createdAt" type="datetime_immutable" column="created_at"/>
     </entity>
 </doctrine-mapping> 

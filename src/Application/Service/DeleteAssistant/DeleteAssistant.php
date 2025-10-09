@@ -24,16 +24,15 @@ class DeleteAssistant
         }
 
         try {
-            $this->assistantApi->deleteAssistant($assistant->getOpenAiAssistantId());
+            $this->assistantApi->deleteAssistant($assistant->getExternalAssistantId());
         } catch (\Exception $e) {
-            // Ignore OpenAI deletion errors
         }
 
         $this->assistantRepository->delete($request->assistantId);
 
         $this->response = new DeleteAssistantResponse(
             $assistant->getAssistantId(),
-            $assistant->getOpenAiAssistantId()
+            $assistant->getExternalAssistantId()
         );
     }
 

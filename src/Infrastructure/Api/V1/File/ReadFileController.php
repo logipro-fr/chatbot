@@ -7,7 +7,6 @@ use Chatbot\Infrastructure\LanguageModel\ChatGPT\Assistant\FileApi;
 use Chatbot\Domain\Model\File\FileId;
 use Chatbot\Domain\Model\File\FileMetadataRepositoryInterface;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/api/v1/file')]
@@ -20,14 +19,15 @@ class ReadFileController extends AbstractController
     }
 
     #[Route('/list', name: 'file_list', methods: ['GET'])]
-    public function list(Request $request): Response
+    public function list(): Response
     {
         try {
             $openAiFiles = $this->fileApi->list();
             $filesWithMetadata = [];
 
             foreach ($openAiFiles as $openAiFile) {
-                $fileId = new FileId($openAiFile['id']);
+                /** @var array<string, string|int> $openAiFile */
+                $fileId = new FileId((string) $openAiFile['id']);
                 $fileMetadata = $this->fileMetadataRepository->findById($fileId);
 
                 $fileWithMetadata = $openAiFile;

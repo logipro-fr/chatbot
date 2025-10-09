@@ -4,14 +4,15 @@ namespace Chatbot\Application\Service\AssistantConversation;
 
 use Chatbot\Domain\Model\Assistant\Assistant;
 use Chatbot\Domain\Model\Conversation\Conversation;
-use Chatbot\Domain\Model\Conversation\ConversationId;
 use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
 use Chatbot\Domain\Model\Conversation\Prompt;
 use Chatbot\Domain\Model\Conversation\Answer;
 use Chatbot\Domain\Model\Context\Context;
-use Chatbot\Domain\Model\Context\ContextId;
 use Chatbot\Domain\Model\Context\ContextMessage;
 use Chatbot\Domain\Model\Context\ContextRepositoryInterface;
+use Chatbot\Domain\Model\Thread\Thread;
+use Chatbot\Domain\Model\Thread\ThreadId;
+use Chatbot\Domain\Model\Thread\ThreadRepositoryInterface;
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\Assistant\AssistantApi;
 
 class AssistantConversation
@@ -21,51 +22,71 @@ class AssistantConversation
     public function __construct(
         private ConversationRepositoryInterface $conversationRepository,
         private ContextRepositoryInterface $contextRepository,
+        private ThreadRepositoryInterface $threadRepository,
         private AssistantApi $assistantApi
     ) {
     }
 
     public function execute(AssistantConversationRequest $request): void
     {
-        $context = $this->createContextFromAssistant($request->assistant);
-        $this->contextRepository->add($context);
+        $context = $this->getOrCreateContextFromAssistant($request->assistant);
 
         $conversation = new Conversation($context->getContextId());
         $this->conversationRepository->add($conversation);
 
         $threadId = $this->assistantApi->createThread();
 
+        $thread = new Thread(
+            new ThreadId(),
+            $request->assistant->getAssistantId(),
+            $threadId,
+            $conversation->getConversationId()
+        );
+        $this->threadRepository->add($thread);
+
         $this->assistantApi->addMessageToThread($threadId, $request->message, 'user');
 
-        $runId = $this->assistantApi->createRun($threadId, $request->assistant->getOpenAiAssistantId());
+        $runId = $this->assistantApi->createRun($threadId, $request->assistant->getExternalAssistantId());
 
         $this->waitForRunCompletion($threadId, $runId);
 
         $messages = $this->assistantApi->getMessages($threadId);
 
         $lastAssistantMessage = $this->findLastAssistantMessage($messages);
+        $cleanedMessage = $this->cleanMetadata($lastAssistantMessage);
 
         $conversation->addPair(
             new Prompt($request->message),
-            new Answer($lastAssistantMessage, 200)
+            new Answer($cleanedMessage, 200)
         );
 
         $this->response = new AssistantConversationResponse(
             $conversation->getConversationId(),
-            $lastAssistantMessage
+            $cleanedMessage
         );
     }
 
-    private function createContextFromAssistant(Assistant $assistant): Context
+    private function getOrCreateContextFromAssistant(Assistant $assistant): Context
     {
-        return new Context(
-            new ContextMessage($assistant->getInstructions())
+        $instructions = $assistant->getInstructions();
+
+        $existingContext = $this->contextRepository->findByMessage($instructions);
+
+        if ($existingContext !== null) {
+            return $existingContext;
+        }
+
+        $context = new Context(
+            new ContextMessage($instructions)
         );
+        $this->contextRepository->add($context);
+
+        return $context;
     }
 
     private function waitForRunCompletion(string $threadId, string $runId): void
     {
-        $maxAttempts = 30; // 30 secondes max
+        $maxAttempts = 30;
         $attempts = 0;
 
         while ($attempts < $maxAttempts) {
@@ -74,7 +95,11 @@ class AssistantConversation
             if ($runStatus['status'] === 'completed') {
                 return;
             } elseif ($runStatus['status'] === 'failed') {
-                throw new \RuntimeException("Le run a échoué: " . ($runStatus['last_error']['message'] ?? 'Erreur inconnue'));
+                /** @var array<string, mixed> $lastError */
+                $lastError = $runStatus['last_error'] ?? [];
+                $message = $lastError['message'] ?? 'Erreur inconnue';
+                $errorMessage = is_string($message) ? $message : 'Erreur inconnue';
+                throw new \RuntimeException("Le run a échoué: " . $errorMessage);
             }
 
             sleep(1);
@@ -84,15 +109,36 @@ class AssistantConversation
         throw new \RuntimeException("Timeout: le run n'a pas été complété dans les temps");
     }
 
+    /**
+     * @param array<array<string, mixed>> $messages
+     */
     private function findLastAssistantMessage(array $messages): string
     {
         foreach ($messages as $message) {
             if ($message['role'] === 'assistant') {
-                return $message['content'][0]['text']['value'] ?? '';
+                $contentArray = $message['content'] ?? [];
+                if (is_array($contentArray) && !empty($contentArray)) {
+                    /** @var array<string, mixed> $content */
+                    $content = $contentArray[0] ?? [];
+                    /** @var array<string, mixed> $text */
+                    $text = $content['text'] ?? [];
+                    $value = $text['value'] ?? '';
+                    return is_string($value) ? $value : '';
+                }
             }
         }
 
         throw new \RuntimeException("Aucun message de l'assistant trouvé");
+    }
+
+    private function cleanMetadata(string $message): string
+    {
+        $cleaned = preg_replace('/【\d+:\d+†[^】]+】/', '', $message);
+        $cleaned = preg_replace('/\d+:\d+†[^\s]+/', '', $cleaned ?? '');
+
+        $cleaned = preg_replace('/\s+/', ' ', $cleaned ?? '');
+
+        return trim($cleaned ?? '');
     }
 
     public function getResponse(): AssistantConversationResponse

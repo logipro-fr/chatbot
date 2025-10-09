@@ -15,16 +15,36 @@ class FileIdType extends Type
 
     public function convertToPHPValue($value, AbstractPlatform $platform): ?FileId
     {
-        return $value !== null ? new FileId($value) : null;
+        if ($value === null) {
+            return null;
+        }
+
+        if (!is_string($value)) {
+            throw new \InvalidArgumentException('Expected string value for FileId');
+        }
+
+        return new FileId($value);
     }
 
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
-        return $value instanceof FileId ? $value->getId() : $value;
+        if ($value instanceof FileId) {
+            return $value->getId();
+        }
+
+        if ($value === null) {
+            return null;
+        }
+
+        if (!is_string($value)) {
+            throw new \InvalidArgumentException('Expected FileId or string value');
+        }
+
+        return $value;
     }
 
     public function getName(): string
     {
-        return 'file_id';
+        return 'fil_id';
     }
 }

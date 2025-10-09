@@ -1,7 +1,8 @@
 post:
   tags:
     - Assistant
-  summary: Create an OpenAI Assistant from an existing context
+  summary: Create an external Assistant from an existing context
+  description: Creates an external Assistant with optional file attachments. Files are automatically associated via vector stores with the file_search tool enabled.
   operationId: createAssistantFromContext
   requestBody:
     required: true
@@ -18,8 +19,8 @@ post:
               type: array
               items:
                 type: string
-              description: Array of OpenAI file IDs to attach to the assistant (optional)
-              example: ["file_123", "file_456"]
+              description: Array of external file IDs to attach to the assistant. Files are automatically associated via vector stores with file_search tool.
+              example: ["fil-abc123", "fil-def456"]
           required:
             - context_id
   responses:
@@ -40,10 +41,10 @@ post:
                   assistantId:
                     type: string
                     description: The internal assistant ID
-                    example: "assistant_abc123"
-                  openAiAssistantId:
+                    example: "ast_abc123"
+                  externalAssistantId:
                     type: string
-                    description: The OpenAI Assistant ID
+                    description: The external Assistant ID
                     example: "asst_xyz789"
     '400':
       description: Bad Request

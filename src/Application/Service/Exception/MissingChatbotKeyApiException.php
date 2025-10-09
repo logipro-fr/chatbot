@@ -6,4 +6,4 @@ use Chatbot\Domain\Shared\Exceptions\LoggedException;
 
 class MissingChatbotKeyApiException extends LoggedException
 {
-} 
+}

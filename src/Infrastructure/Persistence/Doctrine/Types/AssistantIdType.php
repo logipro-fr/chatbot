@@ -15,16 +15,36 @@ class AssistantIdType extends Type
 
     public function convertToPHPValue($value, AbstractPlatform $platform): ?AssistantId
     {
-        return $value === null ? null : new AssistantId($value);
+        if ($value === null) {
+            return null;
+        }
+
+        if (!is_string($value)) {
+            throw new \InvalidArgumentException('Expected string value for AssistantId');
+        }
+
+        return new AssistantId($value);
     }
 
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
-        return $value instanceof AssistantId ? $value->getId() : $value;
+        if ($value instanceof AssistantId) {
+            return $value->getId();
+        }
+
+        if ($value === null) {
+            return null;
+        }
+
+        if (!is_string($value)) {
+            throw new \InvalidArgumentException('Expected AssistantId or string value');
+        }
+
+        return $value;
     }
 
     public function getName(): string
     {
-        return 'assistant_id';
+        return 'ast_id';
     }
 }

@@ -8,7 +8,7 @@ class CreateAssistantFromContextResponse
 {
     public function __construct(
         public AssistantId $assistantId,
-        public string $openAiAssistantId
+        public string $externalAssistantId
     ) {
     }
 }

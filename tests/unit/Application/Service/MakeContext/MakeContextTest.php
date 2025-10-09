@@ -14,19 +14,16 @@ class MakeContextTest extends TestCase
 {
     public function testSomeoneCreateAContext(): void
     {
-        // arrange / Given
 
         $repository = new ContextRepositoryInMemory();
         $request = new MakeContextRequest(
             new ContextMessage("You're helpfull assistant")
         );
         $service = new MakeContext($repository);
-        //act / When
         $service->execute($request);
 
         $response = $service->getResponse();
 
-        //assert / Then
         $this->assertInstanceOf(MakeContextResponse::class, $response);
         $this->assertEquals(
             "You're helpfull assistant",

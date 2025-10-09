@@ -10,6 +10,7 @@ use Chatbot\Application\Service\Exception\UnhautorizeKeyException;
 use Chatbot\Application\Service\Exception\MissingChatbotKeyApiException;
 
 use function Safe\json_decode;
+use function SafePHP\strval;
 
 class FileApi
 {
@@ -25,8 +26,8 @@ class FileApi
                     "Missing environment variable: CHATBOT_KEY_API is required to initialize FileApi."
                 );
             }
-            /** @var string $apiKey */
-            $apiKey = $_ENV["CHATBOT_KEY_API"];
+
+            $apiKey = strval($_ENV["CHATBOT_KEY_API"]);
         }
         $this->CHATBOT_KEY_API = $apiKey;
     }
@@ -34,11 +35,16 @@ class FileApi
     public function upload(string $filePath, string $purpose = 'assistants'): string
     {
         if (!file_exists($filePath)) {
-            throw new BadRequestException("Le fichier n'existe pas: " . $filePath);
+            throw new BadRequestException("File not found: " . $filePath);
+        }
+
+        $fileResource = fopen($filePath, 'r');
+        if ($fileResource === false) {
+            throw new BadRequestException("Cannot open file: " . $filePath);
         }
 
         $body = [
-            'file' => fopen($filePath, 'r'),
+            'file' => $fileResource,
             'purpose' => $purpose
         ];
 
@@ -50,6 +56,7 @@ class FileApi
 
         $this->handleResponse($response);
         $content = json_decode($response->getContent());
+        /** @var object{id: string} $content */
         return $content->id;
     }
 
@@ -63,6 +70,9 @@ class FileApi
         $this->handleResponse($response);
     }
 
+    /**
+     * @return array<array<string, string|int|bool>>
+     */
     public function list(): array
     {
         $response = $this->client->request(
@@ -72,9 +82,28 @@ class FileApi
         );
         $this->handleResponse($response);
         $content = json_decode($response->getContent(), true);
-        return $content['data'] ?? [];
+        /** @var array<string, mixed> $content */
+        $data = $content['data'] ?? [];
+
+        if (!is_array($data)) {
+            return [];
+        }
+
+        /** @var array<array<string, string|int|bool>> $result */
+        $result = [];
+        foreach ($data as $item) {
+            if (is_array($item)) {
+                /** @var array<string, string|int|bool> $item */
+                $result[] = $item;
+            }
+        }
+
+        return $result;
     }
 
+    /**
+     * @return array<string, string|int|bool>
+     */
     public function get(string $fileId): array
     {
         $response = $this->client->request(
@@ -84,10 +113,14 @@ class FileApi
         );
         $this->handleResponse($response);
         $content = json_decode($response->getContent(), true);
+        /** @var array<string, string|int|bool> $content */
         return $content;
     }
 
-    /**  @return  array<string, array<string, string>|array<string, mixed>> */
+    /**
+     * @param array<string, string|int|bool|resource> $data
+     * @return array<string, array<string, string>|array<string, string|int|bool|resource>>
+     */
     private function paramsHeader(array $data, bool $isJson = true): array
     {
         $headers = [
@@ -113,7 +146,7 @@ class FileApi
         return $params;
     }
 
-    private function handleResponse($response): void
+    private function handleResponse(\Symfony\Contracts\HttpClient\ResponseInterface $response): void
     {
         $code = $response->getStatusCode();
         if ($code === 200 || $code === 201) {

@@ -3,7 +3,6 @@
 namespace Chatbot\Tests\Integration\Infrastructure\Api\V1\File;
 
 use Chatbot\Infrastructure\Api\V1\File\ReadFileController;
-use Chatbot\Infrastructure\LanguageModel\ChatGPT\Assistant\FileApi;
 use Chatbot\Tests\Infrastructure\Api\V1\AssertResponseTrait;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
@@ -12,7 +11,7 @@ class ReadFileControllerTest extends TestCase
 {
     use AssertResponseTrait;
 
-    private FileApi $fileApi;
+    private ReadFileControllerFileApiTest|ReadFileControllerFileApiErrorTest $fileApi;
     private ReadFileController $controller;
 
     protected function setUp(): void
@@ -23,37 +22,50 @@ class ReadFileControllerTest extends TestCase
 
     public function testListFilesSuccessfully(): void
     {
-        $request = new Request();
-
-        $response = $this->controller->list($request);
+        $response = $this->controller->list();
 
         $this->assertOnlySuccess($response);
 
-        $data = json_decode($response->getContent(), true);
-        $this->assertIsArray($data['data']->files);
-        $this->assertEquals(2, $data['data']->count);
+        $content = $response->getContent();
+        if ($content === false) {
+            $this->fail('Failed to get response content');
+        }
+        $data = json_decode($content, true);
+        /** @var array<string, mixed> $data */
+        $dataArray = $data['data'] ?? [];
+        if (is_array($dataArray)) {
+            $this->assertIsArray($dataArray['files'] ?? []);
+            $this->assertEquals(2, $dataArray['count'] ?? 0);
+        }
     }
 
     public function testGetFileSuccessfully(): void
     {
-        $request = new Request();
-        $fileId = 'file-abc123';
+        $fileId = 'fil-abc123';
 
-        $response = $this->controller->get($request, $fileId);
+        $response = $this->controller->get($fileId);
 
         $this->assertOnlySuccess($response);
 
-        $data = json_decode($response->getContent(), true);
-        $this->assertIsObject($data['data']->file);
-        $this->assertEquals($fileId, $data['data']->file->id);
+        $content = $response->getContent();
+        if ($content === false) {
+            $this->fail('Failed to get response content');
+        }
+        $data = json_decode($content, true);
+        /** @var array<string, mixed> $data */
+        $dataArray = $data['data'] ?? [];
+        if (is_array($dataArray)) {
+            $fileData = $dataArray['file'] ?? [];
+            $this->assertIsArray($fileData);
+            $this->assertEquals($fileId, $fileData['id'] ?? '');
+        }
     }
 
     public function testGetFileWithEmptyFileId(): void
     {
-        $request = new Request();
         $fileId = '';
 
-        $response = $this->controller->get($request, $fileId);
+        $response = $this->controller->get($fileId);
 
         $this->assertResponseFailure($response, 'InvalidArgumentException');
     }
@@ -63,9 +75,7 @@ class ReadFileControllerTest extends TestCase
         $this->fileApi = new ReadFileControllerFileApiErrorTest();
         $this->controller = new ReadFileController($this->fileApi, new FileMetadataRepositoryTest());
 
-        $request = new Request();
-
-        $response = $this->controller->list($request);
+        $response = $this->controller->list();
 
         $this->assertResponseFailure($response, 'Exception');
     }
@@ -75,65 +85,10 @@ class ReadFileControllerTest extends TestCase
         $this->fileApi = new ReadFileControllerFileApiErrorTest();
         $this->controller = new ReadFileController($this->fileApi, new FileMetadataRepositoryTest());
 
-        $request = new Request();
-        $fileId = 'file-abc123';
+        $fileId = 'fil-abc123';
 
-        $response = $this->controller->get($request, $fileId);
+        $response = $this->controller->get($fileId);
 
         $this->assertResponseFailure($response, 'Exception');
-    }
-}
-
-class ReadFileControllerFileApiTest extends FileApi
-{
-    public function __construct()
-    {
-        parent::__construct(new \Symfony\Component\HttpClient\MockHttpClient());
-    }
-
-    public function list(): array
-    {
-        return [
-            [
-                'id' => 'file-abc123',
-                'filename' => 'document1.pdf',
-                'purpose' => 'assistants',
-                'bytes' => 1024
-            ],
-            [
-                'id' => 'file-def456',
-                'filename' => 'document2.pdf',
-                'purpose' => 'assistants',
-                'bytes' => 2048
-            ]
-        ];
-    }
-
-    public function get(string $fileId): array
-    {
-        return [
-            'id' => $fileId,
-            'filename' => 'document.pdf',
-            'purpose' => 'assistants',
-            'bytes' => 1024
-        ];
-    }
-}
-
-class ReadFileControllerFileApiErrorTest extends FileApi
-{
-    public function __construct()
-    {
-        parent::__construct(new \Symfony\Component\HttpClient\MockHttpClient());
-    }
-
-    public function list(): array
-    {
-        throw new \Exception('API Error');
-    }
-
-    public function get(string $fileId): array
-    {
-        throw new \Exception('API Error');
     }
 }

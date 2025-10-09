@@ -7,7 +7,7 @@ class FileId
     public function __construct(private string $id = "")
     {
         if (empty($this->id)) {
-            $this->id = uniqid("file_");
+            $this->id = uniqid("fil_");
         }
     }
 

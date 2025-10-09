@@ -9,9 +9,9 @@ doctrine:
       pair_id: Chatbot\Infrastructure\Persistence\Doctrine\Types\PairIdType
       prompt : Chatbot\Infrastructure\Persistence\Doctrine\Types\PromptType
       answer : Chatbot\Infrastructure\Persistence\Doctrine\Types\AnswerType
-      file_id: Chatbot\Infrastructure\Persistence\Doctrine\Types\FileIdType
-      assistant_id: Chatbot\Infrastructure\Persistence\Doctrine\Types\AssistantIdType
-      thread_id: Chatbot\Infrastructure\Persistence\Doctrine\Types\ThreadIdType
+      fil_id: Chatbot\Infrastructure\Persistence\Doctrine\Types\FileIdType
+      ast_id: Chatbot\Infrastructure\Persistence\Doctrine\Types\AssistantIdType
+      thr_id: Chatbot\Infrastructure\Persistence\Doctrine\Types\ThreadIdType
       
 
   orm:

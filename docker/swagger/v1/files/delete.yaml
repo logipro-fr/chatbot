@@ -1,7 +1,7 @@
 delete:
   tags:
     - Files
-  summary: Delete a file from OpenAI
+  summary: Delete a file from external service
   operationId: deleteFile
   parameters:
     - name: fileId
@@ -9,8 +9,8 @@ delete:
       required: true
       schema:
         type: string
-      description: The OpenAI file ID
-      example: file-abc123
+      description: The external file ID
+      example: fil-abc123
   responses:
     '200':
       description: File deleted successfully
@@ -33,7 +33,7 @@ delete:
                   file_id:
                     type: string
                     description: The deleted file ID
-                    example: file-abc123
+                    example: fil-abc123
     '400':
       description: Bad Request
       content:

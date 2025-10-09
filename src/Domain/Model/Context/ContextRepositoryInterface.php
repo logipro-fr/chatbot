@@ -7,4 +7,5 @@ interface ContextRepositoryInterface
     public function add(Context $context): void;
     public function findById(ContextId $contextId): Context;
     public function removeContext(ContextId $context): void;
+    public function findByMessage(string $message): ?Context;
 }

@@ -23,20 +23,17 @@ class CreateAssistantFromContext
     public function execute(CreateAssistantFromContextRequest $request): void
     {
         $context = $this->contextRepository->findById($request->contextId);
-        if ($context === null) {
-            throw new \InvalidArgumentException("Contexte non trouvé: " . $request->contextId->getId());
-        }
 
         try {
             $openAiAssistantId = $this->assistantApi->createAssistant(
-                "Assistant basé sur le contexte",
+                "Assistant based on the context",
                 $context->getContext()->getMessage(),
                 $request->fileIds
             );
 
             $assistant = new Assistant(
                 new AssistantId(),
-                "Assistant basé sur le contexte",
+                "Assistant based on the context",
                 $context->getContext()->getMessage(),
                 $openAiAssistantId,
                 $request->fileIds

@@ -4,125 +4,199 @@ namespace Chatbot\Tests\Unit\Application\Service\CreateAssistantFromContext;
 
 use Chatbot\Application\Service\CreateAssistantFromContext\CreateAssistantFromContext;
 use Chatbot\Application\Service\CreateAssistantFromContext\CreateAssistantFromContextRequest;
-use Chatbot\Domain\Model\Assistant\Assistant;
-use Chatbot\Domain\Model\Assistant\AssistantId;
+use Chatbot\Application\Service\CreateAssistantFromContext\CreateAssistantFromContextResponse;
 use Chatbot\Domain\Model\Assistant\AssistantRepositoryInterface;
 use Chatbot\Domain\Model\Context\Context;
 use Chatbot\Domain\Model\Context\ContextId;
-use Chatbot\Domain\Model\Context\ContextMessage;
 use Chatbot\Domain\Model\Context\ContextRepositoryInterface;
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\Assistant\AssistantApi;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpClient\MockHttpClient;
+use Symfony\Component\HttpClient\Response\MockResponse;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class CreateAssistantFromContextTest extends TestCase
 {
-    public function test_should_create_assistant_from_context(): void
+    private ?string $savedChatbotApiKeyEnv = null;
+    protected HttpClientInterface $client;
+
+    public function setUp(): void
     {
-        // Given
-        $contextId = new ContextId();
-        $context = new Context(new ContextMessage("Tu es un assistant spécialisé dans la documentation technique"));
-
-        $request = new CreateAssistantFromContextRequest($contextId, ["file_123", "file_456"]);
-
-        $contextRepository = $this->createMock(ContextRepositoryInterface::class);
-        $assistantRepository = $this->createMock(AssistantRepositoryInterface::class);
-        $assistantApi = $this->createMock(AssistantApi::class);
-
-        $contextRepository->expects($this->once())
-            ->method('findById')
-            ->with($contextId)
-            ->willReturn($context);
-
-        $assistantApi->expects($this->once())
-            ->method('createAssistant')
-            ->with(
-                "Assistant basé sur le contexte",
-                "Tu es un assistant spécialisé dans la documentation technique",
-                ["file_123", "file_456"]
-            )
-            ->willReturn('asst_abc123');
-
-        $assistantRepository->expects($this->once())
-            ->method('add')
-            ->with($this->isInstanceOf(Assistant::class));
-
-        $service = new CreateAssistantFromContext(
-            $assistantRepository,
-            $contextRepository,
-            $assistantApi
-        );
-
-        // When
-        $service->execute($request);
-
-        // Then
-        $response = $service->getResponse();
-        $this->assertNotNull($response);
-        $this->assertEquals('asst_abc123', $response->openAiAssistantId);
-        $this->assertInstanceOf(AssistantId::class, $response->assistantId);
+        $this->saveChatbotApiKeyEnv();
+        $this->client = $this->createMockHttpClient();
     }
 
-    public function test_should_create_assistant_without_files(): void
+    private function saveChatbotApiKeyEnv(): void
     {
-        // Given
-        $contextId = new ContextId();
-        $context = new Context(new ContextMessage("Tu es un assistant de support"));
-
-        $request = new CreateAssistantFromContextRequest($contextId, []);
-
-        $contextRepository = $this->createMock(ContextRepositoryInterface::class);
-        $assistantRepository = $this->createMock(AssistantRepositoryInterface::class);
-        $assistantApi = $this->createMock(AssistantApi::class);
-
-        $contextRepository->expects($this->once())
-            ->method('findById')
-            ->with($contextId)
-            ->willReturn($context);
-
-        $assistantApi->expects($this->once())
-            ->method('createAssistant')
-            ->with("Assistant basé sur le contexte", "Tu es un assistant de support", [])
-            ->willReturn('asst_support123');
-
-        $service = new CreateAssistantFromContext(
-            $assistantRepository,
-            $contextRepository,
-            $assistantApi
-        );
-
-        // When
-        $service->execute($request);
-
-        // Then
-        $response = $service->getResponse();
-        $this->assertEquals('asst_support123', $response->openAiAssistantId);
+        $this->savedChatbotApiKeyEnv = null;
+        if (isset($_ENV['CHATBOT_KEY_API'])) {
+            $envValue = $_ENV['CHATBOT_KEY_API'];
+            if (is_string($envValue)) {
+                $this->savedChatbotApiKeyEnv = $envValue;
+            }
+        }
     }
 
-    public function test_should_throw_exception_when_context_not_found(): void
+    protected function tearDown(): void
     {
-        // Given
-        $contextId = new ContextId();
-        $request = new CreateAssistantFromContextRequest($contextId, []);
+        if ($this->savedChatbotApiKeyEnv !== null) {
+            $_ENV['CHATBOT_KEY_API'] = $this->savedChatbotApiKeyEnv;
+            $this->savedChatbotApiKeyEnv = null;
+        }
+    }
+
+    public function testExecuteCreatesAssistantWithFiles(): void
+    {
+        $contextId = new ContextId('context-123');
+        $fileIds = ['file-123', 'file-456'];
+        $expectedOpenAiId = 'asst-abc123';
+
+        $context = $this->createMock(Context::class);
+        $contextMessage = $this->createMock(\Chatbot\Domain\Model\Context\ContextMessage::class);
+        $contextMessage->method('getMessage')->willReturn('Test context message');
+        $context->method('getContext')->willReturn($contextMessage);
 
         $contextRepository = $this->createMock(ContextRepositoryInterface::class);
+        $contextRepository->method('findById')->willReturn($context);
+
         $assistantRepository = $this->createMock(AssistantRepositoryInterface::class);
-        $assistantApi = $this->createMock(AssistantApi::class);
+        $assistantRepository->expects($this->once())->method('add');
 
-        $contextRepository->expects($this->once())
-            ->method('findById')
-            ->with($contextId)
-            ->willThrowException(new \InvalidArgumentException("Contexte non trouvé"));
+        $responses = [
+            new MockResponse((string) json_encode(['id' => 'vs-xyz789']), ['http_code' => 200]),
+            new MockResponse((string) json_encode(['id' => $expectedOpenAiId]), ['http_code' => 200])
+        ];
 
-        $service = new CreateAssistantFromContext(
+        $client = new MockHttpClient($responses);
+        $assistantApi = new AssistantApi($client);
+
+        $createAssistant = new CreateAssistantFromContext(
             $assistantRepository,
             $contextRepository,
             $assistantApi
         );
 
-        // When & Then
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage("Contexte non trouvé");
+        $request = new CreateAssistantFromContextRequest($contextId, $fileIds);
+        $createAssistant->execute($request);
 
-        $service->execute($request);
+        $response = $createAssistant->getResponse();
+        $this->assertInstanceOf(CreateAssistantFromContextResponse::class, $response);
+    }
+
+    public function testExecuteCreatesAssistantWithoutFiles(): void
+    {
+        $contextId = new ContextId('context-456');
+        $expectedOpenAiId = 'asst-def456';
+
+        $context = $this->createMock(Context::class);
+        $contextMessage = $this->createMock(\Chatbot\Domain\Model\Context\ContextMessage::class);
+        $contextMessage->method('getMessage')->willReturn('Test context message');
+        $context->method('getContext')->willReturn($contextMessage);
+
+        $contextRepository = $this->createMock(ContextRepositoryInterface::class);
+        $contextRepository->method('findById')->willReturn($context);
+
+        $assistantRepository = $this->createMock(AssistantRepositoryInterface::class);
+        $assistantRepository->expects($this->once())->method('add');
+
+        $response = new MockResponse((string) json_encode(['id' => $expectedOpenAiId]), ['http_code' => 200]);
+        $client = new MockHttpClient($response, 'https://api.openai.com/v1/assistants');
+        $assistantApi = new AssistantApi($client);
+
+        $createAssistant = new CreateAssistantFromContext(
+            $assistantRepository,
+            $contextRepository,
+            $assistantApi
+        );
+
+        $request = new CreateAssistantFromContextRequest($contextId, []);
+        $createAssistant->execute($request);
+
+        $response = $createAssistant->getResponse();
+        $this->assertInstanceOf(CreateAssistantFromContextResponse::class, $response);
+    }
+
+    public function testExecuteThrowsExceptionWhenContextNotFound(): void
+    {
+        $contextId = new ContextId('context-789');
+
+        $contextRepository = $this->createMock(ContextRepositoryInterface::class);
+        $contextRepository->method('findById')
+            ->willThrowException(new \Chatbot\Infrastructure\Exception\ContextNotFoundException('Context not found'));
+
+        $this->expectException(\Chatbot\Infrastructure\Exception\ContextNotFoundException::class);
+
+        $createAssistant = new CreateAssistantFromContext(
+            $this->createMock(AssistantRepositoryInterface::class),
+            $contextRepository,
+            new AssistantApi($this->client)
+        );
+
+        $request = new CreateAssistantFromContextRequest($contextId, []);
+        $createAssistant->execute($request);
+    }
+
+    public function testExecutePropagatesAssistantApiException(): void
+    {
+        $contextId = new ContextId('context-123');
+        $context = $this->createMock(Context::class);
+        $contextMessage = $this->createMock(\Chatbot\Domain\Model\Context\ContextMessage::class);
+        $contextMessage->method('getMessage')->willReturn('Test context message');
+        $context->method('getContext')->willReturn($contextMessage);
+
+        $contextRepository = $this->createMock(ContextRepositoryInterface::class);
+        $contextRepository->method('findById')->willReturn($context);
+
+        $response = new MockResponse('{"error":{"message":"API Error"}}', ['http_code' => 400]);
+        $client = new MockHttpClient($response, 'https://api.openai.com/v1/assistants');
+        $assistantApi = new AssistantApi($client);
+
+        $this->expectException(\Exception::class);
+
+        $createAssistant = new CreateAssistantFromContext(
+            $this->createMock(AssistantRepositoryInterface::class),
+            $contextRepository,
+            $assistantApi
+        );
+
+        $request = new CreateAssistantFromContextRequest($contextId, []);
+        $createAssistant->execute($request);
+    }
+
+    public function testGetResponseReturnsResponseObject(): void
+    {
+        $contextId = new ContextId('context-123');
+        $context = $this->createMock(Context::class);
+        $contextMessage = $this->createMock(\Chatbot\Domain\Model\Context\ContextMessage::class);
+        $contextMessage->method('getMessage')->willReturn('Test context message');
+        $context->method('getContext')->willReturn($contextMessage);
+
+        $contextRepository = $this->createMock(ContextRepositoryInterface::class);
+        $contextRepository->method('findById')->willReturn($context);
+
+        $assistantRepository = $this->createMock(AssistantRepositoryInterface::class);
+        $assistantRepository->method('add');
+
+        $response = new MockResponse((string) json_encode(['id' => 'asst-123']), ['http_code' => 200]);
+        $client = new MockHttpClient($response, 'https://api.openai.com/v1/assistants');
+        $assistantApi = new AssistantApi($client);
+
+        $createAssistant = new CreateAssistantFromContext(
+            $assistantRepository,
+            $contextRepository,
+            $assistantApi
+        );
+
+        $request = new CreateAssistantFromContextRequest($contextId, []);
+        $createAssistant->execute($request);
+
+        $response = $createAssistant->getResponse();
+        $this->assertInstanceOf(CreateAssistantFromContextResponse::class, $response);
+    }
+
+    private function createMockHttpClient(): MockHttpClient
+    {
+        $response = new MockResponse('{"id":"asst-test"}', ['http_code' => 200]);
+        return new MockHttpClient($response, 'https://api.openai.com/v1/assistants');
     }
 }

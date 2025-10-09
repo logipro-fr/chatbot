@@ -7,7 +7,6 @@ use Chatbot\Infrastructure\LanguageModel\ChatGPT\Assistant\FileApi;
 use Chatbot\Domain\Model\File\FileId;
 use Chatbot\Domain\Model\File\FileMetadataRepositoryInterface;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/api/v1/file')]
@@ -20,7 +19,7 @@ class DeleteFileController extends AbstractController
     }
 
     #[Route('/delete/{fileId}', name: 'file_delete', methods: ['DELETE'])]
-    public function delete(Request $request, string $fileId): Response
+    public function delete(string $fileId): Response
     {
         try {
             if (empty($fileId)) {

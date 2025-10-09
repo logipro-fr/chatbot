@@ -5,34 +5,31 @@ namespace Chatbot\Infrastructure\Api\V1\Assistant;
 use Chatbot\Application\Service\DeleteAssistant\DeleteAssistant;
 use Chatbot\Application\Service\DeleteAssistant\DeleteAssistantRequest;
 use Chatbot\Domain\Model\Assistant\AssistantId;
-use Chatbot\Infrastructure\Api\V1\AbstractController;
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\Assistant\AssistantApi;
+use Chatbot\Infrastructure\Api\V1\AbstractController;
 use Chatbot\Infrastructure\Persistence\Assistant\AssistantRepositoryDoctrine;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-use function Safe\json_decode;
-
 class DeleteAssistantController extends AbstractController
 {
     public function __construct(
-        private HttpClientInterface $client,
+        private AssistantApi $assistantApi,
         private EntityManagerInterface $entityManager
     ) {
     }
 
-    #[Route('api/v1/assistant/{assistant_id}', 'deleteAssistant', methods: ['DELETE'])]
-    public function deleteAssistant(Request $request, string $assistant_id): Response
+    #[Route('api/v1/assistant/{ast_id}', 'deleteAssistant', methods: ['DELETE'])]
+    public function deleteAssistant(string $ast_id): Response
     {
         try {
-            $deleteAssistantRequest = $this->buildDeleteAssistantRequest($assistant_id);
+            $deleteAssistantRequest = $this->buildDeleteAssistantRequest($ast_id);
 
             $service = new DeleteAssistant(
                 new AssistantRepositoryDoctrine($this->entityManager),
-                new AssistantApi($this->client)
+                $this->assistantApi
             );
             $service->execute($deleteAssistantRequest);
             $this->entityManager->flush();

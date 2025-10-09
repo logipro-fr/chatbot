@@ -11,8 +11,13 @@ abstract class AbstractController
     public const ERROR_CODE_SUCCESS = 200;
     public const ERROR_CODE_ERROR = 500;
 
-    protected function writeSuccessfulResponse(object $data, int $httpStatusCode = self::ERROR_CODE_SUCCESS): Response
-    {
+    /**
+     * @param array<string, string|int|bool|array<string, string|int|bool>>|object $data
+     */
+    protected function writeSuccessfulResponse(
+        object|array $data,
+        int $httpStatusCode = self::ERROR_CODE_SUCCESS
+    ): Response {
 
         return new Response(
             json_encode([

@@ -1,0 +1,120 @@
+get:
+  tags:
+    - Assistant
+  summary: Get an existing assistant by ID
+  description: Retrieves assistant details including external configuration, associated files, and vector store information.
+  operationId: getAssistant
+  parameters:
+    - name: ast_id
+      in: path
+      required: true
+      schema:
+        type: string
+      description: The ID of the assistant to retrieve
+      example: "ast_abc123"
+  responses:
+    '200':
+      description: Assistant retrieved successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                type: object
+                properties:
+                  assistantId:
+                    type: string
+                    example: "ast_abc123"
+                  name:
+                    type: string
+                    example: "Mon Assistant IA"
+                  instructions:
+                    type: string
+                    example: "Tu es un assistant IA spécialisé dans l'aide aux développeurs."
+                  externalAssistantId:
+                    type: string
+                    example: "asst_xyz789"
+                  fileIds:
+                    type: array
+                    items:
+                      type: string
+                    example: ["fil-abc123", "fil-def456"]
+                  createdAt:
+                    type: string
+                    format: date-time
+                    example: "2024-01-15 10:30:00"
+                  externalData:
+                    type: object
+                    description: Complete external assistant configuration including tools and vector stores
+                    properties:
+                      id:
+                        type: string
+                        example: "asst_xyz789"
+                      tools:
+                        type: array
+                        items:
+                          type: object
+                        example: [{"type": "file_search"}]
+                      tool_resources:
+                        type: object
+                        properties:
+                          file_search:
+                            type: object
+                            properties:
+                              vector_store_ids:
+                                type: array
+                                items:
+                                  type: string
+                                example: ["vs_1234567890abcdef"]
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: InvalidArgumentException
+              error_message:
+                type: string
+                example: L'ID de l'assistant est requis
+    '404':
+      description: Assistant not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: InvalidArgumentException
+              error_message:
+                type: string
+                example: Assistant non trouvé
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: Exception
+              error_message:
+                type: string
+                example: API Error

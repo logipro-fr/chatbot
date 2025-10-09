@@ -4,13 +4,13 @@ put:
   summary: Update files for an existing assistant
   operationId: updateAssistantFiles
   parameters:
-    - name: assistant_id
+    - name: ast_id
       in: path
       required: true
       schema:
         type: string
       description: The ID of the assistant
-      example: "assistant_abc123"
+      example: "ast_abc123"
   requestBody:
     required: true
     content:
@@ -22,8 +22,8 @@ put:
               type: array
               items:
                 type: string
-              description: Array of OpenAI file IDs to replace all files for the assistant. Use empty array [] to remove all files.
-              example: ["file_789", "file_101"]
+              description: Array of external file IDs to replace all files for the assistant. Use empty array [] to remove all files.
+              example: ["fil-abc123", "fil-def456"]
           required:
             - file_ids
   responses:
@@ -44,13 +44,13 @@ put:
                   assistantId:
                     type: string
                     description: The assistant ID
-                    example: "assistant_abc123"
+                    example: "ast_abc123"
                   fileIds:
                     type: array
                     items:
                       type: string
                     description: All file IDs attached to the assistant
-                    example: ["file_789", "file_101"]
+                    example: ["fil-abc123", "fil-def456"]
     '400':
       description: Bad Request
       content:

@@ -1,7 +1,7 @@
 get:
   tags:
     - Files
-  summary: Get file information from OpenAI
+  summary: Get file information from external service
   operationId: getFile
   parameters:
     - name: fileId
@@ -9,8 +9,8 @@ get:
       required: true
       schema:
         type: string
-      description: The OpenAI file ID
-      example: file-abc123
+      description: The external file ID
+      example: fil-abc123
   responses:
     '200':
       description: File information retrieved successfully
@@ -31,8 +31,8 @@ get:
                     properties:
                       id:
                         type: string
-                        description: The OpenAI file ID
-                        example: file-abc123
+                        description: The external file ID
+                        example: fil-abc123
                       filename:
                         type: string
                         description: The filename

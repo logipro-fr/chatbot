@@ -11,13 +11,13 @@ class FileIdTest extends TestCase
     {
         $fileId = new FileId();
 
-        $this->assertStringStartsWith('file_', $fileId->getId());
+        $this->assertStringStartsWith('fil_', $fileId->getId());
         $this->assertNotEmpty($fileId->getId());
     }
 
     public function testCreateFileIdWithCustomId(): void
     {
-        $customId = 'file_custom_123';
+        $customId = 'fil_custom_123';
         $fileId = new FileId($customId);
 
         $this->assertEquals($customId, $fileId->getId());
@@ -25,7 +25,7 @@ class FileIdTest extends TestCase
 
     public function testGetId(): void
     {
-        $id = 'file_test_456';
+        $id = 'fil_test_456';
         $fileId = new FileId($id);
 
         $this->assertEquals($id, $fileId->getId());
@@ -33,7 +33,7 @@ class FileIdTest extends TestCase
 
     public function testToString(): void
     {
-        $id = 'file_test_789';
+        $id = 'fil_test_789';
         $fileId = new FileId($id);
 
         $this->assertEquals($id, (string) $fileId);
@@ -41,10 +41,10 @@ class FileIdTest extends TestCase
 
     public function testEquals(): void
     {
-        $id = 'file_test_equals';
+        $id = 'fil_test_equals';
         $fileId1 = new FileId($id);
         $fileId2 = new FileId($id);
-        $fileId3 = new FileId('file_different');
+        $fileId3 = new FileId('fil_different');
 
         $this->assertTrue($fileId1->equals($fileId2));
         $this->assertFalse($fileId1->equals($fileId3));

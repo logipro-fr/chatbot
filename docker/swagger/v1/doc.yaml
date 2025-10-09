@@ -16,9 +16,11 @@ tags:
   - name: Context
     description: Endpoints related to context management
   - name: Files
-    description: Endpoints related to file management for OpenAI assistants
+    description: Endpoints related to file management for external assistants
   - name: Assistant
-    description: Endpoints related to OpenAI Assistant management
+    description: Endpoints related to external Assistant management
+  - name: Thread
+    description: Endpoints related to thread management for external assistants
 
 paths:
   /conversations/Make:
@@ -44,9 +46,13 @@ paths:
   
   /assistant/create-from-context:
     $ref: assistant/create.yaml
-  /assistant/{assistant_id}/files:
+  /assistant/{ast_id}/files:
     $ref: assistant/updateFiles.yaml
-  /assistant/{assistant_id}:
+  /assistant/{ast_id}:
+    $ref: assistant/get.yaml
+  /assistant/{ast_id}/delete:
     $ref: assistant/delete.yaml
   /assistant/conversation:
-    $ref: assistant/conversation.yaml
+    $ref: thread/conversation.yaml
+  /assistant/conversation/continue:
+    $ref: thread/continueConversation.yaml

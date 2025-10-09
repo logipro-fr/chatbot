@@ -10,7 +10,7 @@ class FileMetadataTest extends TestCase
 {
     public function testCreateFileMetadataWithValidData(): void
     {
-        $fileId = new FileId('file_test_123');
+        $fileId = new FileId('fil_test_123');
         $originalFilename = 'test.pdf';
         $purpose = 'assistants';
         $size = 1024;
@@ -58,10 +58,10 @@ class FileMetadataTest extends TestCase
 
     public function testEquals(): void
     {
-        $fileId = new FileId('file_test_equals');
+        $fileId = new FileId('fil_test_equals');
         $fileMetadata1 = new FileMetadata($fileId, 'test1.pdf', 'assistants', 1024);
         $fileMetadata2 = new FileMetadata($fileId, 'test2.pdf', 'fine-tune', 2048);
-        $fileMetadata3 = new FileMetadata(new FileId('file_different'), 'test3.pdf', 'assistants', 1024);
+        $fileMetadata3 = new FileMetadata(new FileId('fil_different'), 'test3.pdf', 'assistants', 1024);
 
         $this->assertTrue($fileMetadata1->equals($fileMetadata2));
         $this->assertFalse($fileMetadata1->equals($fileMetadata3));

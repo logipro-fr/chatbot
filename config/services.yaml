@@ -23,6 +23,9 @@ services:
   Chatbot\Infrastructure\LanguageModel\ChatGPT\Assistant\FileApi:
     autowire: true
 
+  Chatbot\Infrastructure\LanguageModel\ChatGPT\Assistant\AssistantApi:
+    autowire: true
+
   Chatbot\Domain\Model\File\FileMetadataRepositoryInterface:
     class: Chatbot\Infrastructure\Persistence\File\FileMetadataRepositoryDoctrine
   

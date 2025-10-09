@@ -3,6 +3,7 @@
 namespace Chatbot\Infrastructure\Persistence\Thread;
 
 use Chatbot\Domain\Model\Assistant\AssistantId;
+use Chatbot\Domain\Model\Conversation\ConversationId;
 use Chatbot\Domain\Model\Thread\Thread;
 use Chatbot\Domain\Model\Thread\ThreadId;
 use Chatbot\Domain\Model\Thread\ThreadRepositoryInterface;
@@ -34,6 +35,13 @@ class ThreadRepositoryDoctrine extends EntityRepository implements ThreadReposit
         return $this->getEntityManager()
             ->getRepository(Thread::class)
             ->findBy(['assistantId' => $assistantId]);
+    }
+
+    public function findByConversationId(ConversationId $conversationId): ?Thread
+    {
+        return $this->getEntityManager()
+            ->getRepository(Thread::class)
+            ->findOneBy(['conversationId' => $conversationId]);
     }
 
     public function findAll(): array

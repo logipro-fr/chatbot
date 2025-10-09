@@ -6,22 +6,16 @@ use Chatbot\Application\Service\AssistantConversation\AssistantConversation;
 use Chatbot\Application\Service\AssistantConversation\AssistantConversationRequest;
 use Chatbot\Domain\Model\Assistant\Assistant;
 use Chatbot\Domain\Model\Assistant\AssistantId;
-use Chatbot\Domain\Model\Conversation\Conversation;
-use Chatbot\Domain\Model\Conversation\ConversationId;
-use Chatbot\Domain\Model\Conversation\Prompt;
-use Chatbot\Domain\Model\Context\ContextId;
-use Chatbot\Domain\Model\Context\ContextMessage;
-use Chatbot\Domain\Model\Context\Context;
 use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
 use Chatbot\Domain\Model\Context\ContextRepositoryInterface;
+use Chatbot\Domain\Model\Thread\ThreadRepositoryInterface;
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\Assistant\AssistantApi;
 use PHPUnit\Framework\TestCase;
 
 class AssistantConversationTest extends TestCase
 {
-    public function test_should_create_conversation_with_assistant(): void
+    public function testShouldCreateConversationWithAssistant(): void
     {
-        // Given
         $assistant = new Assistant(
             new AssistantId(),
             "Assistant Test",
@@ -36,30 +30,289 @@ class AssistantConversationTest extends TestCase
 
         $conversationRepository = $this->createMock(ConversationRepositoryInterface::class);
         $contextRepository = $this->createMock(ContextRepositoryInterface::class);
-        $assistantApi = $this->createMock(AssistantApi::class);
+        $threadRepository = $this->createMock(ThreadRepositoryInterface::class);
+        $assistantService = $this->createMock(AssistantApi::class);
 
-        $assistantApi->expects($this->once())
+        $assistantService->expects($this->once())
             ->method('createThread')
-            ->willReturn('thread_123');
+            ->willReturn('thr_123');
 
-        $assistantApi->expects($this->once())
+        $assistantService->expects($this->once())
             ->method('addMessageToThread')
-            ->with('thread_123', 'Bonjour, comment allez-vous ?', 'user')
+            ->with('thr_123', 'Bonjour, comment allez-vous ?', 'user')
             ->willReturn('msg_123');
 
-        $assistantApi->expects($this->once())
+        $assistantService->expects($this->once())
             ->method('createRun')
-            ->with('thread_123', 'asst_123')
+            ->with('thr_123', 'asst_123')
             ->willReturn('run_123');
 
-        $assistantApi->expects($this->once())
+        $assistantService->expects($this->once())
             ->method('getRunStatus')
-            ->with('thread_123', 'run_123')
+            ->with('thr_123', 'run_123')
             ->willReturn(['status' => 'completed']);
 
-        $assistantApi->expects($this->once())
+        $assistantService->expects($this->once())
             ->method('getMessages')
-            ->with('thread_123')
+            ->with('thr_123')
+            ->willReturn([
+                [
+                    'role' => 'assistant',
+                    'content' => [
+                        ['text' => ['value' => 'Je vais très bien, merci !']]
+                    ]
+                ]
+            ]);
+
+        $service =         new AssistantConversation(
+            $conversationRepository,
+            $contextRepository,
+            $threadRepository,
+            $assistantService
+        );
+
+        $service->execute($request);
+
+        $response = $service->getResponse();
+        $this->assertEquals('Je vais très bien, merci !', $response->assistantMessage);
+        $this->assertNotEmpty($response->conversationId);
+    }
+
+    public function testShouldHandleRunFailure(): void
+    {
+        $assistant = new Assistant(
+            new AssistantId(),
+            "Assistant Test",
+            "Tu es un assistant utile",
+            "asst_123"
+        );
+
+        $request = new AssistantConversationRequest(
+            $assistant,
+            "Bonjour, comment allez-vous ?"
+        );
+
+        $conversationRepository = $this->createMock(ConversationRepositoryInterface::class);
+        $contextRepository = $this->createMock(ContextRepositoryInterface::class);
+        $threadRepository = $this->createMock(ThreadRepositoryInterface::class);
+        $assistantService = $this->createMock(AssistantApi::class);
+
+        $assistantService->expects($this->once())
+            ->method('createThread')
+            ->willReturn('thr_123');
+
+        $assistantService->expects($this->once())
+            ->method('addMessageToThread')
+            ->with('thr_123', 'Bonjour, comment allez-vous ?', 'user')
+            ->willReturn('msg_123');
+
+        $assistantService->expects($this->once())
+            ->method('createRun')
+            ->with('thr_123', 'asst_123')
+            ->willReturn('run_123');
+
+        $assistantService->expects($this->once())
+            ->method('getRunStatus')
+            ->with('thr_123', 'run_123')
+            ->willReturn([
+                'status' => 'failed',
+                'last_error' => ['message' => 'API Error']
+            ]);
+
+        $service =         new AssistantConversation(
+            $conversationRepository,
+            $contextRepository,
+            $threadRepository,
+            $assistantService
+        );
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Le run a échoué: API Error');
+
+        $service->execute($request);
+    }
+
+    public function testShouldHandleNoAssistantMessageFound(): void
+    {
+        $assistant = new Assistant(
+            new AssistantId(),
+            "Assistant Test",
+            "Tu es un assistant utile",
+            "asst_123"
+        );
+
+        $request = new AssistantConversationRequest(
+            $assistant,
+            "Bonjour, comment allez-vous ?"
+        );
+
+        $conversationRepository = $this->createMock(ConversationRepositoryInterface::class);
+        $contextRepository = $this->createMock(ContextRepositoryInterface::class);
+        $threadRepository = $this->createMock(ThreadRepositoryInterface::class);
+        $assistantService = $this->createMock(AssistantApi::class);
+
+        $assistantService->expects($this->once())
+            ->method('createThread')
+            ->willReturn('thr_123');
+
+        $assistantService->expects($this->once())
+            ->method('addMessageToThread')
+            ->with('thr_123', 'Bonjour, comment allez-vous ?', 'user')
+            ->willReturn('msg_123');
+
+        $assistantService->expects($this->once())
+            ->method('createRun')
+            ->with('thr_123', 'asst_123')
+            ->willReturn('run_123');
+
+        $assistantService->expects($this->once())
+            ->method('getRunStatus')
+            ->with('thr_123', 'run_123')
+            ->willReturn(['status' => 'completed']);
+
+        $assistantService->expects($this->once())
+            ->method('getMessages')
+            ->with('thr_123')
+            ->willReturn([
+                [
+                    'role' => 'user',
+                    'content' => [
+                        ['text' => ['value' => 'Message utilisateur']]
+                    ]
+                ]
+            ]);
+
+        $service =         new AssistantConversation(
+            $conversationRepository,
+            $contextRepository,
+            $threadRepository,
+            $assistantService
+        );
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage("Aucun message de l'assistant trouvé");
+
+        $service->execute($request);
+    }
+
+    public function testShouldCleanMetadataFromMessage(): void
+    {
+        $assistant = new Assistant(
+            new AssistantId(),
+            "Assistant Test",
+            "Tu es un assistant utile",
+            "asst_123"
+        );
+
+        $request = new AssistantConversationRequest(
+            $assistant,
+            "Bonjour, comment allez-vous ?"
+        );
+
+        $conversationRepository = $this->createMock(ConversationRepositoryInterface::class);
+        $contextRepository = $this->createMock(ContextRepositoryInterface::class);
+        $threadRepository = $this->createMock(ThreadRepositoryInterface::class);
+        $assistantService = $this->createMock(AssistantApi::class);
+
+        $assistantService->expects($this->once())
+            ->method('createThread')
+            ->willReturn('thr_123');
+
+        $assistantService->expects($this->once())
+            ->method('addMessageToThread')
+            ->with('thr_123', 'Bonjour, comment allez-vous ?', 'user')
+            ->willReturn('msg_123');
+
+        $assistantService->expects($this->once())
+            ->method('createRun')
+            ->with('thr_123', 'asst_123')
+            ->willReturn('run_123');
+
+        $assistantService->expects($this->once())
+            ->method('getRunStatus')
+            ->with('thr_123', 'run_123')
+            ->willReturn(['status' => 'completed']);
+
+        $assistantService->expects($this->once())
+            ->method('getMessages')
+            ->with('thr_123')
+            ->willReturn([
+                [
+                    'role' => 'assistant',
+                    'content' => [
+                        ['text' => ['value' => 'Je vais très bien, merci !【1:2†source】']]
+                    ]
+                ]
+            ]);
+
+        $service =         new AssistantConversation(
+            $conversationRepository,
+            $contextRepository,
+            $threadRepository,
+            $assistantService
+        );
+
+        $service->execute($request);
+
+        $response = $service->getResponse();
+        $this->assertEquals('Je vais très bien, merci !', $response->assistantMessage);
+        $this->assertNotEmpty($response->conversationId);
+    }
+
+    public function testShouldReuseExistingContextWhenInstructionsAreSame(): void
+    {
+        $assistant = new Assistant(
+            new AssistantId(),
+            "Assistant Test",
+            "Tu es un assistant utile",
+            "asst_123"
+        );
+
+        $request = new AssistantConversationRequest(
+            $assistant,
+            "Bonjour, comment allez-vous ?"
+        );
+
+        $conversationRepository = $this->createMock(ConversationRepositoryInterface::class);
+        $contextRepository = $this->createMock(ContextRepositoryInterface::class);
+        $threadRepository = $this->createMock(ThreadRepositoryInterface::class);
+        $assistantService = $this->createMock(AssistantApi::class);
+
+        // Mock pour simuler un contexte existant trouvé
+        $existingContext = $this->createMock(\Chatbot\Domain\Model\Context\Context::class);
+        $existingContext->method('getContextId')->willReturn(new \Chatbot\Domain\Model\Context\ContextId());
+
+        $contextRepository->expects($this->once())
+            ->method('findByMessage')
+            ->with('Tu es un assistant utile')
+            ->willReturn($existingContext);
+
+        // Vérifier qu'aucun nouveau contexte n'est ajouté
+        $contextRepository->expects($this->never())
+            ->method('add');
+
+        $assistantService->expects($this->once())
+            ->method('createThread')
+            ->willReturn('thr_123');
+
+        $assistantService->expects($this->once())
+            ->method('addMessageToThread')
+            ->with('thr_123', 'Bonjour, comment allez-vous ?', 'user')
+            ->willReturn('msg_123');
+
+        $assistantService->expects($this->once())
+            ->method('createRun')
+            ->with('thr_123', 'asst_123')
+            ->willReturn('run_123');
+
+        $assistantService->expects($this->once())
+            ->method('getRunStatus')
+            ->with('thr_123', 'run_123')
+            ->willReturn(['status' => 'completed']);
+
+        $assistantService->expects($this->once())
+            ->method('getMessages')
+            ->with('thr_123')
             ->willReturn([
                 [
                     'role' => 'assistant',
@@ -72,15 +325,14 @@ class AssistantConversationTest extends TestCase
         $service = new AssistantConversation(
             $conversationRepository,
             $contextRepository,
-            $assistantApi
+            $threadRepository,
+            $assistantService
         );
 
-        // When
         $service->execute($request);
 
-        // Then
         $response = $service->getResponse();
-        $this->assertNotNull($response);
         $this->assertEquals('Je vais très bien, merci !', $response->assistantMessage);
+        $this->assertNotEmpty($response->conversationId);
     }
 }

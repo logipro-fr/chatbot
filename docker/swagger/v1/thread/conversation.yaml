@@ -1,6 +1,6 @@
 post:
   tags:
-    - Assistant
+    - Thread
   summary: Create a conversation with an assistant
   operationId: assistantConversation
   requestBody:
@@ -10,16 +10,16 @@ post:
         schema:
           type: object
           properties:
-            assistant_id:
+            ast_id:
               type: string
               description: The ID of the assistant (required)
-              example: "assistant_abc123"
+              example: "ast_abc123"
             message:
               type: string
               description: The message to send to the assistant
               example: "Peux-tu m'aider à documenter cette fonction PHP ?"
           required:
-            - assistant_id
+            - ast_id
             - message
   responses:
     '200':

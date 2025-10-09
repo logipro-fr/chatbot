@@ -15,16 +15,36 @@ class ThreadIdType extends Type
 
     public function convertToPHPValue($value, AbstractPlatform $platform): ?ThreadId
     {
-        return $value === null ? null : new ThreadId($value);
+        if ($value === null) {
+            return null;
+        }
+
+        if (!is_string($value)) {
+            throw new \InvalidArgumentException('Expected string value for ThreadId');
+        }
+
+        return new ThreadId($value);
     }
 
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
-        return $value instanceof ThreadId ? $value->getId() : $value;
+        if ($value instanceof ThreadId) {
+            return $value->getId();
+        }
+
+        if ($value === null) {
+            return null;
+        }
+
+        if (!is_string($value)) {
+            throw new \InvalidArgumentException('Expected ThreadId or string value');
+        }
+
+        return $value;
     }
 
     public function getName(): string
     {
-        return 'thread_id';
+        return 'thr_id';
     }
 }

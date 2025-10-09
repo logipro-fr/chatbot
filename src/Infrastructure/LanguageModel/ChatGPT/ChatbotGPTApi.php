@@ -30,8 +30,13 @@ class ChatbotGPTApi implements ChatbotApiInterface
                     "Missing environment variable: CHATBOT_KEY_API is required to initialize ChatbotGPTApi."
                 );
             }
-            /** @var string $apiKey */
-            $apiKey = $_ENV["CHATBOT_KEY_API"];
+            $envValue = $_ENV["CHATBOT_KEY_API"];
+            if (!is_string($envValue)) {
+                throw new MissingChatbotKeyApiException(
+                    "Environment variable CHATBOT_KEY_API must be a string."
+                );
+            }
+            $apiKey = $envValue;
         }
         $this->CHATBOT_KEY_API = $apiKey;
     }

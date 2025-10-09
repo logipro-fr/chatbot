@@ -4,9 +4,9 @@ namespace Chatbot\Infrastructure\Api\V1\Assistant;
 
 use Chatbot\Application\Service\CreateAssistantFromContext\CreateAssistantFromContext;
 use Chatbot\Application\Service\CreateAssistantFromContext\CreateAssistantFromContextRequest;
+use Chatbot\Infrastructure\LanguageModel\ChatGPT\Assistant\AssistantApi;
 use Chatbot\Domain\Model\Context\ContextId;
 use Chatbot\Infrastructure\Api\V1\AbstractController;
-use Chatbot\Infrastructure\LanguageModel\ChatGPT\Assistant\AssistantApi;
 use Chatbot\Infrastructure\Persistence\Assistant\AssistantRepositoryDoctrine;
 use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryDoctrine;
 use Doctrine\ORM\EntityManagerInterface;
@@ -20,7 +20,7 @@ use function Safe\json_decode;
 class CreateAssistantFromContextController extends AbstractController
 {
     public function __construct(
-        private HttpClientInterface $client,
+        private AssistantApi $assistantApi,
         private EntityManagerInterface $entityManager
     ) {
     }
@@ -34,7 +34,7 @@ class CreateAssistantFromContextController extends AbstractController
             $service = new CreateAssistantFromContext(
                 new AssistantRepositoryDoctrine($this->entityManager),
                 new ContextRepositoryDoctrine($this->entityManager),
-                new AssistantApi($this->client)
+                $this->assistantApi
             );
             $service->execute($createAssistantRequest);
             $this->entityManager->flush();
@@ -49,11 +49,25 @@ class CreateAssistantFromContextController extends AbstractController
     private function buildCreateAssistantRequest(Request $request): CreateAssistantFromContextRequest
     {
         $content = $request->getContent();
-        /** @var array<string, mixed> $data */
+        /** @var array<string, string|int|bool|array<string>> $data */
         $data = json_decode($content, true);
 
-        $contextId = new ContextId($data['context_id'] ?? '');
-        $fileIds = $data['file_ids'] ?? [];
+        $contextIdValue = $data['context_id'] ?? '';
+        if (!is_string($contextIdValue)) {
+            throw new \InvalidArgumentException('Context ID must be a string');
+        }
+        $contextId = new ContextId($contextIdValue);
+
+        $fileIdsArray = (array) ($data['file_ids'] ?? []);
+        /** @var array<string> $fileIds */
+        $fileIds = [];
+        foreach ($fileIdsArray as $fileId) {
+            if (is_string($fileId)) {
+                $fileIds[] = $fileId;
+            } elseif (is_scalar($fileId)) {
+                $fileIds[] = (string) $fileId;
+            }
+        }
 
         if (empty($data['context_id'])) {
             throw new \InvalidArgumentException("L'ID du contexte est requis");

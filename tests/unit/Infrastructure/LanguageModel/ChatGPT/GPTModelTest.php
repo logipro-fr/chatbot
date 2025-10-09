@@ -36,7 +36,10 @@ class GPTModelTest extends TestCase
     {
         $this->savedChatbotApiKeyEnv = null;
         if (isset($_ENV['CHATBOT_KEY_API'])) {
-            $this->savedChatbotApiKeyEnv = $_ENV['CHATBOT_KEY_API'];
+            $envValue = $_ENV['CHATBOT_KEY_API'];
+            if (is_string($envValue)) {
+                $this->savedChatbotApiKeyEnv = $envValue;
+            }
         }
     }
 

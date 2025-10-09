@@ -8,44 +8,37 @@ use PHPUnit\Framework\TestCase;
 
 class AssistantTest extends TestCase
 {
-    public function test_should_create_assistant_with_basic_information(): void
+    public function testShouldCreateAssistantWithBasicInformation(): void
     {
-        // Given
         $assistantId = new AssistantId();
         $name = "Assistant Documentation";
         $instructions = "Tu es un assistant spécialisé dans la documentation";
-        $openAiAssistantId = "asst_123456";
+        $externalAssistantId = "asst_123456";
 
-        // When
-        $assistant = new Assistant($assistantId, $name, $instructions, $openAiAssistantId);
+        $assistant = new Assistant($assistantId, $name, $instructions, $externalAssistantId);
 
-        // Then
         $this->assertEquals($assistantId, $assistant->getAssistantId());
         $this->assertEquals($name, $assistant->getName());
         $this->assertEquals($instructions, $assistant->getInstructions());
-        $this->assertEquals($openAiAssistantId, $assistant->getOpenAiAssistantId());
+        $this->assertEquals($externalAssistantId, $assistant->getExternalAssistantId());
         $this->assertEmpty($assistant->getFileIds());
     }
 
-    public function test_should_create_assistant_with_file_ids(): void
+    public function testShouldCreateAssistantWithFileIds(): void
     {
-        // Given
         $assistantId = new AssistantId();
         $name = "Assistant avec fichiers";
         $instructions = "Assistant avec fichiers attachés";
-        $openAiAssistantId = "asst_789";
-        $fileIds = ["file_123", "file_456"];
+        $externalAssistantId = "asst_789";
+        $fileIds = ["fil_123", "fil_456"];
 
-        // When
-        $assistant = new Assistant($assistantId, $name, $instructions, $openAiAssistantId, $fileIds);
+        $assistant = new Assistant($assistantId, $name, $instructions, $externalAssistantId, $fileIds);
 
-        // Then
         $this->assertEquals($fileIds, $assistant->getFileIds());
     }
 
-    public function test_should_add_file_id_to_assistant(): void
+    public function testShouldAddFileIdToAssistant(): void
     {
-        // Given
         $assistant = new Assistant(
             new AssistantId(),
             "Assistant Test",
@@ -53,48 +46,55 @@ class AssistantTest extends TestCase
             "asst_123"
         );
 
-        // When
-        $assistant->addFileId("file_789");
+        $assistant->addFileId("fil_789");
 
-        // Then
-        $this->assertContains("file_789", $assistant->getFileIds());
+        $this->assertContains("fil_789", $assistant->getFileIds());
     }
 
-    public function test_should_not_add_duplicate_file_id(): void
+    public function testShouldNotAddDuplicateFileId(): void
     {
-        // Given
         $assistant = new Assistant(
             new AssistantId(),
             "Assistant Test",
             "Instructions",
             "asst_123",
-            ["file_123"]
+            ["fil_123"]
         );
 
-        // When
-        $assistant->addFileId("file_123");
+        $assistant->addFileId("fil_123");
 
-        // Then
         $this->assertCount(1, $assistant->getFileIds());
-        $this->assertContains("file_123", $assistant->getFileIds());
+        $this->assertContains("fil_123", $assistant->getFileIds());
     }
 
-    public function test_should_remove_file_id_from_assistant(): void
+    public function testShouldRemoveFileIdFromAssistant(): void
     {
-        // Given
         $assistant = new Assistant(
             new AssistantId(),
             "Assistant Test",
             "Instructions",
             "asst_123",
-            ["file_123", "file_456"]
+            ["fil_123", "fil_456"]
         );
 
-        // When
-        $assistant->removeFileId("file_123");
+        $assistant->removeFileId("fil_123");
 
-        // Then
-        $this->assertNotContains("file_123", $assistant->getFileIds());
-        $this->assertContains("file_456", $assistant->getFileIds());
+        $this->assertNotContains("fil_123", $assistant->getFileIds());
+        $this->assertContains("fil_456", $assistant->getFileIds());
+    }
+
+    public function testGetCreatedAt(): void
+    {
+        $assistant = new Assistant(
+            new AssistantId(),
+            "Assistant Test",
+            "Instructions",
+            "asst_123"
+        );
+
+        $createdAt = $assistant->getCreatedAt();
+
+        $this->assertInstanceOf(\DateTimeImmutable::class, $createdAt);
+        $this->assertLessThanOrEqual(new \DateTimeImmutable(), $createdAt);
     }
 }

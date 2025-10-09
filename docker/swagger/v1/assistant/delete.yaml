@@ -4,13 +4,13 @@ delete:
   summary: Delete an existing assistant
   operationId: deleteAssistant
   parameters:
-    - name: assistant_id
+    - name: ast_id
       in: path
       required: true
       schema:
         type: string
       description: The ID of the assistant to delete
-      example: "assistant_abc123"
+      example: "ast_abc123"
   responses:
     '200':
       description: Assistant deleted successfully
@@ -29,10 +29,10 @@ delete:
                   assistantId:
                     type: string
                     description: The deleted assistant ID
-                    example: "assistant_abc123"
-                  openAiAssistantId:
+                    example: "ast_abc123"
+                  externalAssistantId:
                     type: string
-                    description: The deleted OpenAI Assistant ID
+                    description: The deleted external Assistant ID
                     example: "asst_xyz789"
     '400':
       description: Bad Request

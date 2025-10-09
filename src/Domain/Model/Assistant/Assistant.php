@@ -12,14 +12,18 @@ class Assistant
     /** @var array<string> */
     private array $fileIds;
 
+    /**
+     * @param array<string> $fileIds
+     */
     public function __construct(
         private AssistantId $assistantId,
         private string $name,
         private string $instructions,
-        private string $openAiAssistantId,
+        private string $externalAssistantId,
         array $fileIds = [],
         private readonly DateTimeImmutable $createdAt = new SafeDateTimeImmutable()
     ) {
+        /** @var array<string> $fileIds */
         $this->fileIds = $fileIds;
         (new EventFacade())->dispatch(new AssistantCreated($this->assistantId, $this->name));
     }
@@ -39,9 +43,9 @@ class Assistant
         return $this->instructions;
     }
 
-    public function getOpenAiAssistantId(): string
+    public function getExternalAssistantId(): string
     {
-        return $this->openAiAssistantId;
+        return $this->externalAssistantId;
     }
 
     /**
