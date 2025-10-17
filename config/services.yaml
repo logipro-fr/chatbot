@@ -28,6 +28,48 @@ services:
 
   Chatbot\Domain\Model\File\FileMetadataRepositoryInterface:
     class: Chatbot\Infrastructure\Persistence\File\FileMetadataRepositoryDoctrine
+
+  Chatbot\Infrastructure\Persistence\Assistant\AssistantRepositoryDoctrine:
+    autowire: true
+
+  Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryDoctrine:
+    autowire: true
+
+  Chatbot\Infrastructure\Persistence\Context\ContextRepositoryDoctrine:
+    autowire: true
+
+  Chatbot\Infrastructure\Persistence\Thread\ThreadRepositoryDoctrine:
+    autowire: true
+
+  Chatbot\Domain\Model\Assistant\AssistantRepositoryInterface:
+    alias: Chatbot\Infrastructure\Persistence\Assistant\AssistantRepositoryDoctrine
+
+  Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface:
+    alias: Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryDoctrine
+
+  Chatbot\Domain\Model\Context\ContextRepositoryInterface:
+    alias: Chatbot\Infrastructure\Persistence\Context\ContextRepositoryDoctrine
+
+  Chatbot\Domain\Model\Thread\ThreadRepositoryInterface:
+    alias: Chatbot\Infrastructure\Persistence\Thread\ThreadRepositoryDoctrine
+
+  Chatbot\Application\Service\AssistantConversation\AssistantConversation:
+    autowire: true
+
+  Chatbot\Application\Service\ContinueAssistantConversation\ContinueAssistantConversation:
+    autowire: true
+
+  Chatbot\Application\Service\CreateAssistantFromContext\CreateAssistantFromContext:
+    autowire: true
+
+  Chatbot\Application\Service\DeleteAssistant\DeleteAssistant:
+    autowire: true
+
+  Chatbot\Application\Service\GetAssistant\GetAssistant:
+    autowire: true
+
+  Chatbot\Application\Service\UpdateAssistantFiles\UpdateAssistantFiles:
+    autowire: true
   
   Chatbot\Infrastructure\Api\V1\:
     resource: "../src/Infrastructure/Api/V1/"

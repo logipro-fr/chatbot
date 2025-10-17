@@ -6,18 +6,13 @@ use Chatbot\Application\Service\GetAssistant\GetAssistant;
 use Chatbot\Application\Service\GetAssistant\GetAssistantRequest;
 use Chatbot\Domain\Model\Assistant\AssistantId;
 use Chatbot\Infrastructure\Api\V1\AbstractController;
-use Chatbot\Infrastructure\Persistence\Assistant\AssistantRepositoryDoctrine;
-use Chatbot\Infrastructure\LanguageModel\ChatGPT\Assistant\AssistantApi;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class GetAssistantController extends AbstractController
 {
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private HttpClientInterface $client
+        private GetAssistant $getAssistantService
     ) {
     }
 
@@ -27,13 +22,9 @@ class GetAssistantController extends AbstractController
         try {
             $getAssistantRequest = $this->buildGetAssistantRequest($ast_id);
 
-            $service = new GetAssistant(
-                new AssistantRepositoryDoctrine($this->entityManager),
-                new AssistantApi($this->client)
-            );
-            $service->execute($getAssistantRequest);
+            $this->getAssistantService->execute($getAssistantRequest);
 
-            $response = $service->getResponse();
+            $response = $this->getAssistantService->getResponse();
             if ($response === null) {
                 throw new \RuntimeException("Service response is null");
             }

@@ -7,11 +7,13 @@ use Chatbot\Application\Service\Exception\MissingChatbotKeyApiException;
 use Chatbot\Application\Service\Exception\OtherException;
 use Chatbot\Application\Service\Exception\TooManyRequestException;
 use Chatbot\Application\Service\Exception\UnhautorizeKeyException;
+use Chatbot\Infrastructure\Exception\FileNotFoundException;
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\Assistant\FileApi;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 
 class FileApiTest extends TestCase
 {
@@ -44,6 +46,21 @@ class FileApiTest extends TestCase
 
         if ($originalEnv !== null) {
             $_ENV['CHATBOT_KEY_API'] = $originalEnv;
+        }
+    }
+
+    public function testConstructorWithEnvApiKey(): void
+    {
+        $originalEnv = $_ENV['CHATBOT_KEY_API'] ?? null;
+        $_ENV['CHATBOT_KEY_API'] = 'env-api-key';
+
+        $fileApi = new FileApi($this->httpClient);
+        $this->assertInstanceOf(FileApi::class, $fileApi);
+
+        if ($originalEnv !== null) {
+            $_ENV['CHATBOT_KEY_API'] = $originalEnv;
+        } else {
+            unset($_ENV['CHATBOT_KEY_API']);
         }
     }
 
@@ -177,6 +194,21 @@ class FileApiTest extends TestCase
         $this->assertEmpty($result);
     }
 
+    public function testListFilesWithNonArrayData(): void
+    {
+        $response = $this->createMock(ResponseInterface::class);
+        $response->method('getStatusCode')->willReturn(200);
+        $response->method('getContent')->willReturn('{"data": "not-an-array"}');
+
+        $this->httpClient
+            ->expects($this->once())
+            ->method('request')
+            ->willReturn($response);
+
+        $result = $this->fileApi->list();
+        $this->assertEmpty($result);
+    }
+
     public function testGetFile(): void
     {
         $fileId = 'file-123';
@@ -239,6 +271,101 @@ class FileApiTest extends TestCase
         $this->fileApi->list();
     }
 
+    public function testHandleResponseWithFileNotFound(): void
+    {
+        $response = $this->createMock(ResponseInterface::class);
+        $response->method('getStatusCode')->willReturn(404);
+        $response->method('getContent')->willReturn('{"error": "File not found"}');
+
+        $this->httpClient
+            ->expects($this->once())
+            ->method('request')
+            ->willReturn($response);
+
+        $this->expectException(FileNotFoundException::class);
+        $this->expectExceptionMessage('File not found: The requested file does not exist or has been deleted.');
+
+        $this->fileApi->get('file-123');
+    }
+
+    public function testGetWithClientException404(): void
+    {
+        $response = $this->createMock(ResponseInterface::class);
+        $response->method('getStatusCode')->willReturn(404);
+        $response->method('getContent')->willReturn('{"error": "File not found"}');
+
+        $clientException = $this->createMock(ClientExceptionInterface::class);
+        $clientException->method('getResponse')->willReturn($response);
+
+        $this->httpClient
+            ->expects($this->once())
+            ->method('request')
+            ->willThrowException($clientException);
+
+        $this->expectException(FileNotFoundException::class);
+        $this->expectExceptionMessage('File not found: The requested file does not exist or has been deleted.');
+
+        $this->fileApi->get('file-123');
+    }
+
+    public function testDeleteWithClientException404(): void
+    {
+        $response = $this->createMock(ResponseInterface::class);
+        $response->method('getStatusCode')->willReturn(404);
+        $response->method('getContent')->willReturn('{"error": "File not found"}');
+
+        $clientException = $this->createMock(ClientExceptionInterface::class);
+        $clientException->method('getResponse')->willReturn($response);
+
+        $this->httpClient
+            ->expects($this->once())
+            ->method('request')
+            ->willThrowException($clientException);
+
+        $this->expectException(FileNotFoundException::class);
+        $this->expectExceptionMessage('File not found: The requested file does not exist or has been deleted.');
+
+        $this->fileApi->delete('file-123');
+    }
+
+    public function testGetWithClientException400(): void
+    {
+        $response = $this->createMock(ResponseInterface::class);
+        $response->method('getStatusCode')->willReturn(400);
+        $response->method('getContent')->willReturn('{"error": "Bad Request"}');
+
+        $clientException = $this->createMock(ClientExceptionInterface::class);
+        $clientException->method('getResponse')->willReturn($response);
+
+        $this->httpClient
+            ->expects($this->once())
+            ->method('request')
+            ->willThrowException($clientException);
+
+        $this->expectException(ClientExceptionInterface::class);
+
+        $this->fileApi->get('file-123');
+    }
+
+    public function testDeleteWithClientException400(): void
+    {
+        $response = $this->createMock(ResponseInterface::class);
+        $response->method('getStatusCode')->willReturn(400);
+        $response->method('getContent')->willReturn('{"error": "Bad Request"}');
+
+        $clientException = $this->createMock(ClientExceptionInterface::class);
+        $clientException->method('getResponse')->willReturn($response);
+
+        $this->httpClient
+            ->expects($this->once())
+            ->method('request')
+            ->willThrowException($clientException);
+
+        $this->expectException(ClientExceptionInterface::class);
+
+        $this->fileApi->delete('file-123');
+    }
+
     public function testHandleResponseWithTooManyRequests(): void
     {
         $response = $this->createMock(ResponseInterface::class);
@@ -273,5 +400,83 @@ class FileApiTest extends TestCase
         );
 
         $this->fileApi->list();
+    }
+
+    public function testParamsHeaderWithJsonContentType(): void
+    {
+
+        $testFileApi = new class ($this->httpClient, 'test-api-key') extends FileApi {
+            /** @return array<string, array<string, string>|array<string, string|int|bool|resource>> */
+            public function testParamsHeaderWithJson(): array
+            {
+                $reflection = new \ReflectionClass($this);
+                $method = $reflection->getMethod('paramsHeader');
+                $method->setAccessible(true);
+                $result = $method->invoke($this, ['test' => 'data'], true);
+                assert(is_array($result));
+                /** @var array<string, array<string, string>|array<string, string|int|bool|resource>> $result */
+                return $result;
+            }
+        };
+
+        $result = $testFileApi->testParamsHeaderWithJson();
+
+        $this->assertArrayHasKey('headers', $result);
+        $this->assertArrayHasKey('Content-Type', $result['headers']);
+        $this->assertEquals('application/json', $result['headers']['Content-Type']);
+        $this->assertArrayHasKey('json', $result);
+        $this->assertEquals(['test' => 'data'], $result['json']);
+    }
+
+    public function testParamsHeaderWithJsonData(): void
+    {
+
+        $testFileApi = new class ($this->httpClient, 'test-api-key') extends FileApi {
+            /** @return array<string, array<string, string>|array<string, string|int|bool|resource>> */
+            public function testParamsHeaderWithJsonData(): array
+            {
+                $reflection = new \ReflectionClass($this);
+                $method = $reflection->getMethod('paramsHeader');
+                $method->setAccessible(true);
+                $result = $method->invoke($this, ['key' => 'value', 'number' => 123], true);
+                assert(is_array($result));
+                /** @var array<string, array<string, string>|array<string, string|int|bool|resource>> $result */
+                return $result;
+            }
+        };
+
+        $result = $testFileApi->testParamsHeaderWithJsonData();
+
+        $this->assertArrayHasKey('headers', $result);
+        $this->assertArrayHasKey('json', $result);
+        $this->assertEquals(['key' => 'value', 'number' => 123], $result['json']);
+        $this->assertArrayHasKey('Content-Type', $result['headers']);
+        $this->assertEquals('application/json', $result['headers']['Content-Type']);
+    }
+
+    public function testUploadWithFileThatCannotBeOpened(): void
+    {
+
+        $filePath = tempnam(sys_get_temp_dir(), 'test-file-') . '.txt';
+        file_put_contents($filePath, 'test content');
+
+        chmod($filePath, 0000);
+
+        $this->expectException(BadRequestException::class);
+        $this->expectExceptionMessage('Cannot open file: ' . $filePath);
+
+        $originalErrorReporting = error_reporting();
+        error_reporting(E_ERROR | E_PARSE | E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_COMPILE_WARNING);
+
+        try {
+            $this->fileApi->upload($filePath);
+        } finally {
+            error_reporting($originalErrorReporting);
+
+            chmod($filePath, 0644);
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
+        }
     }
 }

@@ -4,24 +4,20 @@ namespace Chatbot\Infrastructure\Api\V1\Assistant;
 
 use Chatbot\Application\Service\CreateAssistantFromContext\CreateAssistantFromContext;
 use Chatbot\Application\Service\CreateAssistantFromContext\CreateAssistantFromContextRequest;
-use Chatbot\Infrastructure\LanguageModel\ChatGPT\Assistant\AssistantApi;
 use Chatbot\Domain\Model\Context\ContextId;
 use Chatbot\Infrastructure\Api\V1\AbstractController;
-use Chatbot\Infrastructure\Persistence\Assistant\AssistantRepositoryDoctrine;
-use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryDoctrine;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 use function Safe\json_decode;
 
 class CreateAssistantFromContextController extends AbstractController
 {
     public function __construct(
-        private AssistantApi $assistantApi,
-        private EntityManagerInterface $entityManager
+        private EntityManagerInterface $entityManager,
+        private CreateAssistantFromContext $createAssistantFromContextService
     ) {
     }
 
@@ -31,15 +27,10 @@ class CreateAssistantFromContextController extends AbstractController
         try {
             $createAssistantRequest = $this->buildCreateAssistantRequest($request);
 
-            $service = new CreateAssistantFromContext(
-                new AssistantRepositoryDoctrine($this->entityManager),
-                new ContextRepositoryDoctrine($this->entityManager),
-                $this->assistantApi
-            );
-            $service->execute($createAssistantRequest);
+            $this->createAssistantFromContextService->execute($createAssistantRequest);
             $this->entityManager->flush();
 
-            $response = $service->getResponse();
+            $response = $this->createAssistantFromContextService->getResponse();
             return $this->writeSuccessfulResponse($response);
         } catch (\Exception $e) {
             return $this->writeUnsuccessfulResponse($e);

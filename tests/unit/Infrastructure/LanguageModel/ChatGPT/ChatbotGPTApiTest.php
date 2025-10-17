@@ -285,4 +285,26 @@ class ChatbotGPTApiTest extends TestCase
             }
         }
     }
+
+    public function testMissingChatbotKeyApiExceptionWhenNotString(): void
+    {
+        $this->expectException(MissingChatbotKeyApiException::class);
+        $this->expectExceptionMessage(
+            "Environment variable CHATBOT_KEY_API must be a string."
+        );
+
+        $savedKey = $_ENV['CHATBOT_KEY_API'] ?? null;
+
+        $_ENV['CHATBOT_KEY_API'] = 123;
+
+        try {
+            new ChatbotGPTApi($this->client);
+        } finally {
+            if ($savedKey !== null) {
+                $_ENV['CHATBOT_KEY_API'] = $savedKey;
+            } else {
+                unset($_ENV['CHATBOT_KEY_API']);
+            }
+        }
+    }
 }

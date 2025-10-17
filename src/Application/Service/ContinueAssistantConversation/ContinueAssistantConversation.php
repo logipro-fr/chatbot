@@ -7,6 +7,8 @@ use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
 use Chatbot\Domain\Model\Conversation\Answer;
 use Chatbot\Domain\Model\Conversation\Prompt;
 use Chatbot\Domain\Model\Thread\ThreadRepositoryInterface;
+use Chatbot\Infrastructure\Exception\AssistantMessageNotFoundException;
+use Chatbot\Infrastructure\Exception\RunTimeoutException;
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\Assistant\AssistantApi;
 
 class ContinueAssistantConversation
@@ -56,30 +58,6 @@ class ContinueAssistantConversation
         );
     }
 
-    private function waitForRunCompletion(string $threadId, string $runId): void
-    {
-        $maxAttempts = 30;
-        $attempts = 0;
-
-        while ($attempts < $maxAttempts) {
-            $runStatus = $this->assistantApi->getRunStatus($threadId, $runId);
-
-            if ($runStatus['status'] === 'completed') {
-                return;
-            } elseif ($runStatus['status'] === 'failed') {
-                /** @var array<string, mixed> $lastError */
-                $lastError = $runStatus['last_error'] ?? [];
-                $message = $lastError['message'] ?? 'Erreur inconnue';
-                $errorMessage = is_string($message) ? $message : 'Erreur inconnue';
-                throw new \RuntimeException("Le run a échoué: " . $errorMessage);
-            }
-
-            sleep(1);
-            $attempts++;
-        }
-
-        throw new \RuntimeException("Timeout: le run n'a pas été complété dans les temps");
-    }
 
     /**
      * @param array<array<string, mixed>> $messages
@@ -100,7 +78,33 @@ class ContinueAssistantConversation
             }
         }
 
-        throw new \RuntimeException("Aucun message de l'assistant trouvé");
+        throw new AssistantMessageNotFoundException("Aucun message de l'assistant trouvé");
+    }
+
+    private function waitForRunCompletion(string $threadId, string $runId): void
+    {
+        $maxAttempts = 30;
+        $attempt = 0;
+        $baseDelay = 100000;
+
+        while ($attempt < $maxAttempts) {
+            $runStatus = $this->assistantApi->getRunStatus($threadId, $runId);
+            $status = $runStatus['status'] ?? '';
+
+            if ($status === 'completed') {
+                return;
+            }
+
+            if ($status === 'failed' || $status === 'cancelled' || $status === 'expired') {
+                throw new \RuntimeException("Le run a échoué avec le statut: " . $status);
+            }
+
+            $delay = min($baseDelay * (1 << min($attempt, 3)), 1000000);
+            usleep($delay);
+            $attempt++;
+        }
+
+        throw new RunTimeoutException();
     }
 
     private function cleanMetadata(string $message): string

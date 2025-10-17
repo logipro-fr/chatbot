@@ -5,8 +5,8 @@ namespace Chatbot\Infrastructure\Api\V1\Assistant;
 use Chatbot\Application\Service\AssistantConversation\AssistantConversation;
 use Chatbot\Application\Service\AssistantConversation\AssistantConversationRequest;
 use Chatbot\Domain\Model\Assistant\AssistantId;
-use Chatbot\Infrastructure\LanguageModel\ChatGPT\Assistant\AssistantApi;
 use Chatbot\Infrastructure\Api\V1\AbstractController;
+use Chatbot\Infrastructure\Exception\AssistantMessageNotFoundException;
 use Chatbot\Infrastructure\Persistence\Assistant\AssistantRepositoryDoctrine;
 use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryDoctrine;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryDoctrine;
@@ -22,8 +22,8 @@ use function Safe\json_decode;
 class AssistantConversationController extends AbstractController
 {
     public function __construct(
-        private AssistantApi $assistantApi,
-        private EntityManagerInterface $entityManager
+        private EntityManagerInterface $entityManager,
+        private AssistantConversation $assistantConversationService
     ) {
     }
 
@@ -33,17 +33,13 @@ class AssistantConversationController extends AbstractController
         try {
             $assistantConversationRequest = $this->buildAssistantConversationRequest($request);
 
-            $service = new AssistantConversation(
-                new ConversationRepositoryDoctrine($this->entityManager),
-                new ContextRepositoryDoctrine($this->entityManager),
-                new ThreadRepositoryDoctrine($this->entityManager),
-                $this->assistantApi
-            );
-            $service->execute($assistantConversationRequest);
+            $this->assistantConversationService->execute($assistantConversationRequest);
             $this->entityManager->flush();
 
-            $response = $service->getResponse();
+            $response = $this->assistantConversationService->getResponse();
             return $this->writeSuccessfulResponse($response);
+        } catch (AssistantMessageNotFoundException $e) {
+            return $this->writeUnsuccessfulResponse($e, 404);
         } catch (\Exception $e) {
             return $this->writeUnsuccessfulResponse($e);
         }

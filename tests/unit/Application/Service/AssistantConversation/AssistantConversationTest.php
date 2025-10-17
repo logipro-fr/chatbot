@@ -9,6 +9,7 @@ use Chatbot\Domain\Model\Assistant\AssistantId;
 use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
 use Chatbot\Domain\Model\Context\ContextRepositoryInterface;
 use Chatbot\Domain\Model\Thread\ThreadRepositoryInterface;
+use Chatbot\Infrastructure\Exception\AssistantMessageNotFoundException;
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\Assistant\AssistantApi;
 use PHPUnit\Framework\TestCase;
 
@@ -78,59 +79,6 @@ class AssistantConversationTest extends TestCase
         $this->assertNotEmpty($response->conversationId);
     }
 
-    public function testShouldHandleRunFailure(): void
-    {
-        $assistant = new Assistant(
-            new AssistantId(),
-            "Assistant Test",
-            "Tu es un assistant utile",
-            "asst_123"
-        );
-
-        $request = new AssistantConversationRequest(
-            $assistant,
-            "Bonjour, comment allez-vous ?"
-        );
-
-        $conversationRepository = $this->createMock(ConversationRepositoryInterface::class);
-        $contextRepository = $this->createMock(ContextRepositoryInterface::class);
-        $threadRepository = $this->createMock(ThreadRepositoryInterface::class);
-        $assistantService = $this->createMock(AssistantApi::class);
-
-        $assistantService->expects($this->once())
-            ->method('createThread')
-            ->willReturn('thr_123');
-
-        $assistantService->expects($this->once())
-            ->method('addMessageToThread')
-            ->with('thr_123', 'Bonjour, comment allez-vous ?', 'user')
-            ->willReturn('msg_123');
-
-        $assistantService->expects($this->once())
-            ->method('createRun')
-            ->with('thr_123', 'asst_123')
-            ->willReturn('run_123');
-
-        $assistantService->expects($this->once())
-            ->method('getRunStatus')
-            ->with('thr_123', 'run_123')
-            ->willReturn([
-                'status' => 'failed',
-                'last_error' => ['message' => 'API Error']
-            ]);
-
-        $service =         new AssistantConversation(
-            $conversationRepository,
-            $contextRepository,
-            $threadRepository,
-            $assistantService
-        );
-
-        $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Le run a échoué: API Error');
-
-        $service->execute($request);
-    }
 
     public function testShouldHandleNoAssistantMessageFound(): void
     {
@@ -189,7 +137,7 @@ class AssistantConversationTest extends TestCase
             $assistantService
         );
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(AssistantMessageNotFoundException::class);
         $this->expectExceptionMessage("Aucun message de l'assistant trouvé");
 
         $service->execute($request);
@@ -278,7 +226,6 @@ class AssistantConversationTest extends TestCase
         $threadRepository = $this->createMock(ThreadRepositoryInterface::class);
         $assistantService = $this->createMock(AssistantApi::class);
 
-        // Mock pour simuler un contexte existant trouvé
         $existingContext = $this->createMock(\Chatbot\Domain\Model\Context\Context::class);
         $existingContext->method('getContextId')->willReturn(new \Chatbot\Domain\Model\Context\ContextId());
 
@@ -287,7 +234,6 @@ class AssistantConversationTest extends TestCase
             ->with('Tu es un assistant utile')
             ->willReturn($existingContext);
 
-        // Vérifier qu'aucun nouveau contexte n'est ajouté
         $contextRepository->expects($this->never())
             ->method('add');
 

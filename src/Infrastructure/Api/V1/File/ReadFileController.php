@@ -6,6 +6,7 @@ use Chatbot\Infrastructure\Api\V1\AbstractController;
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\Assistant\FileApi;
 use Chatbot\Domain\Model\File\FileId;
 use Chatbot\Domain\Model\File\FileMetadataRepositoryInterface;
+use Chatbot\Infrastructure\Exception\FileNotFoundException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -72,6 +73,8 @@ class ReadFileController extends AbstractController
             ];
 
             return $this->writeSuccessfulResponse($data);
+        } catch (FileNotFoundException $e) {
+            return $this->writeUnsuccessfulResponse($e, 404);
         } catch (\Exception $e) {
             return $this->writeUnsuccessfulResponse($e);
         }

@@ -6,19 +6,18 @@ use Chatbot\Application\Service\UpdateAssistantFiles\UpdateAssistantFiles;
 use Chatbot\Application\Service\UpdateAssistantFiles\UpdateAssistantFilesRequest;
 use Chatbot\Domain\Model\Assistant\AssistantId;
 use Chatbot\Infrastructure\Api\V1\AbstractController;
-use Chatbot\Infrastructure\Persistence\Assistant\AssistantRepositoryDoctrine;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 use function Safe\json_decode;
 
 class UpdateAssistantFilesController extends AbstractController
 {
     public function __construct(
-        private EntityManagerInterface $entityManager
+        private EntityManagerInterface $entityManager,
+        private UpdateAssistantFiles $updateAssistantFilesService
     ) {
     }
 
@@ -28,13 +27,10 @@ class UpdateAssistantFilesController extends AbstractController
         try {
             $updateFilesRequest = $this->buildUpdateFilesRequest($request, $ast_id);
 
-            $service = new UpdateAssistantFiles(
-                new AssistantRepositoryDoctrine($this->entityManager)
-            );
-            $service->execute($updateFilesRequest);
+            $this->updateAssistantFilesService->execute($updateFilesRequest);
             $this->entityManager->flush();
 
-            $response = $service->getResponse();
+            $response = $this->updateAssistantFilesService->getResponse();
             return $this->writeSuccessfulResponse($response);
         } catch (\Exception $e) {
             return $this->writeUnsuccessfulResponse($e);

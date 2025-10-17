@@ -55,4 +55,19 @@ class ContextRepositoryInMemoryTest extends TestCase
 
         $this->addToAssertionCount(1);
     }
+
+    public function testFindByMessageWithExistingMessage(): void
+    {
+        $foundContext = $this->repository->findByMessage("You're helpfull assistant");
+
+        $this->assertNotNull($foundContext);
+        $this->assertEquals("You're helpfull assistant", $foundContext->getContext()->getMessage());
+    }
+
+    public function testFindByMessageWithNonExistentMessage(): void
+    {
+        $foundContext = $this->repository->findByMessage("Message qui n'existe pas");
+
+        $this->assertNull($foundContext);
+    }
 }

@@ -3,11 +3,13 @@
 namespace Chatbot\Infrastructure\LanguageModel\ChatGPT\Assistant;
 
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Chatbot\Application\Service\Exception\BadRequestException;
 use Chatbot\Application\Service\Exception\TooManyRequestException;
 use Chatbot\Application\Service\Exception\OtherException;
 use Chatbot\Application\Service\Exception\UnhautorizeKeyException;
 use Chatbot\Application\Service\Exception\MissingChatbotKeyApiException;
+use Chatbot\Infrastructure\Exception\FileNotFoundException;
 
 use function Safe\json_decode;
 use function SafePHP\strval;
@@ -62,12 +64,23 @@ class FileApi
 
     public function delete(string $fileId): void
     {
-        $response = $this->client->request(
-            'DELETE',
-            "https://api.openai.com/v1/files/{$fileId}",
-            $this->paramsHeader([], false)
-        );
-        $this->handleResponse($response);
+        try {
+            $response = $this->client->request(
+                'DELETE',
+                "https://api.openai.com/v1/files/{$fileId}",
+                $this->paramsHeader([], false)
+            );
+            $this->handleResponse($response);
+        } catch (ClientExceptionInterface $e) {
+            $response = $e->getResponse();
+            $code = $response->getStatusCode();
+            if ($code === 404) {
+                throw new FileNotFoundException(
+                    "File not found: The requested file does not exist or has been deleted."
+                );
+            }
+            throw $e;
+        }
     }
 
     /**
@@ -106,15 +119,26 @@ class FileApi
      */
     public function get(string $fileId): array
     {
-        $response = $this->client->request(
-            'GET',
-            "https://api.openai.com/v1/files/{$fileId}",
-            $this->paramsHeader([], false)
-        );
-        $this->handleResponse($response);
-        $content = json_decode($response->getContent(), true);
-        /** @var array<string, string|int|bool> $content */
-        return $content;
+        try {
+            $response = $this->client->request(
+                'GET',
+                "https://api.openai.com/v1/files/{$fileId}",
+                $this->paramsHeader([], false)
+            );
+            $this->handleResponse($response);
+            $content = json_decode($response->getContent(), true);
+            /** @var array<string, string|int|bool> $content */
+            return $content;
+        } catch (ClientExceptionInterface $e) {
+            $response = $e->getResponse();
+            $code = $response->getStatusCode();
+            if ($code === 404) {
+                throw new FileNotFoundException(
+                    "File not found: The requested file does not exist or has been deleted."
+                );
+            }
+            throw $e;
+        }
     }
 
     /**
@@ -157,6 +181,9 @@ class FileApi
         } elseif ($code === 400) {
             $content = $response->getContent();
             throw new BadRequestException("Bad Request: The request was invalid or cannot be processed.");
+        } elseif ($code === 404) {
+            $content = $response->getContent();
+            throw new FileNotFoundException("File not found: The requested file does not exist or has been deleted.");
         } elseif ($code === 429) {
             $content = $response->getContent();
             throw new TooManyRequestException("Too Many Requests: You have exceeded your request quota.");

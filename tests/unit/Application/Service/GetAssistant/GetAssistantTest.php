@@ -204,6 +204,27 @@ class GetAssistantTest extends TestCase
         $this->assertEquals('Test Assistant', $data['name']);
     }
 
+    public function testGetAssistantResponseGetAssistantMethod(): void
+    {
+        $assistantId = new AssistantId('assistant-123');
+        $assistant = $this->createMock(Assistant::class);
+        $assistant->method('getAssistantId')->willReturn($assistantId);
+        $assistant->method('getName')->willReturn('Test Assistant');
+        $assistant->method('getInstructions')->willReturn('Test instructions');
+        $assistant->method('getExternalAssistantId')->willReturn('asst-123');
+        $assistant->method('getFileIds')->willReturn(['file-123']);
+        $assistant->method('getCreatedAt')->willReturn(new \DateTimeImmutable('2024-01-01 10:00:00'));
+
+        $externalData = ['id' => 'asst-123', 'model' => 'gpt-4-turbo'];
+
+        $response = new GetAssistantResponse($assistant, $externalData);
+
+        $retrievedAssistant = $response->getAssistant();
+        $this->assertSame($assistant, $retrievedAssistant);
+        $this->assertEquals($assistantId, $retrievedAssistant->getAssistantId());
+        $this->assertEquals('Test Assistant', $retrievedAssistant->getName());
+    }
+
     private function createMockHttpClient(): MockHttpClient
     {
         $response = new MockResponse('{"id":"asst-test"}', ['http_code' => 200]);
