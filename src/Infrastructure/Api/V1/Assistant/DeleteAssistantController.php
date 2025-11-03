@@ -18,7 +18,7 @@ class DeleteAssistantController extends AbstractController
     ) {
     }
 
-    #[Route('api/v1/assistant/{ast_id}', 'deleteAssistant', methods: ['DELETE'])]
+    #[Route('api/v1/assistant/{ast_id}/delete', 'deleteAssistant', methods: ['DELETE'])]
     public function deleteAssistant(string $ast_id): Response
     {
         try {

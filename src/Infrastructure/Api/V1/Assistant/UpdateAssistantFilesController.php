@@ -21,7 +21,7 @@ class UpdateAssistantFilesController extends AbstractController
     ) {
     }
 
-    #[Route('api/v1/assistant/{ast_id}', 'updateAssistantFiles', methods: ['PUT'])]
+    #[Route('api/v1/assistant/{ast_id}/files', 'updateAssistantFiles', methods: ['PUT'])]
     public function updateAssistantFiles(Request $request, string $ast_id): Response
     {
         try {
