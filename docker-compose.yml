@@ -1,0 +1,90 @@
+services:
+  api:
+    image: "${COMPOSE_PROJECT_NAME}-api"
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
+    command: [nginx, '-g', 'daemon off;']
+    depends_on:
+      - php
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - "./:/var/${COMPOSE_PROJECT_NAME}"
+    ports:
+      - "${HOST_IP}:11080:80"
+    networks:
+      - ${COMPOSE_PROJECT_NAME}-network
+
+  php:
+    image: "${COMPOSE_PROJECT_NAME}-php"
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    user: "${USERID}:${GROUPID}"
+    volumes:
+      - "./:/var/${COMPOSE_PROJECT_NAME}"
+      - "./:$PWD"
+      - "./docker/php/php.ini:/usr/local/etc/php/php.ini"
+    working_dir: $PWD
+    depends_on:
+      mariadb:
+        condition: service_started
+    networks:
+      - ${COMPOSE_PROJECT_NAME}-network
+    environment:
+      - HOST_IP=${HOST_IP}
+      - DATA_PATH=${DATA_PATH}
+      - CHATBOT_KEY_API=${CHATBOT_KEY_API}
+
+  mariadb:
+    image: ${COMPOSE_PROJECT_NAME}:latest
+    build:
+      context: .
+      dockerfile: docker/mariadb/Dockerfile
+      tags:
+        - latest
+    restart: always
+    volumes: 
+      - ${DATA_PATH}/${COMPOSE_PROJECT_NAME}/mariadb:/var/lib/mysql
+      - ./mariabackup:/backup
+    env_file:
+      - ./docker/mariadb/db.env
+    networks:
+      - ${COMPOSE_PROJECT_NAME}-network
+
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: mariadb
+    depends_on:
+      - mariadb
+    ports:
+      - "127.0.0.1:11090:80"
+    networks:
+      - ${COMPOSE_PROJECT_NAME}-network
+
+  swagger-ui:
+    image: swaggerapi/swagger-ui:latest
+    restart: always
+    environment:
+      PORT_IPV6: 8080
+      SUPPORTED_SUBMIT_METHODS: "['get', 'post', 'put', 'delete', 'patch']"
+      SWAGGER_JSON: /v1/doc.yaml
+    volumes:
+      - ./docker/swagger/v1:/v1
+    ports:
+      - "${HOST_IP}:11002:8080"
+    networks:
+      - ${COMPOSE_PROJECT_NAME}-network
+
+
+networks:
+  chatbot-network:
+    name: "${COMPOSE_PROJECT_NAME}-network"
+    driver: bridge
+    enable_ipv6: true
+    ipam:
+      config:
+        - subnet: fdff:1:2a::/112
+          gateway: fdff:1:2a::1

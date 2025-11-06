@@ -1,0 +1,108 @@
+name: CI Pipeline
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  cache-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.3
+          extensions: amqp
+          tools: composer
+
+      - name: Install dependencies
+        run: composer install
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+  security-checker:
+    runs-on: ubuntu-latest
+    needs: cache-job
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run security checker
+        run: |
+          curl -O https://github.com/fabpot/local-php-security-checker/releases/download/v2.1.3/local-php-security-checker_linux_amd64
+          chmod +x ./local-php-security-checker_linux_amd64
+          ./local-php-security-checker_linux_amd64 composer.lock
+
+  phpcs:
+    runs-on: ubuntu-latest
+    needs: cache-job
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.3
+
+      - name: Install dependencies
+        run: composer install
+
+      - name: Run PHP CodeSniffer
+        run: php vendor/bin/phpcs -v --standard=PSR12 ./src ./tests
+
+  phpstan:
+    runs-on: ubuntu-latest
+    needs: cache-job
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.3
+          extensions: pcov
+
+      - name: Install dependencies
+        run: composer install
+
+      - name: Run PHPStan
+        run: |
+          php -d date.timezone=Europe/Paris -d memory_limit=-1 -d phar.readonly=0 -d pcov.enabled=1 -d expose_php=off vendor/bin/phpstan analyse --level=9 ./src
+          php -d date.timezone=Europe/Paris -d memory_limit=-1 -d phar.readonly=0 -d pcov.enabled=1 -d expose_php=off vendor/bin/phpstan analyse --level=9 ./tests
+
+  phpunit:
+    runs-on: ubuntu-latest
+    needs: cache-job
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.3
+          extensions: zip, exif, pcov
+          coverage: pcov
+
+      - name: Install dependencies
+        run: composer install
+
+      - name: Run PHPUnit
+        run: ./vendor/bin/phpunit --testsuite all --coverage-text --colors=never --log-junit report.xml
+        continue-on-error: false
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-results
+          path: report.xml

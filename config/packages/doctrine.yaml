@@ -1,0 +1,28 @@
+doctrine:
+  dbal:
+    url: "%env(resolve:DATABASE_URL)%"
+    types:
+      conversation_id: Chatbot\Infrastructure\Persistence\Doctrine\Types\ConversationIdType
+      context: Chatbot\Infrastructure\Persistence\Doctrine\Types\ContextType
+      context_id : Chatbot\Infrastructure\Persistence\Doctrine\Types\ContextIdType
+      contextmessage : Chatbot\Infrastructure\Persistence\Doctrine\Types\ContextMessageType
+      pair_id: Chatbot\Infrastructure\Persistence\Doctrine\Types\PairIdType
+      prompt : Chatbot\Infrastructure\Persistence\Doctrine\Types\PromptType
+      answer : Chatbot\Infrastructure\Persistence\Doctrine\Types\AnswerType
+      fil_id: Chatbot\Infrastructure\Persistence\Doctrine\Types\FileIdType
+      ast_id: Chatbot\Infrastructure\Persistence\Doctrine\Types\AssistantIdType
+      thr_id: Chatbot\Infrastructure\Persistence\Doctrine\Types\ThreadIdType
+      
+
+  orm:
+    auto_generate_proxy_classes: true
+    naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+    auto_mapping: true
+    controller_resolver:
+      auto_mapping: true
+    mappings:
+      Chatbot:
+        is_bundle: false
+        type: xml
+        dir: "%kernel.project_dir%/src/Infrastructure/Persistence/Doctrine/Mapping"
+        prefix: 'Chatbot\Domain\Model'

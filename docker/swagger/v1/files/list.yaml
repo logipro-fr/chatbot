@@ -1,0 +1,65 @@
+get:
+  tags:
+    - Files
+  summary: List all files from external service
+  operationId: listFiles
+  responses:
+    '200':
+      description: Files retrieved successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                description: Indicates if the files were retrieved
+                example: true
+              data:
+                type: object
+                properties:
+                  files:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          description: The external file ID
+                          example: fil-abc123
+                        filename:
+                          type: string
+                          description: The filename
+                          example: phpQYX9Wc
+                        purpose:
+                          type: string
+                          description: The purpose of the file
+                          example: assistants
+                        bytes:
+                          type: integer
+                          description: The file size in bytes
+                          example: 1024
+                        original_filename:
+                          type: string
+                          description: The original filename
+                          example: document.pdf
+                  count:
+                    type: integer
+                    description: The number of files
+                    example: 2
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: Exception
+              error_message:
+                type: string
+                example: API Error 

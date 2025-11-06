@@ -1,0 +1,83 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
+services:
+  # default configuration for services in *this* file
+  _defaults:
+    autowire: true # Automatically injects dependencies in your services.
+    autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+  Chatbot\Infrastructure\LanguageModel\ModelFactory:
+    autowire: true
+
+  conversation.factory:
+    public: true
+    autowire: true
+    class: Chatbot\Infrastructure\LanguageModel\ModelFactory
+       
+
+  Chatbot\Application\Service\MakeConversation\LanguageModelAbstractFactory: "@conversation.factory"
+
+  Chatbot\Infrastructure\LanguageModel\ChatGPT\Assistant\FileApi:
+    autowire: true
+
+  Chatbot\Infrastructure\LanguageModel\ChatGPT\Assistant\AssistantApi:
+    autowire: true
+
+  Chatbot\Domain\Model\File\FileMetadataRepositoryInterface:
+    class: Chatbot\Infrastructure\Persistence\File\FileMetadataRepositoryDoctrine
+
+  Chatbot\Infrastructure\Persistence\Assistant\AssistantRepositoryDoctrine:
+    autowire: true
+
+  Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryDoctrine:
+    autowire: true
+
+  Chatbot\Infrastructure\Persistence\Context\ContextRepositoryDoctrine:
+    autowire: true
+
+  Chatbot\Infrastructure\Persistence\Thread\ThreadRepositoryDoctrine:
+    autowire: true
+
+  Chatbot\Domain\Model\Assistant\AssistantRepositoryInterface:
+    alias: Chatbot\Infrastructure\Persistence\Assistant\AssistantRepositoryDoctrine
+
+  Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface:
+    alias: Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryDoctrine
+
+  Chatbot\Domain\Model\Context\ContextRepositoryInterface:
+    alias: Chatbot\Infrastructure\Persistence\Context\ContextRepositoryDoctrine
+
+  Chatbot\Domain\Model\Thread\ThreadRepositoryInterface:
+    alias: Chatbot\Infrastructure\Persistence\Thread\ThreadRepositoryDoctrine
+
+  Chatbot\Application\Service\AssistantConversation\AssistantConversation:
+    autowire: true
+
+  Chatbot\Application\Service\ContinueAssistantConversation\ContinueAssistantConversation:
+    autowire: true
+
+  Chatbot\Application\Service\CreateAssistantFromContext\CreateAssistantFromContext:
+    autowire: true
+
+  Chatbot\Application\Service\DeleteAssistant\DeleteAssistant:
+    autowire: true
+
+  Chatbot\Application\Service\GetAssistant\GetAssistant:
+    autowire: true
+
+  Chatbot\Application\Service\UpdateAssistantFiles\UpdateAssistantFiles:
+    autowire: true
+  
+  Chatbot\Infrastructure\Api\V1\:
+    resource: "../src/Infrastructure/Api/V1/"
+    tags: ["controller.service_arguments"]
+    exclude: "../src/Infrastructure/Api/V1/File/"
+
+  Chatbot\Infrastructure\Api\V1\File\:
+    resource: "../src/Infrastructure/Api/V1/File/"
+    tags: ["controller.service_arguments"]
+    
+

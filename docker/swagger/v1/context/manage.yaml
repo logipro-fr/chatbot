@@ -1,0 +1,164 @@
+get:
+  tags:
+      - Context
+  summary: View a context
+  operationId: viewContext
+  parameters:
+  - name: Id
+    in: query
+    required: true
+    schema:
+      type: string
+      example: cot_66b46fefe29d5
+    description: The context you want to view. If you provide a conversation ID, it will retrieve the relevant context.
+  responses:
+    '200':
+      description: Successful response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                description: Indicate whether the context was changed
+                example: true
+              data:
+                type: object
+                properties:
+                  contextMessage:
+                    type: string
+                    description: The context message of id selected
+                    example: I'm a context
+                description: Data returned by the conversation service
+
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                description: Indicates whether the conversation was created
+                example: false
+              error:
+                type: string
+                description: The message error
+                example: NoIdException     
+patch:
+  tags:
+      - Context
+  summary: Modify a context message
+  operationId: editContext
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            Id:
+              type: string
+              description: The context you want to edit.
+              example: cot_66b46fefe29d5
+            NewMessage:
+              type: string
+              description: The new context message.
+              example: context
+            
+
+  responses:
+    '200':
+      description: Successful response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                description: Indicate whether the context was changed
+                example: true
+              data:
+                type: object
+                properties:
+                  contextId:
+                    type: string
+                    description: The Id of Context
+                    example: con_664c50f9c95cb
+                  contextMessage:
+                    type: string
+                    description: The new message for the context
+                    example: I'm new context
+                description: Data returned by the conversation service
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                description: Indicates whether the conversation was created
+                example: false
+              error:
+                type: string
+                description: The message error
+                example: NoIdException
+delete:
+  tags:
+      - Context
+  summary: Delete a context
+  operationId: deleteContext
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            Id:
+              type: string
+              description: The context you want to delete.
+              example: cot_66b46fefe29d5
+
+            
+
+  responses:
+    '200':
+      description: Successful response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                description: Indicate whether the context was changed
+                example: true
+              data:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Message explaining whether the context has been removed or not.
+                    example: the context was deleted
+                
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                description: Indicates whether the conversation was created
+                example: false
+              error:
+                type: string
+                description: The message error
+                example: NoIdException 
