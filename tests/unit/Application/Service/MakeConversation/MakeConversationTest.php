@@ -23,7 +23,6 @@ class MakeConversationTest extends TestCase
 {
     public function testSomeoneEngageAFirstSimpleConverdation(): void
     {
-        // arrange / Given
 
         $repository = new ConversationRepositoryInMemory();
         $contextrepo = new ContextRepositoryInMemory();
@@ -34,18 +33,15 @@ class MakeConversationTest extends TestCase
         );
         $factory = new ModelFactory();
         $service = new MakeConversation($repository, $factory, $contextrepo);
-        //act / When
         $service->execute($request);
 
         $response = $service->getResponse();
 
-        //assert / Then
         $this->assertInstanceOf(MakeConversationResponse::class, $response);
     }
 
     public function testTwoConversation(): void
     {
-        //arrange/ given
         $repository = new ConversationRepositoryInMemory();
         $contextrepo = new ContextRepositoryInMemory();
         $request = new MakeConversationRequest(
@@ -56,19 +52,13 @@ class MakeConversationTest extends TestCase
         $factory = new ModelFactory();
         $service = new MakeConversation($repository, $factory, $contextrepo);
 
-        //act / When
         $service->execute($request);
 
         $response = $service->getResponse();
         $service->execute($request);
         $responseOtherConversation = $service->getResponse();
 
-        //assert /Then
         $this->assertNotEquals($response->conversationId, $responseOtherConversation->conversationId);
-
-
-        $conversation = $repository->findById(new ConversationId($response->conversationId));
-        //$this->assertGreaterThan(1, $conversation->getTotalToken());
     }
 
 
@@ -86,15 +76,11 @@ class MakeConversationTest extends TestCase
         $factory = new ModelFactory($client);
         $service = new MakeConversation($repository, $factory, $contextrepo);
 
-        //act / When
         $service->execute($request);
 
         $response = $service->getResponse();
 
-        //assert / Then
         $this->assertInstanceOf(MakeConversationResponse::class, $response);
-        $conversation = $repository->findById(new ConversationId($response->conversationId));
-        //$this->assertGreaterThan(1, $conversation->getTotalToken());
     }
 
 
@@ -116,14 +102,11 @@ class MakeConversationTest extends TestCase
         $factory = new ModelFactory($client);
         $service = new MakeConversation($repository, $factory, $contextrepo);
 
-        //act / When
         $service->execute($request);
 
         $response = $service->getResponse();
 
-        //assert / Then
         $this->assertInstanceOf(MakeConversationResponse::class, $response);
         $conversation = $repository->findById(new ConversationId($response->conversationId));
-        //$this->assertGreaterThan(1, $conversation->getTotalToken());
     }
 }

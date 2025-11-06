@@ -8,9 +8,7 @@ use Chatbot\Application\Service\ContinueConversation\ContinueConversationRequest
 use Chatbot\Application\Service\MakeConversation\MakeConversation;
 use Chatbot\Application\Service\MakeConversation\MakeConversationRequest;
 use Chatbot\Application\Service\MakeConversation\MakeConversationResponse;
-use Chatbot\Domain\Model\Context\Context as ConversationContext;
 use Chatbot\Domain\Model\Context\ContextId;
-use Chatbot\Domain\Model\Context\ContextMessage;
 use Chatbot\Domain\Model\Context\ContextRepositoryInterface;
 use Chatbot\Domain\Model\Conversation\Conversation;
 use Chatbot\Domain\Model\Conversation\ConversationId;
@@ -21,9 +19,6 @@ use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryInMemory;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
 use PHPUnit\Framework\Assert;
 
-/**
- * Defines applaication features from the specific context.
- */
 class QueryModelContext implements Context
 {
     private MakeConversationResponse $response ;
@@ -37,18 +32,11 @@ class QueryModelContext implements Context
     {
     }
 
-
- /**
-     * @Given I want to speak with the langage model :prompt
-     */
     public function iWantToSpeakWithTheLangageModel(string $model): void
     {
         $this->lmName = $model;
     }
 
-    /**
-     * @When I start a conversation prompting with :prompt
-     */
     public function iStartAConversationPromptingWith(string $prompt): void
     {
         $request = new MakeConversationRequest(
@@ -64,9 +52,6 @@ class QueryModelContext implements Context
         $this->response = $service->getResponse();
     }
 
-    /**
-     * @Then I get an answer :answer
-     */
     public function iGetAnAnswer(string $answer): void
     {
         /** @var Conversation $conversation */
@@ -77,17 +62,11 @@ class QueryModelContext implements Context
         Assert::assertEquals($answer, $response);
     }
 
-    /**
-     * @Then I have a conversation identifier
-     */
     public function iHaveAConversationIdentifier(): void
     {
         Assert::assertNotEmpty($this->response->conversationId);
     }
 
-     /**
-     * @Given I started a conversation
-     */
     public function iStartedAConversation(): void
     {
         $request = new MakeConversationRequest(
@@ -102,12 +81,8 @@ class QueryModelContext implements Context
         $service->execute($request);
         $this->response = $service->getResponse();
         $this->conversation = $this->repository->findById(new ConversationId($this->response->conversationId));
-        //$this->tokencount1 = $this->conversation->getTotalToken();
     }
 
-    /**
-     * @When I ask :prompt
-     */
     public function iAsk(string $prompt): void
     {
         $factory = new ModelFactory();
@@ -117,9 +92,6 @@ class QueryModelContext implements Context
         $service->execute($request);
     }
 
-    /**
-     * @Then I have an answer
-     */
     public function iHaveAnAnswer(): void
     {
         /** @var Conversation $conversation */
@@ -129,19 +101,6 @@ class QueryModelContext implements Context
         Assert::assertNotEmpty($response);
     }
 
-    /**
-     * @Then the number of token has increased
-     */
-    public function theNumberOfTokenHasIncreased(): void
-    {
-        /** @var Conversation $conversation */
-        $conversation = $this->repository->findById(new ConversationId($this->response->conversationId));
-       // Assert::assertGreaterThan($this->tokencount1, $conversation->getTotalToken());
-    }
-
-     /**
-     * @Given I have an existing conversation
-     */
     public function iHaveAnExistingConversation(): void
     {
         $this->repository = new ConversationRepositoryInMemory();
@@ -161,9 +120,6 @@ class QueryModelContext implements Context
     }
 
 
-    /**
-     * @When I request :prompt
-     */
     public function iRequest(string $prompt): void
     {
         $factory = new ModelFactory();
@@ -176,18 +132,12 @@ class QueryModelContext implements Context
         $service->execute($request);
     }
 
-    /**
-     * @Then I should get an answer :answer
-     */
     public function iShouldGetAnAnswer(string $answer): void
     {
         $response = $this->conversation->getPair(1)->getAnswer()->getMessage();
         Assert::assertEquals($answer, $response);
     }
 
-    /**
-     * @Then the conversation is enriched by a new pair
-     */
     public function theConversationIsEnrichedByANewPair(): void
     {
         Assert::assertGreaterThan($this->numberOfPairs, $this->conversation->countPair());

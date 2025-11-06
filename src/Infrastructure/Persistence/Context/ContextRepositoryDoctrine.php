@@ -38,4 +38,16 @@ class ContextRepositoryDoctrine extends EntityRepository implements ContextRepos
         $context = $this->findById($context);
         $this->getEntityManager()->remove($context);
     }
+
+    public function findByMessage(string $message): ?Context
+    {
+        $qb = $this->createQueryBuilder('c');
+        $qb->where('c.contextmessage = :message')
+           ->setParameter('message', $message)
+           ->setMaxResults(1);
+
+        /** @var Context|null $result */
+        $result = $qb->getQuery()->getOneOrNullResult();
+        return $result;
+    }
 }

@@ -1,0 +1,68 @@
+post:
+  tags:
+    - Conversations
+  summary: Continue a conversation
+  operationId: continueConversation
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            Prompt:
+              type: string
+              description: The prompt I want to send to the IA
+              example: Bonjour
+            convId:
+              type: string
+              description: The id of conversation I want to continue
+              example: con_66680a4a5ee25
+            lmName:
+              type: string
+              description: The model I want to use
+              example: GPTModel
+
+  responses:
+    '200':
+      description: Successful response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                description: Indicates whether the publication was successful
+                example: true
+              data:
+                type: object
+                properties:
+                  conversationId:
+                    type: string
+                    description: The ID of the conversation
+                    example: con_66c58c7ee6c58
+                  numberOfPairs:
+                    type: int
+                    description: The number of pair in the conversation
+                    example: 1
+                  botMessage:
+                    type: string
+                    description: ChatGPT's response.
+                    example: Bonjour! Comment puis-je vous aider aujourd'hui?
+              description: Data returned by the make conversation service
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                description: Indicates whether the conversation was created
+                example: false
+              error:
+                type: string
+                description: The message error
+                example: NoIdException 

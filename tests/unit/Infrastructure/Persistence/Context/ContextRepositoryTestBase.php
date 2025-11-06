@@ -56,4 +56,25 @@ abstract class ContextRepositoryTestBase extends TestCase
         $this->expectException(ContextNotFoundException::class);
         $found = $this->contextRepository->findById($id);
     }
+
+    public function testFindByMessageWithExistingMessage(): void
+    {
+        $message = "Test message for findByMessage";
+        $context = new Context(new ContextMessage($message));
+        $this->contextRepository->add($context);
+
+        $foundContext = $this->contextRepository->findByMessage($message);
+
+        $this->assertNotNull($foundContext);
+        $this->assertEquals($message, $foundContext->getContext()->getMessage());
+    }
+
+    public function testFindByMessageWithNonExistentMessage(): void
+    {
+        $nonExistentMessage = "Message qui n'existe pas";
+
+        $foundContext = $this->contextRepository->findByMessage($nonExistentMessage);
+
+        $this->assertNull($foundContext);
+    }
 }

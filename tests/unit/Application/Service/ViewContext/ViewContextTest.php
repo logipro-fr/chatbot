@@ -15,7 +15,6 @@ class ViewContextTest extends TestCase
 {
     public function testFindContextWithContextId(): void
     {
-        // arrange / Given
 
         $repository = new ContextRepositoryInMemory();
         $request = new MakeContextRequest(
@@ -31,7 +30,6 @@ class ViewContextTest extends TestCase
         $service->execute($request);
         $response = $service->getResponse();
 
-        //assert / Then
         $this->assertInstanceOf(ViewContextResponse::class, $response);
         $this->assertEquals("You're helpfull assistant", $response->contextMessage);
     }

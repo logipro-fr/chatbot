@@ -16,6 +16,33 @@ use function Safe\file_get_contents;
 
 class GPTModelTest extends TestCase
 {
+    private ?string $savedChatbotApiKeyEnv = null;
+
+    public function setUp(): void
+    {
+        $this->saveChatbotApiKeyEnv();
+        $_ENV['CHATBOT_KEY_API'] = 'fake-api-key-for-testing';
+    }
+
+    protected function tearDown(): void
+    {
+        if ($this->savedChatbotApiKeyEnv !== null) {
+            $_ENV['CHATBOT_API_KEY'] = $this->savedChatbotApiKeyEnv;
+            $this->savedChatbotApiKeyEnv = null;
+        }
+    }
+
+    private function saveChatbotApiKeyEnv(): void
+    {
+        $this->savedChatbotApiKeyEnv = null;
+        if (isset($_ENV['CHATBOT_KEY_API'])) {
+            $envValue = $_ENV['CHATBOT_KEY_API'];
+            if (is_string($envValue)) {
+                $this->savedChatbotApiKeyEnv = $envValue;
+            }
+        }
+    }
+
     public function testGPTModel(): void
     {
         $conversation = new Conversation(new ContextId("base"));

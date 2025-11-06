@@ -1,0 +1,68 @@
+delete:
+  tags:
+    - Assistant
+  summary: Delete an existing assistant
+  operationId: deleteAssistant
+  parameters:
+    - name: ast_id
+      in: path
+      required: true
+      schema:
+        type: string
+      description: The ID of the assistant to delete
+      example: "ast_abc123"
+  responses:
+    '200':
+      description: Assistant deleted successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                description: Indicates if the assistant was deleted
+                example: true
+              data:
+                type: object
+                properties:
+                  assistantId:
+                    type: string
+                    description: The deleted assistant ID
+                    example: "ast_abc123"
+                  externalAssistantId:
+                    type: string
+                    description: The deleted external Assistant ID
+                    example: "asst_xyz789"
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: InvalidArgumentException
+              error_message:
+                type: string
+                example: Assistant non trouvé
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: Exception
+              error_message:
+                type: string
+                example: API Error 
