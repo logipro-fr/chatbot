@@ -29,6 +29,8 @@ paths:
     $ref: conversations/continue.yaml
   /conversations:
     $ref: conversations/view.yaml
+  /conversations/list:
+    $ref: conversations/list.yaml
   
   /context/Make:
     $ref: context/make.yaml

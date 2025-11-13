@@ -2,9 +2,11 @@
 
 namespace Chatbot\Infrastructure\Api\V1;
 
-use Chatbot\Application\Service\ViewConversation\ViewConversation;
-use Chatbot\Application\Service\ViewConversation\ViewConversationRequest;
+use Chatbot\Application\Service\ListConversations\ListConversations;
+use Chatbot\Application\Service\ListConversations\ListConversationsRequest;
+use Chatbot\Domain\Model\Assistant\AssistantId;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryDoctrine;
+use Chatbot\Infrastructure\Persistence\Thread\ThreadRepositoryDoctrine;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Phariscope\MultiTenant\Doctrine\DatabaseTools;
@@ -13,7 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class ViewConversationController extends AbstractController
+class ListConversationsController extends AbstractController
 {
     private EntityManagerResolver $entityManagerResolver;
 
@@ -23,35 +25,40 @@ class ViewConversationController extends AbstractController
         $this->entityManagerResolver = new EntityManagerResolver($entityManager);
     }
 
-    #[Route('api/v1/conversations', 'viewConversations', methods: ['GET'])]
-    public function viewConversation(Request $request): Response
+    #[Route('api/v1/conversations/list', 'listConversations', methods: ['GET'])]
+    public function listConversations(Request $request): Response
     {
         try {
             $entityManager = $this->entityManagerResolver->getEntityManagerByRequest($request);
             (new DatabaseTools())->createDatabaseIfNotExists($entityManager);
 
-            $request = $this->buildViewConversationRequest($request);
-            $context = new ViewConversation(
+            $listRequest = $this->buildListConversationsRequest($request);
+            $service = new ListConversations(
+                new ThreadRepositoryDoctrine($entityManager),
                 new ConversationRepositoryDoctrine($entityManager)
             );
 
-            $context->execute($request);
+            $service->execute($listRequest);
 
             $eventFlush = new EventFlush($entityManager);
             $eventFlush->flushAndDistribute();
         } catch (Exception $e) {
-            return $this->writeUnSuccessFulResponse($e);
+            return $this->writeUnsuccessfulResponse($e);
         }
-        $response = $context->getResponse();
+        $response = $service->getResponse();
         return $this->writeSuccessfulResponse($response->toArray());
     }
 
-    private function buildViewConversationRequest(Request $request): ViewConversationRequest
+    private function buildListConversationsRequest(Request $request): ListConversationsRequest
     {
         /** @var string */
-        $conversation = $request->query->get('Id');
+        $assistantId = $request->query->get('assistantId');
 
+        if (empty($assistantId)) {
+            throw new \InvalidArgumentException("L'ID de l'assistant est requis");
+        }
 
-        return new ViewConversationRequest($conversation);
+        return new ListConversationsRequest(new AssistantId($assistantId));
     }
 }
+

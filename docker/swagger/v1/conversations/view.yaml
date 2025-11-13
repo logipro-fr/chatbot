@@ -3,17 +3,14 @@ get:
     - Conversations
   summary: View a conversation
   operationId: viewConversation
-  requestBody:
-    required: true
-    content:
-      application/json:
-        schema:
-          type: object
-          properties:
-            Id:
-              type: string
-              description: The conversation Id I want to see
-              example: con_66cd76e11574
+  parameters:
+    - name: Id
+      in: query
+      required: true
+      description: The conversation Id I want to see
+      schema:
+        type: string
+        example: con_66cd76e11574
 
   responses:
     '200':
@@ -30,20 +27,33 @@ get:
               data:
                 type: object
                 properties:
-                  conversationId:
+                  contextId:
                     type: string
-                    description: The ID of the conversation
-                    example: con_66c58c7ee6c58
-                  numberOfPairs:
-                    type: int
-                    description: The number of pair in the conversation
-                    example: 1
-                  botMessage:
+                    description: The ID of the context associated with the conversation
+                    example: cot_690c4fcf71048
+                  title:
                     type: string
-                    description: ChatGPT's response.
-                    example: Bonjour! Comment puis-je vous aider aujourd'hui?
-
-                description: Data returned by the make conversation service
+                    description: The formatted title of the conversation (e.g., "Conversation du 15/01/2024 10:30")
+                    example: "Conversation du 15/01/2024 10:30"
+                  pairs:
+                    type: array
+                    description: Array of conversation pairs (prompt/answer)
+                    items:
+                      type: object
+                      properties:
+                        prompt:
+                          type: string
+                          description: The user's prompt/question
+                          example: Bonjour
+                        answer:
+                          type: string
+                          description: The bot's response
+                          example: Bonjour! Comment puis-je vous aider aujourd'hui?
+                        codeStatus:
+                          type: integer
+                          description: HTTP status code of the response
+                          example: 200
+                description: Data returned by the view conversation service
     
     '500':
       description: Internal Server Error

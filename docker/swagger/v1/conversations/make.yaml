@@ -17,7 +17,7 @@ post:
             lmName:
               type: string
               description: The model I want to use
-              example: GPTAssistant
+              example: GPTModel
             context:
               type: string
               description: The context id

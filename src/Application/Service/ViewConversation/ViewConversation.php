@@ -22,7 +22,11 @@ class ViewConversation
     {
         $conversation = $this->convRepository->findById(new ConversationId($request->id));
 
-        $this->response = new ViewConversationResponse($conversation->getContext(), $this->pairArray($conversation));
+        $this->response = new ViewConversationResponse(
+            $conversation->getContext()->__toString(),
+            $conversation->getTitle(),
+            $this->pairArray($conversation)
+        );
     }
 
     public function getResponse(): ViewConversationResponse
