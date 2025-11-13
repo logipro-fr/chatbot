@@ -31,12 +31,10 @@ services:
         condition: service_started
     networks:
       - ${COMPOSE_PROJECT_NAME}-network
-    env_file :
-      - ./docker/php.env
-      - ../secret.env
     environment:
       - HOST_IP=${HOST_IP}
       - DATA_PATH=${DATA_PATH}
+      - CHATBOT_KEY_API=${CHATBOT_KEY_API}
 
   mariadb:
     image: ${COMPOSE_PROJECT_NAME}:latest

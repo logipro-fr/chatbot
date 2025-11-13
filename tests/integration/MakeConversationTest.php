@@ -6,19 +6,23 @@ use Chatbot\Application\Service\ContinueConversation\ContinueConversation;
 use Chatbot\Application\Service\ContinueConversation\ContinueConversationRequest;
 use Chatbot\Application\Service\MakeConversation\MakeConversation;
 use Chatbot\Application\Service\MakeConversation\MakeConversationRequest;
-use Chatbot\Domain\Model\Context\Context;
 use Chatbot\Domain\Model\Context\ContextId;
-use Chatbot\Domain\Model\Context\ContextMessage;
 use Chatbot\Domain\Model\Conversation\ConversationId;
 use Chatbot\Domain\Model\Conversation\Prompt;
 use Chatbot\Infrastructure\LanguageModel\ModelFactory;
 use Chatbot\Infrastructure\Persistence\Context\ContextRepositoryInMemory;
 use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemory;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpClient\CurlHttpClient;
+use Symfony\Component\Dotenv\Dotenv;
 
 class MakeConversationTest extends TestCase
 {
+    public function setUp(): void
+    {
+        $dotenv = new Dotenv();
+        $dotenv->loadEnv(getcwd() . '/.env.local');
+    }
+
     public function testMakeOneConversation(): void
     {
         $repository = new ConversationRepositoryInMemory();

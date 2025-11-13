@@ -21,7 +21,7 @@ class ViewConversationControllerTest extends WebTestCase
     {
         $this->initDoctrineTester();
         $dotenv = new Dotenv();
-        $dotenv->loadEnv(getcwd() . '/src/Infrastructure/Shared/Symfony/.env.local');
+        $dotenv->loadEnv(getcwd() . '/.env.local');
         $this->clearTables(["conversations_pairs", "pairs", "conversations"]);
         $this->client = self::createClient(["debug" => false]);
 

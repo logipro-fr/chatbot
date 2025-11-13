@@ -6,7 +6,6 @@ use Chatbot\Application\Service\MakeContext\MakeContext;
 use Chatbot\Application\Service\MakeContext\MakeContextRequest;
 use Chatbot\Application\Service\MakeConversation\MakeConversation;
 use Chatbot\Application\Service\MakeConversation\MakeConversationRequest;
-use Chatbot\Domain\Model\Context\Context;
 use Chatbot\Domain\Model\Context\ContextId;
 use Chatbot\Domain\Model\Context\ContextMessage;
 use Chatbot\Domain\Model\Conversation\ConversationId;
@@ -22,7 +21,7 @@ class ChatBotGPTTranslateTest extends TestCase
     public function setUp(): void
     {
         $dotenv = new Dotenv();
-        $dotenv->loadEnv(getcwd() . '/src/Infrastructure/Shared/Symfony/.env.local');
+        $dotenv->loadEnv(getcwd() . '/.env.local');
     }
 
 

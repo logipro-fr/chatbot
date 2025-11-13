@@ -18,13 +18,13 @@ class ListConversations
     public function execute(ListConversationsRequest $request): void
     {
         $threads = $this->threadRepository->findByAssistantId($request->assistantId);
-        
+
         $conversations = [];
         foreach ($threads as $thread) {
             $conversation = $this->conversationRepository->findById($thread->getConversationId());
-            
+
             $createdAt = $conversation->getCreatedAt();
-            
+
             $conversations[] = new ListConversationItem(
                 $conversation->getConversationId()->__toString(),
                 $conversation->getTitle(),
@@ -46,4 +46,3 @@ class ListConversations
         return $this->response;
     }
 }
-

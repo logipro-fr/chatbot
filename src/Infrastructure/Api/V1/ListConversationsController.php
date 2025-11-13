@@ -61,4 +61,3 @@ class ListConversationsController extends AbstractController
         return new ListConversationsRequest(new AssistantId($assistantId));
     }
 }
-
