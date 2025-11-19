@@ -75,4 +75,9 @@ class Conversation
     {
         return $this->context;
     }
+
+    public function getTitle(): string
+    {
+        return "Conversation du " . $this->createdAt->format('d/m/Y H:i');
+    }
 }

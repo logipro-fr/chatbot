@@ -12,7 +12,7 @@ abstract class AbstractController
     public const ERROR_CODE_ERROR = 500;
 
     /**
-     * @param array<string, string|int|bool|array<string, string|int|bool>>|object $data
+     * @param array<string, mixed>|object $data
      */
     protected function writeSuccessfulResponse(
         object|array $data,

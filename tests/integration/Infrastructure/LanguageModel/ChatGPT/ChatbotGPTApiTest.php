@@ -19,9 +19,37 @@ class ChatbotGPTApiTest extends ChatGPTChatbotGPTApiTest
     public function setUp(): void
     {
         $dotenv = new Dotenv();
-        $dotenv->loadEnv(getcwd() . '/src/Infrastructure/Shared/Symfony/.env.local');
+        $dotenv->loadEnv(getcwd() . '/.env.local');
 
         $this->client = new CurlHttpClient();
+    }
+
+    protected function assertResponseIsCorrect(string $messageResponse): void
+    {
+        $this->assertGreaterThan(3, strlen($messageResponse));
+    }
+
+    public function testRequest(): void
+    {
+        $conversation = new Conversation(new ContextId("base"));
+        $prompt = new Prompt("raconte moi une blague stp");
+        $context = new Context(new ContextMessage("You're helpfull asistant"));
+        $chatBotTest = new ChatbotGPTApi($this->client);
+        $requestGPT = new RequestGPT($prompt, $context, $conversation);
+
+        $response = $chatBotTest->request($requestGPT);
+
+        $this->assertResponseIsCorrect($response->message);
+    }
+
+    public function testHeader(): void
+    {
+        $this->markTestSkipped('Test unitaire non applicable en intégration');
+    }
+
+    public function testBody(): void
+    {
+        $this->markTestSkipped('Test unitaire non applicable en intégration');
     }
 
     public function testRequestToRefacto(): void

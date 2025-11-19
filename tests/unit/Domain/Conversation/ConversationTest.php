@@ -105,6 +105,13 @@ class ConversationTest extends TestCase
         $this->assertEquals($creationTime, $conversation->getCreatedAt());
     }
 
+    public function testConversationTitle(): void
+    {
+        $creationTime = SafeDateTimeImmutable::createFromFormat('d/m/Y H:i:s', "12/03/2022 15:32:45");
+        $conversation = new Conversation(new ContextId(), createdAt: $creationTime);
+        $this->assertEquals("Conversation du 12/03/2022 15:32", $conversation->getTitle());
+    }
+
     public function testPairOutOfRangeException(): void
     {
         $this->expectException(PairOutOfRangeException::class);

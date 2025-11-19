@@ -138,9 +138,14 @@ class ChatbotGPTApiTest extends TestCase
         $context = new Context(new ContextMessage(self::CONTEXT));
         $requestGPT = new RequestGPT($prompt, $context, $conversation);
         $response = $chatBotTest->request($requestGPT);
+        $this->assertResponseIsCorrect($response->message);
+    }
+
+    protected function assertResponseIsCorrect(string $messageResponse): void
+    {
         $this->assertEquals(
             "\n\nBonjour ! Je vais bien merci ! comment puis-je vous aidez aujourd'hui",
-            $response->message
+            $messageResponse
         );
     }
 

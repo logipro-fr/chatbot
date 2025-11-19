@@ -1,0 +1,78 @@
+get:
+  tags:
+    - Conversations
+  summary: List all conversations for an assistant
+  operationId: listConversations
+  parameters:
+    - name: assistantId
+      in: query
+      required: true
+      description: The assistant ID to get conversations for
+      schema:
+        type: string
+        example: ast_66cd76e11574
+
+  responses:
+    '200':
+      description: Successful response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                description: Indicates if the request was successful
+                example: true
+              data:
+                type: object
+                properties:
+                  conversations:
+                    type: array
+                    description: Array of conversations linked to the assistant
+                    items:
+                      type: object
+                      properties:
+                        conversationId:
+                          type: string
+                          description: The ID of the conversation (use this with GET /conversations?Id=conversationId to view the conversation)
+                          example: con_66c58c7ee6c58
+                        title:
+                          type: string
+                          description: The formatted title of the conversation (e.g., "Conversation du 15/01/2024 10:30")
+                          example: "Conversation du 15/01/2024 10:30"
+                        contextId:
+                          type: string
+                          description: The ID of the context associated with the conversation
+                          example: cot_690c4fcf71048
+                        numberOfPairs:
+                          type: integer
+                          description: The number of pairs in the conversation
+                          example: 3
+                        createdAt:
+                          type: string
+                          format: date-time
+                          description: The creation date of the conversation
+                          example: "2024-01-15 10:30:00"
+                description: Data returned by the list conversations service
+    
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                description: Indicates whether the request was successful
+                example: false
+              error:
+                type: string
+                description: The error class name
+                example: InvalidArgumentException
+              error_message:
+                type: string
+                description: The error message
+                example: L'ID de l'assistant est requis
+
