@@ -137,6 +137,17 @@ class AssistantApi
             'assistant_id' => $assistantId
         ];
 
+        $assistantData = $this->getAssistant($assistantId);
+        $toolResources = $assistantData['tool_resources'] ?? null;
+        
+        if ($toolResources !== null && isset($toolResources['file_search'])) {
+            $requestData['additional_instructions'] = 
+            'IMPORTANT: Vous devez TOUJOURS rechercher dans les fichiers attachés avant de répondre à une question. 
+            Utilisez l\'outil file_search pour trouver les informations pertinentes dans les fichiers disponibles. 
+            Ne dites jamais que vous n\'avez pas trouvé d\'information sans avoir d\'abord effectué 
+            une recherche dans les fichiers attachés.';
+        }
+
         $response = $this->client->request(
             'POST',
             "https://api.openai.com/v1/threads/{$threadId}/runs",
