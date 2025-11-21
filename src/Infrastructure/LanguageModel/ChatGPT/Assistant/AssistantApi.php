@@ -56,7 +56,14 @@ class AssistantApi
 
             $requestData['tools'] = [
                 [
-                    'type' => 'file_search'
+                    'type' => 'file_search',
+                    'file_search' => [
+                        'ranking_options' => [
+                            'ranker' => 'default_2024_08_21',
+                            'score_threshold' => 0.0,
+                            'hybrid_search' => null
+                        ]
+                    ]
                 ]
             ];
 
@@ -304,6 +311,99 @@ class AssistantApi
         $response = $this->client->request(
             'DELETE',
             "https://api.openai.com/v1/assistants/{$assistantId}",
+            $this->paramsHeader([], false)
+        );
+
+        $this->handleResponse($response);
+    }
+
+    /**
+     * @param array<string> $fileIds
+     */
+    public function updateAssistant(string $assistantId, ?array $fileIds = null): void
+    {
+        /** @var array<string, mixed> $requestData */
+        $requestData = [];
+
+        if ($fileIds !== null) {
+            if (empty($fileIds)) {
+                // Si aucun fichier, on supprime le file_search tool
+                $requestData['tools'] = [];
+                $requestData['tool_resources'] = [];
+            } else {
+                $this->validateFileIds($fileIds);
+
+                $vectorStoreId = $this->createVectorStore($fileIds);
+
+                $requestData['tools'] = [
+                    [
+                        'type' => 'file_search',
+                        'file_search' => [
+                            'ranking_options' => [
+                                'ranker' => 'default_2024_08_21',
+                                'score_threshold' => 0.0,
+                                'hybrid_search' => null
+                            ]
+                        ]
+                    ]
+                ];
+
+                $requestData['tool_resources'] = [
+                    'file_search' => [
+                        'vector_store_ids' => [$vectorStoreId]
+                    ]
+                ];
+            }
+        }
+
+        try {
+            $response = $this->client->request(
+                'POST',
+                "https://api.openai.com/v1/assistants/{$assistantId}",
+                $this->paramsHeader($requestData)
+            );
+
+            $this->handleResponse($response);
+        } catch (ClientExceptionInterface $e) {
+            $response = $e->getResponse();
+            $content = $response->getContent(false);
+            throw new BadRequestException("OpenAI API Error: " . $content);
+        }
+    }
+
+    /**
+     * @param array<string> $fileIds
+     */
+    public function createVectorStoreFile(string $vectorStoreId, array $fileIds): void
+    {
+        foreach ($fileIds as $fileId) {
+            $this->validateFileIds([$fileId]);
+
+            $requestData = [
+                'file_id' => $fileId
+            ];
+
+            try {
+                $response = $this->client->request(
+                    'POST',
+                    "https://api.openai.com/v1/vector_stores/{$vectorStoreId}/files",
+                    $this->paramsHeader($requestData)
+                );
+
+                $this->handleResponse($response);
+            } catch (ClientExceptionInterface $e) {
+                $response = $e->getResponse();
+                $content = $response->getContent(false);
+                throw new BadRequestException("OpenAI Vector Store File API Error: " . $content);
+            }
+        }
+    }
+
+    public function deleteVectorStoreFile(string $vectorStoreId, string $fileId): void
+    {
+        $response = $this->client->request(
+            'DELETE',
+            "https://api.openai.com/v1/vector_stores/{$vectorStoreId}/files/{$fileId}",
             $this->paramsHeader([], false)
         );
 

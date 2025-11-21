@@ -34,32 +34,48 @@ class FileApi
         $this->CHATBOT_KEY_API = $apiKey;
     }
 
-    public function upload(string $filePath, string $purpose = 'assistants'): string
+    public function upload(string $filePath, string $purpose = 'assistants', ?string $filename = null): string
     {
         if (!file_exists($filePath)) {
             throw new BadRequestException("File not found: " . $filePath);
         }
 
-        $fileResource = fopen($filePath, 'r');
-        if ($fileResource === false) {
-            throw new BadRequestException("Cannot open file: " . $filePath);
+        $tempFilePath = $filePath;
+        $shouldDeleteTempFile = false;
+
+        if ($filename !== null && basename($filePath) !== $filename) {
+            $tempDir = sys_get_temp_dir();
+            $tempFilePath = $tempDir . '/' . $filename;
+            copy($filePath, $tempFilePath);
+            $shouldDeleteTempFile = true;
         }
 
-        $body = [
-            'file' => $fileResource,
-            'purpose' => $purpose
-        ];
+        try {
+            $fileResource = fopen($tempFilePath, 'r');
+            if ($fileResource === false) {
+                throw new BadRequestException("Cannot open file: " . $tempFilePath);
+            }
 
-        $response = $this->client->request(
-            'POST',
-            'https://api.openai.com/v1/files',
-            $this->paramsHeader($body, false)
-        );
+            $body = [
+                'file' => $fileResource,
+                'purpose' => $purpose
+            ];
 
-        $this->handleResponse($response);
-        $content = json_decode($response->getContent());
-        /** @var object{id: string} $content */
-        return $content->id;
+            $response = $this->client->request(
+                'POST',
+                'https://api.openai.com/v1/files',
+                $this->paramsHeader($body, false)
+            );
+
+            $this->handleResponse($response);
+            $content = json_decode($response->getContent());
+            /** @var object{id: string} $content */
+            return $content->id;
+        } finally {
+            if ($shouldDeleteTempFile && file_exists($tempFilePath)) {
+                unlink($tempFilePath);
+            }
+        }
     }
 
     public function delete(string $fileId): void

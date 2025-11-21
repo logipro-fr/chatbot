@@ -10,7 +10,8 @@ class UpdateAssistantFiles
     private UpdateAssistantFilesResponse $response;
 
     public function __construct(
-        private AssistantRepositoryInterface $assistantRepository
+        private AssistantRepositoryInterface $assistantRepository,
+        private AssistantApi $assistantApi
     ) {
     }
 
@@ -30,6 +31,9 @@ class UpdateAssistantFiles
         foreach ($request->fileIds as $fileId) {
             $assistant->addFileId($fileId);
         }
+
+        // Mettre à jour l'assistant dans OpenAI avec le nouveau vector store
+        $this->assistantApi->updateAssistant($assistant->getExternalAssistantId(), $request->fileIds);
 
         $this->assistantRepository->add($assistant);
 
