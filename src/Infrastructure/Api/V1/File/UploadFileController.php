@@ -46,7 +46,8 @@ class UploadFileController extends AbstractController
             }
 
             $filePath = $uploadedFile->getPathname();
-            $openAiFileId = $this->fileApi->upload($filePath, $purpose);
+            $originalFilename = $uploadedFile->getClientOriginalName();
+            $openAiFileId = $this->fileApi->upload($filePath, $purpose, $originalFilename);
 
             $fileId = new FileId($openAiFileId);
             $fileMetadata = new FileMetadata(

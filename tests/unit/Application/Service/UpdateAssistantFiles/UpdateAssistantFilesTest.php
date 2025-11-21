@@ -8,18 +8,21 @@ use Chatbot\Application\Service\UpdateAssistantFiles\UpdateAssistantFilesRespons
 use Chatbot\Domain\Model\Assistant\Assistant;
 use Chatbot\Domain\Model\Assistant\AssistantId;
 use Chatbot\Domain\Model\Assistant\AssistantRepositoryInterface;
+use Chatbot\Infrastructure\LanguageModel\ChatGPT\Assistant\AssistantApi;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class UpdateAssistantFilesTest extends TestCase
 {
     private AssistantRepositoryInterface&MockObject $assistantRepository;
+    private AssistantApi&MockObject $assistantApi;
     private UpdateAssistantFiles $updateAssistantFiles;
 
     protected function setUp(): void
     {
         $this->assistantRepository = $this->createMock(AssistantRepositoryInterface::class);
-        $this->updateAssistantFiles = new UpdateAssistantFiles($this->assistantRepository);
+        $this->assistantApi = $this->createMock(AssistantApi::class);
+        $this->updateAssistantFiles = new UpdateAssistantFiles($this->assistantRepository, $this->assistantApi);
     }
 
     public function testExecuteWithValidAssistant(): void
@@ -43,11 +46,19 @@ class UpdateAssistantFilesTest extends TestCase
         $assistant->expects($this->exactly(3))
             ->method('addFileId');
 
+        $assistant->method('getExternalAssistantId')
+            ->willReturn('asst_external123');
+
         $this->assistantRepository
             ->expects($this->once())
             ->method('findById')
             ->with($assistantId)
             ->willReturn($assistant);
+
+        $this->assistantApi
+            ->expects($this->once())
+            ->method('updateAssistant')
+            ->with('asst_external123', $fileIds);
 
         $this->assistantRepository
             ->expects($this->once())
@@ -102,11 +113,19 @@ class UpdateAssistantFilesTest extends TestCase
         $assistant->expects($this->never())
             ->method('addFileId');
 
+        $assistant->method('getExternalAssistantId')
+            ->willReturn('asst_external123');
+
         $this->assistantRepository
             ->expects($this->once())
             ->method('findById')
             ->with($assistantId)
             ->willReturn($assistant);
+
+        $this->assistantApi
+            ->expects($this->once())
+            ->method('updateAssistant')
+            ->with('asst_external123', $fileIds);
 
         $this->assistantRepository
             ->expects($this->once())
