@@ -248,8 +248,16 @@ class AssistantApiTest extends TestCase
         $assistantId = 'asst-xyz789';
         $expectedRunId = 'run-def456';
 
-        $response = new MockResponse((string) json_encode(['id' => $expectedRunId]), ['http_code' => 200]);
-        $client = new MockHttpClient($response, "https://api.openai.com/v1/threads/{$threadId}/runs");
+        // Mock pour getAssistant (appelé avant createRun)
+        $assistantData = [
+            'id' => $assistantId,
+            'tool_resources' => null
+        ];
+        $responses = [
+            new MockResponse((string) json_encode($assistantData), ['http_code' => 200]),
+            new MockResponse((string) json_encode(['id' => $expectedRunId]), ['http_code' => 200])
+        ];
+        $client = new MockHttpClient($responses);
         $assistantApi = new AssistantApi($client);
 
         $result = $assistantApi->createRun($threadId, $assistantId);
@@ -262,11 +270,46 @@ class AssistantApiTest extends TestCase
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Invalid response: missing run ID');
 
-        $response = new MockResponse('{}', ['http_code' => 200]);
-        $client = new MockHttpClient($response, 'https://api.openai.com/v1/threads/thread-123/runs');
+        // Mock pour getAssistant (appelé avant createRun)
+        $assistantData = [
+            'id' => 'asst-123',
+            'tool_resources' => null
+        ];
+        $responses = [
+            new MockResponse((string) json_encode($assistantData), ['http_code' => 200]),
+            new MockResponse('{}', ['http_code' => 200])
+        ];
+        $client = new MockHttpClient($responses);
         $assistantApi = new AssistantApi($client);
 
         $assistantApi->createRun('thread-123', 'asst-123');
+    }
+
+    public function testCreateRunWithFiles(): void
+    {
+        $threadId = 'thread-abc123';
+        $assistantId = 'asst-xyz789';
+        $expectedRunId = 'run-def456';
+
+        // Mock pour getAssistant avec fichiers attachés
+        $assistantData = [
+            'id' => $assistantId,
+            'tool_resources' => [
+                'file_search' => [
+                    'vector_store_ids' => ['vs-123']
+                ]
+            ]
+        ];
+        $responses = [
+            new MockResponse((string) json_encode($assistantData), ['http_code' => 200]),
+            new MockResponse((string) json_encode(['id' => $expectedRunId]), ['http_code' => 200])
+        ];
+        $client = new MockHttpClient($responses);
+        $assistantApi = new AssistantApi($client);
+
+        $result = $assistantApi->createRun($threadId, $assistantId);
+
+        $this->assertEquals($expectedRunId, $result);
     }
 
     public function testGetRunStatus(): void
