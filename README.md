@@ -18,3 +18,17 @@ git clone https://github.com/logipro-fr/chatbot.git
 cd chatbot
 ./install
 ```
+
+## Add .env.local files
+
+Variable environemment 
+
+* HOST_IP
+* CHATBOT_KEY_API
+
+MS Windows dev uwsing WSL must consitder to add:
+
+```
+HOST_IP=0.0.0.0
+```
+
