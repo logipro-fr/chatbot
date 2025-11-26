@@ -23,8 +23,8 @@ cd chatbot
 
 Variable environemment 
 
-* HOST_IP
-* CHATBOT_KEY_API
+* HOST_IP → Set an environment variable to access Swagger or the database
+* CHATBOT_KEY_API → Access key for the OpenAI API
 
 MS Windows dev uwsing WSL must consitder to add:
 

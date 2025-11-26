@@ -20,7 +20,7 @@ use Chatbot\Infrastructure\Persistence\Conversation\ConversationRepositoryInMemo
 
 class ConversationContext implements Context
 {
-    private string $lmName = "";
+    private string $languageModelName = "";
     private ConversationRepositoryInterface $repository;
     private ContextRepositoryInterface $contextrepo;
     private MakeConversationRequest $request;
@@ -33,16 +33,16 @@ class ConversationContext implements Context
      #[Given('the assistant use model :name')]
     public function theAssistantUseModel(string $name): void
     {
-        $this->lmName = $name;
+        $this->languageModelName = $name;
     }
 
 
     #[Given('User prepares the request with this prompt :askquestion to the assistant')]
-    public function userPreparesTheRequestWithThisPromptToTheAssistant($askquestion): void
+    public function userPreparesTheRequestWithThisPromptToTheAssistant(string $askquestion): void
     {
         $this->request = new MakeConversationRequest(
             new Prompt($askquestion),
-            $this->lmName,
+            $this->languageModelName,
             new ContextId("base")
         );
     }
@@ -58,7 +58,7 @@ class ConversationContext implements Context
     }
 
     #[Then('the assistant responds :answer')]
-    public function theAssistantResponds($answer): void
+    public function theAssistantResponds(string $answer): void
     {
         $response = $this->service->getResponse();
         Assert::assertEquals($answer, $response->botMessage);
