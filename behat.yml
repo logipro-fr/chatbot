@@ -12,6 +12,7 @@ default:
       contexts:
         - Features\QueryModelContext
         - Features\TranslateContext
+        - Features\ConversationContext
 #  extensions:
 #    DVDoug\Behat\CodeCoverage\Extension:
 #      filter:

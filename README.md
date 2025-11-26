@@ -18,3 +18,17 @@ git clone https://github.com/logipro-fr/chatbot.git
 cd chatbot
 ./install
 ```
+
+## Add .env.local files
+
+Variable environemment 
+
+* HOST_IP → Set an environment variable to access Swagger or the database
+* CHATBOT_KEY_API → Access key for the OpenAI API
+
+MS Windows dev uwsing WSL must consitder to add:
+
+```
+HOST_IP=0.0.0.0
+```
+
