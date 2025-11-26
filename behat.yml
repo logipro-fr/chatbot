@@ -13,6 +13,7 @@ default:
         - Features\QueryModelContext
         - Features\TranslateContext
         - Features\ConversationContext
+        - Features\FileUploadContext
 #  extensions:
 #    DVDoug\Behat\CodeCoverage\Extension:
 #      filter:
