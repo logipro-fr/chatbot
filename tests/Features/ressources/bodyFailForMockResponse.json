@@ -1,0 +1,6 @@
+{
+    "success": false,
+    "http_code": 400,
+    "error": "InvalidArgumentException",
+    "error_message": "No file uploaded"    
+}

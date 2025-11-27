@@ -55,13 +55,12 @@ class FileUploadContext implements BehatContext
             [$this->filesId]
         );
 
-        $jsonPath = __DIR__ . '/ressources/dataForMockResponse.json';
+        $bodyPath = __DIR__ . '/ressources/bodyForMockResponse.json';
 
-        /** @var string $json */
-        $json = file_get_contents($jsonPath);
-
-        $myResponse = new MockResponse($json);
-        $client = new MockHttpClient([$myResponse, $myResponse]);
+        /** @var string $body */
+        $body = file_get_contents($bodyPath);
+        $mockResponse = new MockResponse($body);
+        $client = new MockHttpClient([$mockResponse, $mockResponse]);
         $assistantApi = new AssistantApi($client);
         $this->service = new UpdateAssistantFiles($this->assitantRepository, $assistantApi);
         $this->service->execute($this->request);
@@ -94,13 +93,12 @@ class FileUploadContext implements BehatContext
     #[Then('the upload fails')]
     public function theUploadFails(): void
     {
-        $jsonPath = __DIR__ . '/ressources/dataForMockResponse.json';
+        $bodyPath = __DIR__ . '/ressources/bodyFailForMockResponse.json';
 
-        /** @var string $json */
-        $json = file_get_contents($jsonPath);
-
-        $myResponse = new MockResponse($json);
-        $client = new MockHttpClient([$myResponse, $myResponse]);
+        /** @var string $body */
+        $body = file_get_contents($bodyPath);
+        $mockResponse = new MockResponse($body);
+        $client = new MockHttpClient([$mockResponse, $mockResponse]);
         $assistantApi = new AssistantApi($client);
         $this->service = new UpdateAssistantFiles($this->assitantRepository, $assistantApi);
 
