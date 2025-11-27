@@ -4,7 +4,7 @@ Feature: file upload
     I want to add a file
 
     Background:
-        Given the assistant exists with "id"
+        Given the assistant exists
 
     Scenario: uploaded file is linked to an assistant
         Given a file to upload
@@ -13,6 +13,6 @@ Feature: file upload
         And the assistant now has new knowledge
 
     Scenario: uploaded file is NOT linked to an assistant
-        When the file is uploaded
-        And the file is not linked to the assistant
+        Given a file to upload
+        When the file is uploaded without being linked to an assistant
         Then the upload fails

@@ -21,17 +21,17 @@ class UpdateAssistantFiles
         if ($assistant === null) {
             throw new \InvalidArgumentException("Assistant not found: " . $request->assistantId->getId());
         }
-
+        
         $currentFileIds = $assistant->getFileIds();
-
+        
         foreach ($currentFileIds as $fileId) {
             $assistant->removeFileId($fileId);
         }
-
+        
         foreach ($request->fileIds as $fileId) {
             $assistant->addFileId($fileId);
         }
-
+        
         // Mettre à jour l'assistant dans OpenAI avec le nouveau vector store
         $this->assistantApi->updateAssistant($assistant->getExternalAssistantId(), $request->fileIds);
 

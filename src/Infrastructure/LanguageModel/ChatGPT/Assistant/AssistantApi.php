@@ -245,9 +245,9 @@ class AssistantApi
                 'https://api.openai.com/v1/vector_stores',
                 $this->paramsHeader($requestData)
             );
-
             $this->handleResponse($response);
             $content = json_decode($response->getContent());
+            // dd($content);
             /** @var object{id: string} $content */
             return $content->id;
         } catch (ClientExceptionInterface $e) {
@@ -343,9 +343,9 @@ class AssistantApi
                 $requestData['tool_resources'] = [];
             } else {
                 $this->validateFileIds($fileIds);
-
+                
                 $vectorStoreId = $this->createVectorStore($fileIds);
-
+                
                 $requestData['tools'] = [
                     [
                         'type' => 'file_search',
