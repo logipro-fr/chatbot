@@ -6,7 +6,6 @@ use Behat\Step\Given;
 use Behat\Step\When;
 use Behat\Step\Then;
 use Behat\Behat\Context\Context as BehatContext;
-
 use Chatbot\Application\Service\UpdateAssistantFiles\UpdateAssistantFiles;
 use Chatbot\Application\Service\UpdateAssistantFiles\UpdateAssistantFilesRequest;
 use Chatbot\Domain\Model\Assistant\Assistant;
@@ -23,7 +22,7 @@ class FileUploadContext implements BehatContext
     private AssistantId $assistantId;
     private UpdateAssistantFilesRequest $request;
     private UpdateAssistantFiles $service;
-    private $filesId;
+    private FileId $filesId;
     private AssistantRepositoryInMemory $assitantRepository;
     private Assistant $assistant;
 
@@ -45,7 +44,7 @@ class FileUploadContext implements BehatContext
     #[Given('a file to upload')]
     public function aFileToUpload(): void
     {
-        $this->filesId = [ new FileId("file-xxxx") ];
+        $this->filesId = new FileId("file-xxxx");
     }
 
     #[When('the file is uploaded')]
@@ -53,10 +52,12 @@ class FileUploadContext implements BehatContext
     {
         $this->request = new UpdateAssistantFilesRequest(
             $this->assistantId,
-            $this->filesId
+            [$this->filesId]
         );
 
         $jsonPath = __DIR__ . '/ressources/dataForMockResponse.json';
+
+        /** @var string $json */
         $json = file_get_contents($jsonPath);
 
         $myResponse = new MockResponse($json);
@@ -75,7 +76,7 @@ class FileUploadContext implements BehatContext
      #[Then('the assistant now has new knowledge')]
     public function theAssistantNowHasNewKnowledge(): void
     {
-        Assert::assertEquals($this->assistant->getFileIds(), $this->filesId, "error on fileID");
+        Assert::assertEquals($this->assistant->getFileIds(), [$this->filesId], "error on fileID");
     }
 
     // Scenario 2
@@ -83,24 +84,26 @@ class FileUploadContext implements BehatContext
     public function theFileIsUploadedWithoutBeingLinkedToAnAssistant(): void
     {
          $this->assistantId = new AssistantId();
-         
+
          $this->request = new UpdateAssistantFilesRequest(
-            $this->assistantId,
-            $this->filesId
-        );
+             $this->assistantId,
+             [$this->filesId]
+         );
     }
 
     #[Then('the upload fails')]
     public function theUploadFails(): void
     {
         $jsonPath = __DIR__ . '/ressources/dataForMockResponse.json';
+
+        /** @var string $json */
         $json = file_get_contents($jsonPath);
 
         $myResponse = new MockResponse($json);
         $client = new MockHttpClient([$myResponse, $myResponse]);
         $assistantApi = new AssistantApi($client);
         $this->service = new UpdateAssistantFiles($this->assitantRepository, $assistantApi);
-        
+
         try {
             $this->service->execute($this->request);
             Assert::fail('Expected InvalidArgumentException to be thrown');

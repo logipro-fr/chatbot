@@ -343,9 +343,9 @@ class AssistantApi
                 $requestData['tool_resources'] = [];
             } else {
                 $this->validateFileIds($fileIds);
-                
+
                 $vectorStoreId = $this->createVectorStore($fileIds);
-                
+
                 $requestData['tools'] = [
                     [
                         'type' => 'file_search',
