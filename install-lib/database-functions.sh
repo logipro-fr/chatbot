@@ -29,8 +29,7 @@ function create_database_in_container() {
             echo "Error: Database creation failed"
         fi
     fi
-    #bin/console doctrine:schema:create 
-    # Commande Docker pour créer le schéma de la base de données avec Doctrine
+        # Commande Docker pour créer le schéma de la base de données avec Doctrine
     bin/console doctrine:schema:create
     if [ $? -eq 0 ]; then
         echo "Success! Database schema created."
