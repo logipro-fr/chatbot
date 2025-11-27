@@ -13,7 +13,7 @@ use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
 use Chatbot\Domain\Model\Thread\Thread;
 use Chatbot\Domain\Model\Thread\ThreadRepositoryInterface;
 use Chatbot\Domain\Model\Assistant\AssistantRepositoryInterface;
-use Chatbot\Infrastructure\Exception\AssistantMessageNotFoundException;
+use Chatbot\Application\Service\Exception\AssistantMessageNotFoundException;
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\Assistant\AssistantApi;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;

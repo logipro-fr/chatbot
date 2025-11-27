@@ -8,7 +8,7 @@ use Chatbot\Application\Service\AssistantConversation\AssistantConversationRespo
 use Chatbot\Domain\Model\Assistant\Assistant;
 use Chatbot\Domain\Model\Assistant\AssistantId;
 use Chatbot\Infrastructure\Api\V1\Assistant\AssistantConversationController;
-use Chatbot\Infrastructure\Exception\AssistantMessageNotFoundException;
+use Chatbot\Application\Service\Exception\AssistantMessageNotFoundException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use PHPUnit\Framework\TestCase;

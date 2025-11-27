@@ -13,8 +13,7 @@ use Chatbot\Domain\Model\Context\ContextRepositoryInterface;
 use Chatbot\Domain\Model\Thread\Thread;
 use Chatbot\Domain\Model\Thread\ThreadId;
 use Chatbot\Domain\Model\Thread\ThreadRepositoryInterface;
-use Chatbot\Infrastructure\Exception\AssistantMessageNotFoundException;
-use Chatbot\Infrastructure\Exception\RunTimeoutException;
+use Chatbot\Application\Service\Exception\AssistantMessageNotFoundException;
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\Assistant\AssistantApi;
 
 class AssistantConversation
@@ -109,31 +108,12 @@ class AssistantConversation
         throw new AssistantMessageNotFoundException("Aucun message de l'assistant trouvé");
     }
 
+
     private function waitForRunCompletion(string $threadId, string $runId): void
     {
-        $maxAttempts = 30;
-        $attempt = 0;
-        $baseDelay = 100000;
-
-        while ($attempt < $maxAttempts) {
-            $runStatus = $this->assistantApi->getRunStatus($threadId, $runId);
-            $status = $runStatus['status'] ?? '';
-
-            if ($status === 'completed') {
-                return;
-            }
-
-            if ($status === 'failed' || $status === 'cancelled' || $status === 'expired') {
-                throw new \RuntimeException("Le run a échoué avec le statut: " . $status);
-            }
-
-            $delay = min($baseDelay * (1 << min($attempt, 3)), 1000000);
-            usleep($delay);
-            $attempt++;
-        }
-
-        throw new RunTimeoutException();
+        $this->assistantApi->getRunStatus($threadId, $runId);
     }
+
 
     private function cleanMetadata(string $message): string
     {
