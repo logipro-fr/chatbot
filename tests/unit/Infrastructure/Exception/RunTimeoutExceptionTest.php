@@ -2,7 +2,7 @@
 
 namespace Chatbot\Tests\Infrastructure\Exception;
 
-use Chatbot\Application\Service\Exception\RunTimeoutException;
+use Chatbot\Infrastructure\Exception\RunTimeoutException;
 use PHPUnit\Framework\TestCase;
 
 class RunTimeoutExceptionTest extends TestCase

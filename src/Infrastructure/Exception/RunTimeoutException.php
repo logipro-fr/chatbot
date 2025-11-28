@@ -1,6 +1,6 @@
 <?php
 
-namespace Chatbot\Application\Service\Exception;
+namespace Chatbot\Infrastructure\Exception;
 
 class RunTimeoutException extends \RuntimeException
 {
