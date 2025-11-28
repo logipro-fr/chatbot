@@ -174,9 +174,9 @@ class AssistantApi
             $this->paramsHeader([], false)
         );
 
-
         $this->handleResponse($response);
 
+        /** @var array<string, string|int|bool> $content */
         $content = json_decode($response->getContent(), true);
         $status = $content['status'] ?? '';
         if ($status === 'completed') {
@@ -186,17 +186,14 @@ class AssistantApi
         if ($status === 'failed' || $status === 'cancelled' || $status === 'expired') {
                 throw new \RuntimeException("Le run a échoué avec le statut: " . $status);
         }
-        $attempt = 0;
+
         $delay = min($baseDelay * (1 << min($attempt, 3)), 1000000);
-
         usleep($delay);
-         $attempt++;
-
+        $attempt++;
 
         if ($attempt <= 30) {
             return $this->getRunStatus($threadId, $runId, $baseDelay, $attempt);
         }
-
 
         /** @var array<string, string|int|bool> $content */
         return $content;
