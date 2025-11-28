@@ -8,7 +8,7 @@ use Chatbot\Domain\Model\Conversation\Answer;
 use Chatbot\Domain\Model\Conversation\Prompt;
 use Chatbot\Domain\Model\Thread\ThreadRepositoryInterface;
 use Chatbot\Application\Service\Exception\AssistantMessageNotFoundException;
-use Chatbot\Infrastructure\Exception\RunTimeoutException;
+use Chatbot\Application\Service\Exception\RunTimeoutException;
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\Assistant\AssistantApi;
 
 class ContinueAssistantConversation
