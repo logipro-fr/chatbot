@@ -166,7 +166,7 @@ class AssistantApi
     /**
      * @return array<string, string|int|bool>
      */
-    public function getRunStatus(string $threadId, string $runId): array
+    public function getRunStatus(string $threadId, string $runId, int $baseDelay = 100000, int $attempt = 0): array
     {
         $response = $this->client->request(
             'GET',
@@ -175,7 +175,26 @@ class AssistantApi
         );
 
         $this->handleResponse($response);
+
+        /** @var array<string, string|int|bool> $content */
         $content = json_decode($response->getContent(), true);
+        $status = $content['status'] ?? '';
+        if ($status === 'completed') {
+                return $content;
+        }
+
+        if ($status === 'failed' || $status === 'cancelled' || $status === 'expired') {
+                throw new \RuntimeException("Le run a échoué avec le statut: " . $status);
+        }
+
+        $delay = min($baseDelay * (1 << min($attempt, 3)), 1000000);
+        usleep($delay);
+        $attempt++;
+
+        if ($attempt <= 30) {
+            return $this->getRunStatus($threadId, $runId, $baseDelay, $attempt);
+        }
+
         /** @var array<string, string|int|bool> $content */
         return $content;
     }

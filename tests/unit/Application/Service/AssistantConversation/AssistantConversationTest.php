@@ -9,7 +9,7 @@ use Chatbot\Domain\Model\Assistant\AssistantId;
 use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
 use Chatbot\Domain\Model\Context\ContextRepositoryInterface;
 use Chatbot\Domain\Model\Thread\ThreadRepositoryInterface;
-use Chatbot\Infrastructure\Exception\AssistantMessageNotFoundException;
+use Chatbot\Application\Service\Exception\AssistantMessageNotFoundException;
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\Assistant\AssistantApi;
 use PHPUnit\Framework\TestCase;
 

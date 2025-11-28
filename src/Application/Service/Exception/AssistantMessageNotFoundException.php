@@ -1,6 +1,6 @@
 <?php
 
-namespace Chatbot\Infrastructure\Exception;
+namespace Chatbot\Application\Service\Exception;
 
 use Exception;
 

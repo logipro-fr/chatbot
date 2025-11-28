@@ -13,7 +13,7 @@ use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
 use Chatbot\Domain\Model\Thread\Thread;
 use Chatbot\Domain\Model\Thread\ThreadRepositoryInterface;
 use Chatbot\Domain\Model\Assistant\AssistantRepositoryInterface;
-use Chatbot\Infrastructure\Exception\AssistantMessageNotFoundException;
+use Chatbot\Application\Service\Exception\AssistantMessageNotFoundException;
 use Chatbot\Infrastructure\LanguageModel\ChatGPT\Assistant\AssistantApi;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -280,8 +280,11 @@ class ContinueAssistantConversationTest extends TestCase
 
         $this->assistantApi
             ->expects($this->once())
-            ->method('addMessageToThread')
-            ->with('thr_123', $message, 'user');
+            ->method('getRunStatus')
+            ->with('thr_123', 'run_123')
+            ->willThrowException(
+                new \RuntimeException("Le run a échoué avec le statut: failed")
+            );
 
         $this->assistantRepository
             ->expects($this->once())
@@ -354,11 +357,10 @@ class ContinueAssistantConversationTest extends TestCase
             ->willReturn('run_123');
 
         $this->assistantApi
-            ->expects($this->exactly(2))
+            ->expects($this->exactly(1))
             ->method('getRunStatus')
             ->with('thr_123', 'run_123')
             ->willReturnOnConsecutiveCalls(
-                ['status' => 'in_progress'],
                 ['status' => 'completed']
             );
 
