@@ -25,17 +25,18 @@ function create_database_in_container() {
         bin/console doctrine:database:create
         if [ $? -eq 0 ]; then
             echo "Success! Database '$DB_NAME' created."
+            # Commande Docker pour créer le schéma de la base de données avec Doctrine
+            bin/console doctrine:schema:create
+            if [ $? -eq 0 ]; then
+                echo "Success! Database schema created."
+            else
+                echo "Error: Database schema creation failed."
+            fi
         else
             echo "Error: Database creation failed"
         fi
     fi
-        # Commande Docker pour créer le schéma de la base de données avec Doctrine
-    bin/console doctrine:schema:create
-    if [ $? -eq 0 ]; then
-        echo "Success! Database schema created."
-    else
-        echo "Error: Database schema creation failed."
-    fi
+        
 
     _stop_database_container mariadb php
 }
