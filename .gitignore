@@ -1,6 +1,7 @@
 /log/
 /var/
 /vendor/
+/data/
 /src/Infrastructure/Shared/Symfony/.env.local
 secret.env
 .env.local

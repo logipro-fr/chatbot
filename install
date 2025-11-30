@@ -38,10 +38,11 @@ function build_docker_images() {
 }
 
 
-
+load_env
 echo "-------------Step 1: Create some directories-----------------------------------------------------"
 create_var_directory
 create_log_directory
+create_data_directory "${DATA_PATH}"
 echo "-------------Step 1: Done!"
 
 echo "-------------Step 2: Build docker images---------------------------------------------------------"
