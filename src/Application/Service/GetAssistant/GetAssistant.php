@@ -3,7 +3,7 @@
 namespace Chatbot\Application\Service\GetAssistant;
 
 use Chatbot\Domain\Model\Assistant\AssistantRepositoryInterface;
-use Chatbot\Infrastructure\LanguageModel\ChatGPT\Assistant\AssistantApi;
+use Chatbot\Application\Service\ChatGPT\AssistantApi;
 
 class GetAssistant
 {

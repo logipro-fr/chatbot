@@ -14,7 +14,7 @@ use Chatbot\Domain\Model\Thread\Thread;
 use Chatbot\Domain\Model\Thread\ThreadId;
 use Chatbot\Domain\Model\Thread\ThreadRepositoryInterface;
 use Chatbot\Application\Service\Exception\AssistantMessageNotFoundException;
-use Chatbot\Infrastructure\LanguageModel\ChatGPT\Assistant\AssistantApi;
+use Chatbot\Application\Service\ChatGPT\AssistantApi;
 
 class AssistantConversation
 {

@@ -4,7 +4,7 @@ namespace Chatbot\Application\Service\DeleteAssistant;
 
 use Chatbot\Domain\Model\Assistant\Assistant;
 use Chatbot\Domain\Model\Assistant\AssistantRepositoryInterface;
-use Chatbot\Infrastructure\LanguageModel\ChatGPT\Assistant\AssistantApi;
+use Chatbot\Application\Service\ChatGPT\AssistantApi;
 
 class DeleteAssistant
 {

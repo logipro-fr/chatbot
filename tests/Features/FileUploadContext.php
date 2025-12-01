@@ -11,7 +11,7 @@ use Chatbot\Application\Service\UpdateAssistantFiles\UpdateAssistantFilesRequest
 use Chatbot\Domain\Model\Assistant\Assistant;
 use Chatbot\Domain\Model\Assistant\AssistantId;
 use Chatbot\Domain\Model\File\FileId;
-use Chatbot\Infrastructure\LanguageModel\ChatGPT\Assistant\AssistantApi;
+use Chatbot\Application\Service\ChatGPT\AssistantApi;
 use Chatbot\Infrastructure\Persistence\Assistant\AssistantRepositoryInMemory;
 use PHPUnit\Framework\Assert;
 use Symfony\Component\HttpClient\MockHttpClient;

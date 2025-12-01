@@ -1,8 +1,8 @@
 <?php
 
-namespace Chatbot\Tests\Unit\Infrastructure\LanguageModel\ChatGPT\Assistant;
+namespace Chatbot\Tests\Unit\Application\Service\ChatGPT;
 
-use Chatbot\Infrastructure\LanguageModel\ChatGPT\Assistant\AssistantApi;
+use Chatbot\Application\Service\ChatGPT\AssistantApi;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;

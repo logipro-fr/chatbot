@@ -9,7 +9,7 @@ use Chatbot\Domain\Model\Assistant\AssistantRepositoryInterface;
 use Chatbot\Domain\Model\Context\Context;
 use Chatbot\Domain\Model\Context\ContextId;
 use Chatbot\Domain\Model\Context\ContextRepositoryInterface;
-use Chatbot\Infrastructure\LanguageModel\ChatGPT\Assistant\AssistantApi;
+use Chatbot\Application\Service\ChatGPT\AssistantApi;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
