@@ -23,7 +23,7 @@ services:
   Chatbot\Infrastructure\LanguageModel\ChatGPT\Assistant\FileApi:
     autowire: true
 
-  Chatbot\Infrastructure\LanguageModel\ChatGPT\Assistant\AssistantApi:
+  Chatbot\Application\Service\ChatGPT\AssistantApi:
     autowire: true
 
   Chatbot\Domain\Model\File\FileMetadataRepositoryInterface:

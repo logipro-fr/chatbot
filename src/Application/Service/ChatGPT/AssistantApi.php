@@ -1,6 +1,6 @@
 <?php
 
-namespace Chatbot\Infrastructure\LanguageModel\ChatGPT\Assistant;
+namespace Chatbot\Application\Service\ChatGPT;
 
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Chatbot\Application\Service\Exception\BadRequestException;
@@ -9,10 +9,11 @@ use Chatbot\Application\Service\Exception\OtherException;
 use Chatbot\Application\Service\Exception\UnhautorizeKeyException;
 use Chatbot\Application\Service\Exception\MissingChatbotKeyApiException;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Chatbot\Application\Service\AssistantApiInterface;
 
 use function Safe\json_decode;
 
-class AssistantApi
+class AssistantApi implements AssistantApiInterface
 {
     private string $CHATBOT_KEY_API;
 

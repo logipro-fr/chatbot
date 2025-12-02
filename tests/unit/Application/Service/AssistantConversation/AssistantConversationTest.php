@@ -10,7 +10,7 @@ use Chatbot\Domain\Model\Conversation\ConversationRepositoryInterface;
 use Chatbot\Domain\Model\Context\ContextRepositoryInterface;
 use Chatbot\Domain\Model\Thread\ThreadRepositoryInterface;
 use Chatbot\Application\Service\Exception\AssistantMessageNotFoundException;
-use Chatbot\Infrastructure\LanguageModel\ChatGPT\Assistant\AssistantApi;
+use Chatbot\Application\Service\ChatGPT\AssistantApi;
 use PHPUnit\Framework\TestCase;
 
 class AssistantConversationTest extends TestCase
