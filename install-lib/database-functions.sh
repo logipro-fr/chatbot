@@ -36,12 +36,6 @@ function create_database_in_container() {
             echo "Error: Database creation failed"
         fi
     fi
-    bin/console doctrine:schema:create
-    if [ $? -eq 0 ]; then
-        echo "Success! Database schema created."
-    else
-        echo "Error: Database schema created failed."
-    fi
 
     _stop_database_container mariadb php
 }
