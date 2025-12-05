@@ -38,9 +38,19 @@ class Assistant
         return $this->name;
     }
 
+    public function setName(string $name): void
+    {
+        $this->name = $name;
+    }
+
     public function getInstructions(): string
     {
         return $this->instructions;
+    }
+
+    public function setInstructions(string $instructions): void
+    {
+        $this->instructions = $instructions;
     }
 
     public function getExternalAssistantId(): string
