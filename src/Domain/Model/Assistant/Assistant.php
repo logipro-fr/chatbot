@@ -38,9 +38,9 @@ class Assistant
         return $this->name;
     }
 
-    public function setName(string $name): void
+    public function setName(?string $name): void
     {
-        $this->name = $name;
+        $this->name = $name ?? '';
     }
 
     public function getInstructions(): string
@@ -48,9 +48,9 @@ class Assistant
         return $this->instructions;
     }
 
-    public function setInstructions(string $instructions): void
+    public function setInstructions(?string $instructions): void
     {
-        $this->instructions = $instructions;
+        $this->instructions = $instructions ?? '';
     }
 
     public function getExternalAssistantId(): string

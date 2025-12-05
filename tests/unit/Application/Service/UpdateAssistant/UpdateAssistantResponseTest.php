@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace Chatbot\Tests\Application\Service\UpdateAssistant;
 
@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 class UpdateAssistantResponseTest extends TestCase
 {
-    public function testConstructor():void
+    public function testConstructor(): void
     {
         $assistantId = new AssistantId('test-assistant-id');
         $newName = 'New Assistant Name';
@@ -20,7 +20,7 @@ class UpdateAssistantResponseTest extends TestCase
         $this->assertEquals($newInstructions, $response->newInstructions);
     }
 
-    public function testConstructorWithNullValues():void
+    public function testConstructorWithNullValues(): void
     {
         $assistantId = new AssistantId('test-assistant-id');
         $newName = 'New Assistant Name';
@@ -30,6 +30,4 @@ class UpdateAssistantResponseTest extends TestCase
         $this->assertEquals($newName, $response->newName);
         $this->assertNull($response->newInstructions);
     }
-
-
 }
