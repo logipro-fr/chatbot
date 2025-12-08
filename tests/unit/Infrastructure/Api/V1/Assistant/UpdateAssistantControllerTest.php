@@ -55,7 +55,11 @@ class UpdateAssistantControllerTest extends TestCase
         $updateAssistantService
             ->expects($this->once())
             ->method('getResponse')
-            ->willReturn(new UpdateAssistantResponse(new AssistantId('test-assistant-id'), 'Patrick', 'Tu es le meilleur assistant'));
+            ->willReturn(new UpdateAssistantResponse(
+                new AssistantId('test-assistant-id'),
+                'Patrick',
+                'Tu es le meilleur assistant'
+            ));
 
         $entityManager
             ->expects($this->once())
