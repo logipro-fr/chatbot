@@ -29,7 +29,7 @@ class UpdateAssistantFilesTest extends TestCase
     {
         $assistantId = new AssistantId('test-assistant-id');
         $fileIds = ['file1', 'file2', 'file3'];
-        $request = new UpdateAssistantFilesRequest($assistantId, $fileIds);
+        $request = new UpdateAssistantFilesRequest($assistantId, $fileIds, 'vs_123456');
 
         $assistant = $this->createMock(Assistant::class);
         $assistant->method('getAssistantId')->willReturn($assistantId);
@@ -77,7 +77,7 @@ class UpdateAssistantFilesTest extends TestCase
     {
         $assistantId = new AssistantId('non-existent-id');
         $fileIds = ['file1', 'file2'];
-        $request = new UpdateAssistantFilesRequest($assistantId, $fileIds);
+        $request = new UpdateAssistantFilesRequest($assistantId, $fileIds, 'vs_123456');
 
         $this->assistantRepository
             ->expects($this->once())
@@ -95,7 +95,8 @@ class UpdateAssistantFilesTest extends TestCase
     {
         $assistantId = new AssistantId('test-assistant-id');
         $fileIds = [];
-        $request = new UpdateAssistantFilesRequest($assistantId, $fileIds);
+        $vectorId = 'vs_123456';
+        $request = new UpdateAssistantFilesRequest($assistantId, $fileIds, $vectorId);
 
         $assistant = $this->createMock(Assistant::class);
         $assistant->method('getAssistantId')->willReturn($assistantId);
@@ -138,5 +139,53 @@ class UpdateAssistantFilesTest extends TestCase
         $this->assertInstanceOf(UpdateAssistantFilesResponse::class, $response);
         $this->assertEquals($assistantId, $response->assistantId);
         $this->assertEquals($fileIds, $response->fileIds);
+    }
+
+     public function testAssistantAddFileInVectorStore(): void
+    {
+        $assistantId = new AssistantId('test-assistant-id');
+        $fileIds = ['file1'];
+        $vectorId = null;
+        $request = new UpdateAssistantFilesRequest($assistantId, $fileIds, $vectorId);
+
+        $assistant = $this->createMock(Assistant::class);
+        $assistant->method('getAssistantId')->willReturn($assistantId);
+
+        $assistant->method('getFileIds')
+            ->willReturnOnConsecutiveCalls(
+                ['old-file1'],
+                $fileIds
+            );
+        
+        $assistant->expects($this->once())
+            ->method('addFileId')
+            ->with('file1');
+
+        $assistant->method('getExternalAssistantId')
+            ->willReturn('asst_external123');
+
+        $this->assistantRepository
+            ->expects($this->once())
+            ->method('findById')
+            ->with($assistantId)
+            ->willReturn($assistant);
+
+        $this->assistantApi
+            ->expects($this->once())
+            ->method('updateAssistantFile')
+            ->with('asst_external123', $fileIds, $vectorId);
+        
+        $this->assistantRepository
+            ->expects($this->once())
+            ->method('add')
+            ->with($assistant);
+
+        $this->updateAssistantFiles->execute($request);
+
+        $response = $this->updateAssistantFiles->getResponse();
+        $this->assertInstanceOf(UpdateAssistantFilesResponse::class, $response);
+        $this->assertEquals($assistantId, $response->assistantId);
+        $this->assertEquals($fileIds, $response->fileIds);
+        $this->assertEquals($vectorId, $response->vectorId);
     }
 }

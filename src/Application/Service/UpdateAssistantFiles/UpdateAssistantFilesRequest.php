@@ -12,7 +12,8 @@ class UpdateAssistantFilesRequest
      */
     public function __construct(
         public AssistantId $assistantId,
-        public array $fileIds
+        public array $fileIds,
+        public ?string $vectorId
     ) {
     }
 }

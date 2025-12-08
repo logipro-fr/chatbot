@@ -24,23 +24,23 @@ class UpdateAssistantFiles
 
         $currentFileIds = $assistant->getFileIds();
 
-        foreach ($currentFileIds as $fileId) {
-            $assistant->removeFileId($fileId);
-        }
-
+        // On ajoute seulement les nouveaux file_ids
         foreach ($request->fileIds as $fileId) {
-            $assistant->addFileId($fileId);
+            if (!in_array($fileId, $currentFileIds, true)) {
+                $assistant->addFileId($fileId);
+            }
         }
+        $allFileIds = $assistant->getFileIds();
 
         // Mettre à jour l'assistant dans OpenAI avec le nouveau vector store
-        $this->assistantApi->updateAssistantFile($assistant->getExternalAssistantId(), $request->fileIds);
+        $this->assistantApi->updateAssistantFile($assistant->getExternalAssistantId(), $allFileIds, $assistant->getVectorId());
 
         $this->assistantRepository->add($assistant);
 
         $this->response = new UpdateAssistantFilesResponse(
             $assistant->getAssistantId(),
-            $assistant->getFileIds()
-        );
+            $allFileIds,
+            $assistant->getVectorId());
     }
 
     public function getResponse(): UpdateAssistantFilesResponse

@@ -10,12 +10,14 @@ use Chatbot\Application\Service\Exception\UnhautorizeKeyException;
 use Chatbot\Application\Service\Exception\MissingChatbotKeyApiException;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Chatbot\Application\Service\AssistantApiInterface;
+use Chatbot\Domain\Model\Assistant\Assistant;
 
 use function Safe\json_decode;
 
 class AssistantApi implements AssistantApiInterface
 {
     private string $CHATBOT_KEY_API;
+    private Assistant $assistant;
 
     public function __construct(
         private HttpClientInterface $client,
@@ -300,9 +302,10 @@ class AssistantApi implements AssistantApiInterface
                 'https://api.openai.com/v1/vector_stores',
                 $this->paramsHeader($requestData)
             );
-
+            
             $this->handleResponse($response);
             $content = json_decode($response->getContent());
+            $this->assistant->setVectorId($content->id);
             /** @var object{id: string} $content */
             return $content->id;
         } catch (ClientExceptionInterface $e) {
@@ -311,10 +314,34 @@ class AssistantApi implements AssistantApiInterface
             throw new BadRequestException("OpenAI Vector Store API Error: " . $content);
         }
     }
-
+    public function createVectorStoreFile(string $vectorStoreId, array $fileIds): void
+    {
+        foreach ($fileIds as $fileId) {
+            $this->validateFileIds([$fileId]);
+ 
+            $requestData = [
+                'file_id' => $fileId
+            ];
+ 
+            try {
+                $response = $this->client->request(
+                    'POST',
+                    "https://api.openai.com/v1/vector_stores/{$vectorStoreId}/files",
+                    $this->paramsHeader($requestData)
+                );
+ 
+                $this->handleResponse($response);
+            } catch (ClientExceptionInterface $e) {
+                $response = $e->getResponse();
+                $content = $response->getContent(false);
+                throw new BadRequestException("OpenAI Vector Store File API Error: " . $content);
+            }
+        }
+    }
+    
     /**
      * @return array<string, string|int|bool>
-     */
+    */
     public function getVectorStore(string $vectorStoreId): array
     {
         $response = $this->client->request(
@@ -382,14 +409,15 @@ class AssistantApi implements AssistantApiInterface
 
         $this->handleResponse($response);
     }
-
+    
     /**
      * @param array<string> $fileIds
      */
-    public function updateAssistantFile(string $assistantId, ?array $fileIds = null): void
+   public function updateAssistantFile(string $assistantId, ?array $fileIds = null, ?string $vectorId = null): void
     {
         /** @var array<string, mixed> $requestData */
         $requestData = [];
+        
 
         if ($fileIds !== null) {
             if (empty($fileIds)) {
@@ -399,8 +427,15 @@ class AssistantApi implements AssistantApiInterface
             } else {
                 $this->validateFileIds($fileIds);
 
+               if(!$vectorId)
+               {
                 $vectorStoreId = $this->createVectorStore($fileIds);
-
+                }
+                else
+                {
+	              $vectorStoreId = $this->createVectorStoreFile($vectorId, $fileIds);
+                }
+								
                 $requestData['tools'] = [
                     [
                         'type' => 'file_search',
@@ -440,30 +475,6 @@ class AssistantApi implements AssistantApiInterface
     /**
      * @param array<string> $fileIds
      */
-    public function createVectorStoreFile(string $vectorStoreId, array $fileIds): void
-    {
-        foreach ($fileIds as $fileId) {
-            $this->validateFileIds([$fileId]);
-
-            $requestData = [
-                'file_id' => $fileId
-            ];
-
-            try {
-                $response = $this->client->request(
-                    'POST',
-                    "https://api.openai.com/v1/vector_stores/{$vectorStoreId}/files",
-                    $this->paramsHeader($requestData)
-                );
-
-                $this->handleResponse($response);
-            } catch (ClientExceptionInterface $e) {
-                $response = $e->getResponse();
-                $content = $response->getContent(false);
-                throw new BadRequestException("OpenAI Vector Store File API Error: " . $content);
-            }
-        }
-    }
 
     public function deleteVectorStoreFile(string $vectorStoreId, string $fileId): void
     {
