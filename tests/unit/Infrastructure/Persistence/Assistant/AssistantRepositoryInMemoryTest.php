@@ -95,4 +95,24 @@ class AssistantRepositoryInMemoryTest extends TestCase
 
         $this->addToAssertionCount(1);
     }
+
+    public function testAssistantAddandGetVectorId(): void
+    {
+        $assistantId = new AssistantId('test-assistant-id');
+        // $vectorId = 'vs_12345';
+        $assistant = new Assistant(
+            $assistantId,
+            'Test Assistant',
+            'Test instructions',
+            'external-assistant-id',
+            [],
+        );
+
+
+        $this->assertNull($assistant->getVectorId());
+
+        $newVectorId = 'vs_67890';
+        $assistant->setVectorId($newVectorId);
+        $this->assertEquals($newVectorId, $assistant->getVectorId());
+    }
 }

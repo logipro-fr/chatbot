@@ -162,4 +162,35 @@ class AssistantRepositoryDoctrineTest extends TestCase
 
         $assistantRepository->delete($assistantId);
     }
+
+    public function testAssistantAddandGetVectorId(): void
+    {
+        $em = $this->createMock(EntityManagerInterface::class);
+        $classMetadata = $this->createMock(ClassMetadata::class);
+
+        $classMetadata->name = 'Chatbot\Domain\Model\Assistant\Assistant';
+
+        $em->expects($this->once())
+            ->method('getClassMetadata')
+            ->with('Chatbot\Domain\Model\Assistant\Assistant')
+            ->willReturn($classMetadata);
+
+        $assistantRepository = new AssistantRepositoryDoctrine($em);
+        $assistantId = new AssistantId('test-assistant-id');
+        $assistant = new Assistant(
+            $assistantId,
+            'Test Assistant',
+            'Test instructions',
+            'external-assistant-id',
+            []
+        );
+
+        $assistant->setVectorId('vector-12345');
+        $this->assertEquals('vector-12345', $assistant->getVectorId());
+
+        $assistantRepository->add($assistant);
+        $retrievedAssistant = $assistantRepository->findById($assistantId);
+        $this->assertEquals('vector-12345', $retrievedAssistant->getVectorId());
+
+    }
 }

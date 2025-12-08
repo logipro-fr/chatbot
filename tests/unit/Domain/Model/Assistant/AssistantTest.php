@@ -143,4 +143,19 @@ class AssistantTest extends TestCase
         $this->assertEquals("Old Name", $assistant->getName());
         $this->assertEquals("New Instructions", $assistant->getInstructions());
     }
+
+    public function testAssistantAddandGetVectorId(): void 
+    {
+        $assistant = new Assistant(
+            new AssistantId(),
+            "Assistant Test",
+            "Instructions",
+            "asst_123"
+        );
+
+        $vectorId = "vs_456";
+        $assistant->setVectorId($vectorId);
+
+        $this->assertEquals($vectorId, $assistant->getVectorId());
+    }
 }
