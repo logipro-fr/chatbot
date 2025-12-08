@@ -191,6 +191,5 @@ class AssistantRepositoryDoctrineTest extends TestCase
         $assistantRepository->add($assistant);
         $retrievedAssistant = $assistantRepository->findById($assistantId);
         $this->assertEquals('vector-12345', $retrievedAssistant->getVectorId());
-
     }
 }

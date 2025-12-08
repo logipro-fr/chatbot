@@ -141,7 +141,7 @@ class UpdateAssistantFilesTest extends TestCase
         $this->assertEquals($fileIds, $response->fileIds);
     }
 
-     public function testAssistantAddFileInVectorStore(): void
+    public function testAssistantAddFileInVectorStore(): void
     {
         $assistantId = new AssistantId('test-assistant-id');
         $fileIds = ['file1'];
@@ -152,33 +152,33 @@ class UpdateAssistantFilesTest extends TestCase
         $assistant->method('getAssistantId')->willReturn($assistantId);
 
         $assistant->method('getFileIds')
-            ->willReturnOnConsecutiveCalls(
-                ['old-file1'],
-                $fileIds
-            );
-        
+           ->willReturnOnConsecutiveCalls(
+               ['old-file1'],
+               $fileIds
+           );
+
         $assistant->expects($this->once())
-            ->method('addFileId')
-            ->with('file1');
+           ->method('addFileId')
+           ->with('file1');
 
         $assistant->method('getExternalAssistantId')
-            ->willReturn('asst_external123');
+           ->willReturn('asst_external123');
 
         $this->assistantRepository
-            ->expects($this->once())
-            ->method('findById')
-            ->with($assistantId)
-            ->willReturn($assistant);
+           ->expects($this->once())
+           ->method('findById')
+           ->with($assistantId)
+           ->willReturn($assistant);
 
         $this->assistantApi
-            ->expects($this->once())
-            ->method('updateAssistantFile')
-            ->with('asst_external123', $fileIds, $vectorId);
-        
+           ->expects($this->once())
+           ->method('updateAssistantFile')
+           ->with('asst_external123', $fileIds, $vectorId);
+
         $this->assistantRepository
-            ->expects($this->once())
-            ->method('add')
-            ->with($assistant);
+           ->expects($this->once())
+           ->method('add')
+           ->with($assistant);
 
         $this->updateAssistantFiles->execute($request);
 

@@ -17,10 +17,10 @@ use function Safe\json_decode;
 class AssistantApi implements AssistantApiInterface
 {
     private string $CHATBOT_KEY_API;
-    private Assistant $assistant;
 
     public function __construct(
         private HttpClientInterface $client,
+        private Assistant $assistant,
         ?string $apiKey = null
     ) {
         if ($apiKey == null) {
@@ -302,11 +302,11 @@ class AssistantApi implements AssistantApiInterface
                 'https://api.openai.com/v1/vector_stores',
                 $this->paramsHeader($requestData)
             );
-            
+
             $this->handleResponse($response);
             $content = json_decode($response->getContent());
-            $this->assistant->setVectorId($content->id);
             /** @var object{id: string} $content */
+            $this->assistant->setVectorId($content->id);
             return $content->id;
         } catch (ClientExceptionInterface $e) {
             $response = $e->getResponse();
@@ -318,18 +318,18 @@ class AssistantApi implements AssistantApiInterface
     {
         foreach ($fileIds as $fileId) {
             $this->validateFileIds([$fileId]);
- 
+
             $requestData = [
                 'file_id' => $fileId
             ];
- 
+
             try {
                 $response = $this->client->request(
                     'POST',
                     "https://api.openai.com/v1/vector_stores/{$vectorStoreId}/files",
                     $this->paramsHeader($requestData)
                 );
- 
+
                 $this->handleResponse($response);
             } catch (ClientExceptionInterface $e) {
                 $response = $e->getResponse();
@@ -338,7 +338,7 @@ class AssistantApi implements AssistantApiInterface
             }
         }
     }
-    
+
     /**
      * @return array<string, string|int|bool>
     */
@@ -409,15 +409,15 @@ class AssistantApi implements AssistantApiInterface
 
         $this->handleResponse($response);
     }
-    
+
     /**
      * @param array<string> $fileIds
      */
-   public function updateAssistantFile(string $assistantId, ?array $fileIds = null, ?string $vectorId = null): void
+    public function updateAssistantFile(string $assistantId, ?array $fileIds = null, ?string $vectorId = null): void
     {
         /** @var array<string, mixed> $requestData */
         $requestData = [];
-        
+
 
         if ($fileIds !== null) {
             if (empty($fileIds)) {
@@ -427,15 +427,13 @@ class AssistantApi implements AssistantApiInterface
             } else {
                 $this->validateFileIds($fileIds);
 
-               if(!$vectorId)
-               {
-                $vectorStoreId = $this->createVectorStore($fileIds);
+                if (!$vectorId) {
+                    $vectorStoreId = $this->createVectorStore($fileIds);
+                } else {
+                    $this->createVectorStoreFile($vectorId, $fileIds);
+                    $vectorStoreId = $vectorId;
                 }
-                else
-                {
-	              $vectorStoreId = $this->createVectorStoreFile($vectorId, $fileIds);
-                }
-								
+
                 $requestData['tools'] = [
                     [
                         'type' => 'file_search',
@@ -471,10 +469,6 @@ class AssistantApi implements AssistantApiInterface
             throw new BadRequestException("OpenAI API Error: " . $content);
         }
     }
-
-    /**
-     * @param array<string> $fileIds
-     */
 
     public function deleteVectorStoreFile(string $vectorStoreId, string $fileId): void
     {

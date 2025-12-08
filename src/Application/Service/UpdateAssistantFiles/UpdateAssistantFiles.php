@@ -22,6 +22,8 @@ class UpdateAssistantFiles
             throw new \InvalidArgumentException("Assistant not found: " . $request->assistantId->getId());
         }
 
+        $vectorId = $assistant->getVectorId();
+
         $currentFileIds = $assistant->getFileIds();
 
         // On ajoute seulement les nouveaux file_ids
@@ -33,14 +35,15 @@ class UpdateAssistantFiles
         $allFileIds = $assistant->getFileIds();
 
         // Mettre à jour l'assistant dans OpenAI avec le nouveau vector store
-        $this->assistantApi->updateAssistantFile($assistant->getExternalAssistantId(), $allFileIds, $assistant->getVectorId());
+        $this->assistantApi->updateAssistantFile($assistant->getExternalAssistantId(), $allFileIds, $vectorId);
 
         $this->assistantRepository->add($assistant);
 
         $this->response = new UpdateAssistantFilesResponse(
             $assistant->getAssistantId(),
             $allFileIds,
-            $assistant->getVectorId());
+            $vectorId
+        );
     }
 
     public function getResponse(): UpdateAssistantFilesResponse

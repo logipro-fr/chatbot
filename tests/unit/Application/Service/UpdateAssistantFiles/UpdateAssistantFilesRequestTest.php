@@ -12,13 +12,11 @@ class UpdateAssistantFilesRequestTest extends TestCase
     {
         $assistantId = new AssistantId('test-assistant-id');
         $fileIds = ['file1', 'file2', 'file3'];
-        $vectorId = 'vs_123456';
 
-        $request = new UpdateAssistantFilesRequest($assistantId, $fileIds, $vectorId);
+        $request = new UpdateAssistantFilesRequest($assistantId, $fileIds);
 
         $this->assertEquals($assistantId, $request->assistantId);
         $this->assertEquals($fileIds, $request->fileIds);
-        $this->assertEquals($vectorId, $request->vectorId);
     }
 
     public function testConstructorWithEmptyFileIds(): void
@@ -31,6 +29,5 @@ class UpdateAssistantFilesRequestTest extends TestCase
 
         $this->assertEquals($assistantId, $request->assistantId);
         $this->assertEquals($fileIds, $request->fileIds);
-        $this->assertEquals($vectorId, $request->vectorId);
     }
 }
