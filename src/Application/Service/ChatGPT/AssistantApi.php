@@ -250,6 +250,41 @@ class AssistantApi implements AssistantApiInterface
     }
 
     /**
+     * @return array<string, string|int|bool>
+     */
+    public function updateAssistant(string $assistantId, ?string $name = null, ?string $instructions = null): array
+    {
+        try {
+
+            /** @var array<string, mixed> $requestData */
+            $requestData = [];
+
+            if ($name !== null) {
+                $requestData['name'] = $name;
+            }
+
+            if ($instructions !== null) {
+                $requestData['instructions'] = $instructions;
+            }
+
+            $response = $this->client->request(
+                'POST',
+                "https://api.openai.com/v1/assistants/{$assistantId}",
+                $this->paramsHeader($requestData)
+            );
+
+            $this->handleResponse($response);
+            $content = json_decode($response->getContent(), true);
+        /** @var array<string, string|int|bool> $content */
+            return $content;
+        } catch (ClientExceptionInterface $e) {
+            $response = $e->getResponse();
+            $content = $response->getContent(false);
+            throw new BadRequestException("OpenAI API Error: " . $content);
+        }
+    }
+
+    /**
      * @param array<string> $fileIds
      */
     public function createVectorStore(array $fileIds): string
@@ -351,7 +386,7 @@ class AssistantApi implements AssistantApiInterface
     /**
      * @param array<string> $fileIds
      */
-    public function updateAssistant(string $assistantId, ?array $fileIds = null): void
+    public function updateAssistantFile(string $assistantId, ?array $fileIds = null): void
     {
         /** @var array<string, mixed> $requestData */
         $requestData = [];

@@ -50,6 +50,8 @@ paths:
   
   /assistant/create-from-context:
     $ref: assistant/create.yaml
+  /assistant/{ast_id}/update:
+    $ref: assistant/updateAssistant.yaml
   /assistant/{ast_id}/files:
     $ref: assistant/updateFiles.yaml
   /assistant/{ast_id}:

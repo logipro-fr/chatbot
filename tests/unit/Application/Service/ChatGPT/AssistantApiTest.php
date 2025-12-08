@@ -165,6 +165,41 @@ class AssistantApiTest extends TestCase
         $this->assertEquals($expectedData, $result);
     }
 
+    public function testUpdateAssistant(): void
+    {
+        $assistantId = 'asst-abc123';
+        $name = 'Updated Assistant Name';
+        $instructions = 'Updated instructions';
+
+        // Réponse attendue de l'API
+        $expectedResponse = [
+           'id' => $assistantId,
+           'name' => $name,
+           'instructions' => $instructions,
+        ];
+
+        // Mock de l'API
+        $response = new MockResponse(
+            (string) json_encode($expectedResponse),
+            ['http_code' => 200]
+        );
+
+        $client = new MockHttpClient(
+            $response,
+            "https://api.openai.com/v1/assistants/{$assistantId}"
+        );
+
+        $assistantApi = new AssistantApi($client);
+
+        // Appel à la méthode updateAssistant
+        $result = $assistantApi->updateAssistant($assistantId, $name, $instructions);
+
+        // Vérifications
+        $this->assertEquals($expectedResponse['id'], $result['id']);
+        $this->assertEquals($expectedResponse['name'], $result['name']);
+        $this->assertEquals($expectedResponse['instructions'], $result['instructions']);
+    }
+
 
     public function testBadRequest(): void
     {

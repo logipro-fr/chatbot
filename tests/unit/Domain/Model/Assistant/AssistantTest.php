@@ -97,4 +97,50 @@ class AssistantTest extends TestCase
         $this->assertInstanceOf(\DateTimeImmutable::class, $createdAt);
         $this->assertLessThanOrEqual(new \DateTimeImmutable(), $createdAt);
     }
+
+    public function testShouldUpdateNameAndInstructions(): void
+    {
+        $assistant = new Assistant(
+            new AssistantId(),
+            "Old Name",
+            "Old Instructions",
+            "asst_123"
+        );
+
+        $assistant->setName("New Name");
+        $assistant->setInstructions("New Instructions");
+
+        $this->assertEquals("New Name", $assistant->getName());
+        $this->assertEquals("New Instructions", $assistant->getInstructions());
+    }
+
+    public function testShouldUpdateOnlyName(): void
+    {
+        $assistant = new Assistant(
+            new AssistantId(),
+            "Old Name",
+            "Old Instructions",
+            "asst_123"
+        );
+
+        $assistant->setName("New Name");
+
+        $this->assertEquals("New Name", $assistant->getName());
+        $this->assertEquals("Old Instructions", $assistant->getInstructions());
+    }
+
+    public function testShouldUpdateOnlyInstructions(): void
+    {
+        $assistant = new Assistant(
+            new AssistantId(),
+            "Old Name",
+            "Old Instructions",
+            "asst_123"
+        );
+
+        $assistant->setInstructions("New Instructions");
+
+        $this->assertEquals("Old Name", $assistant->getName());
+        $this->assertEquals("New Instructions", $assistant->getInstructions());
+    }
 }

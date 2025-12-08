@@ -1,0 +1,90 @@
+put: 
+  tags:
+    - Assistant
+  summary: Update name and/or instruction of a specific Assistant
+  description: Update the name and/or instruction for the local assistant and to the external Assistant.
+  operationId: updateAssistant
+  parameters:
+    - name: ast_id
+      in: path
+      required: true
+      schema:
+        type: string
+      description: The ID of the assistant
+      example: "ast_abc123"
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            name:
+              type: string
+              description: The new name for the assistant
+              example: "My Updated Assistant"
+            instruction:
+              type: string
+              description: The new instruction for the assistant
+              example: "You are an updated helpful assistant."
+          required:
+            - assistantId
+  responses:
+    '200':
+      description: Assistant created successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                description: Indicates if the assistant was created
+                example: true
+              data:
+                type: object
+                properties:
+                  assistantId:
+                    type: string
+                    description: The internal assistant ID
+                    example: "ast_abc123"
+                  name:
+                    type: string
+                    description: The name of the assistant
+                    example: "My Updated Assistant"
+                  instruction:
+                    type: string
+                    description: The instruction of the assistant
+                    example: "You are an updated helpful assistant."
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: InvalidArgumentException
+              error_message:
+                type: string
+                example: L'ID de l'assistant est requis
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: Exception
+              error_message:
+                type: string
+                example: API Error

@@ -57,7 +57,7 @@ class UpdateAssistantFilesTest extends TestCase
 
         $this->assistantApi
             ->expects($this->once())
-            ->method('updateAssistant')
+            ->method('updateAssistantFile')
             ->with('asst_external123', $fileIds);
 
         $this->assistantRepository
@@ -124,7 +124,7 @@ class UpdateAssistantFilesTest extends TestCase
 
         $this->assistantApi
             ->expects($this->once())
-            ->method('updateAssistant')
+            ->method('updateAssistantFile')
             ->with('asst_external123', $fileIds);
 
         $this->assistantRepository

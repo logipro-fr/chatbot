@@ -28,6 +28,12 @@ interface AssistantApiInterface
      */
     public function getAssistant(string $assistantId): array;
 
+
+    /**
+     * @return array<string, string|int|bool>
+     */
+    public function updateAssistant(string $assistantId, ?string $name = null, ?string $instructions = null): array;
+
     /**
      * @param array<string> $fileIds
      */
@@ -50,7 +56,7 @@ interface AssistantApiInterface
     /**
      * @param array<string> $fileIds
      */
-    public function updateAssistant(string $assistantId, ?array $fileIds = null): void;
+    public function updateAssistantFile(string $assistantId, ?array $fileIds = null): void;
 
     /**
      * @param array<string> $fileIds

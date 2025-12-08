@@ -33,7 +33,7 @@ class UpdateAssistantFiles
         }
 
         // Mettre à jour l'assistant dans OpenAI avec le nouveau vector store
-        $this->assistantApi->updateAssistant($assistant->getExternalAssistantId(), $request->fileIds);
+        $this->assistantApi->updateAssistantFile($assistant->getExternalAssistantId(), $request->fileIds);
 
         $this->assistantRepository->add($assistant);
 
