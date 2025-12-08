@@ -70,6 +70,9 @@ services:
 
   Chatbot\Application\Service\UpdateAssistantFiles\UpdateAssistantFiles:
     autowire: true
+
+  Chatbot\Application\Service\UpdateAssistant\UpdateAssistant:
+    autowire: true
   
   Chatbot\Infrastructure\Api\V1\:
     resource: "../src/Infrastructure/Api/V1/"
