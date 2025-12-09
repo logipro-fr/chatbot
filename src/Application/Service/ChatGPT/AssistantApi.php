@@ -20,7 +20,6 @@ class AssistantApi implements AssistantApiInterface
 
     public function __construct(
         private HttpClientInterface $client,
-        private Assistant $assistant,
         ?string $apiKey = null
     ) {
         if ($apiKey == null) {
@@ -289,31 +288,40 @@ class AssistantApi implements AssistantApiInterface
     /**
      * @param array<string> $fileIds
      */
-    public function createVectorStore(array $fileIds): string
+    public function createVectorStore(array $fileIds, ?Assistant $assistant = null): string
     {
         $requestData = [
-            'name' => 'Vector Store for Assistant',
-            'file_ids' => $fileIds
+        'name'  => 'Vector Store for Assistant',
+        'file_ids' => $fileIds,
         ];
 
         try {
-            $response = $this->client->request(
-                'POST',
-                'https://api.openai.com/v1/vector_stores',
-                $this->paramsHeader($requestData)
-            );
+             $response = $this->client->request(
+                 'POST',
+                 'https://api.openai.com/v1/vector_stores',
+                 $this->paramsHeader($requestData)
+             );
 
-            $this->handleResponse($response);
-            $content = json_decode($response->getContent());
-            /** @var object{id: string} $content */
-            $this->assistant->setVectorId($content->id);
-            return $content->id;
+             $this->handleResponse($response);
+
+             /** @var object{id: string} $content */
+             $content = json_decode($response->getContent());
+
+
+            if ($assistant !== null) {
+                $assistant->setVectorId($content->id);
+            }
+
+             return $content->id;
         } catch (ClientExceptionInterface $e) {
             $response = $e->getResponse();
             $content = $response->getContent(false);
-            throw new BadRequestException("OpenAI Vector Store API Error: " . $content);
+            throw new BadRequestException(
+                "OpenAI Vector Store API Error: " . $content
+            );
         }
     }
+
     public function createVectorStoreFile(string $vectorStoreId, array $fileIds): void
     {
         foreach ($fileIds as $fileId) {
@@ -413,8 +421,12 @@ class AssistantApi implements AssistantApiInterface
     /**
      * @param array<string> $fileIds
      */
-    public function updateAssistantFile(string $assistantId, ?array $fileIds = null, ?string $vectorId = null): void
-    {
+    public function updateAssistantFile(
+        string $assistantId,
+        Assistant $assistant,
+        ?array $fileIds = null,
+        ?string $vectorId = null
+    ): void {
         /** @var array<string, mixed> $requestData */
         $requestData = [];
 
@@ -428,7 +440,7 @@ class AssistantApi implements AssistantApiInterface
                 $this->validateFileIds($fileIds);
 
                 if (!$vectorId) {
-                    $vectorStoreId = $this->createVectorStore($fileIds);
+                    $vectorStoreId = $this->createVectorStore($fileIds, $assistant);
                 } else {
                     $this->createVectorStoreFile($vectorId, $fileIds);
                     $vectorStoreId = $vectorId;

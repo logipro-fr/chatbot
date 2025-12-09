@@ -168,14 +168,15 @@ class AssistantRepositoryDoctrineTest extends TestCase
         $em = $this->createMock(EntityManagerInterface::class);
         $classMetadata = $this->createMock(ClassMetadata::class);
 
-        $classMetadata->name = 'Chatbot\Domain\Model\Assistant\Assistant';
+        $classMetadata->name = Assistant::class;
 
         $em->expects($this->once())
             ->method('getClassMetadata')
-            ->with('Chatbot\Domain\Model\Assistant\Assistant')
+            ->with(Assistant::class)
             ->willReturn($classMetadata);
 
         $assistantRepository = new AssistantRepositoryDoctrine($em);
+
         $assistantId = new AssistantId('test-assistant-id');
         $assistant = new Assistant(
             $assistantId,
@@ -188,8 +189,23 @@ class AssistantRepositoryDoctrineTest extends TestCase
         $assistant->setVectorId('vector-12345');
         $this->assertEquals('vector-12345', $assistant->getVectorId());
 
+        // 👉 On vérifie que add() appelle bien persist()
+        $em->expects($this->once())
+            ->method('persist')
+            ->with($assistant);
+
+        // 👉 On stub l'appel à find() pour simuler que Doctrine retrouve l'assistant
+        $em->expects($this->once())
+            ->method('find')
+            ->with(Assistant::class, $assistantId->getId())
+            ->willReturn($assistant);
+
+        // Act : on utilise le repository
         $assistantRepository->add($assistant);
         $retrievedAssistant = $assistantRepository->findById($assistantId);
+
+        // Plus besoin du if/fail, on s’attend à un Assistant
+        $this->assertInstanceOf(Assistant::class, $retrievedAssistant);
         $this->assertEquals('vector-12345', $retrievedAssistant->getVectorId());
     }
 }

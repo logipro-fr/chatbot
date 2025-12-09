@@ -4,6 +4,7 @@ namespace Chatbot\Application\Service\UpdateAssistantFiles;
 
 use Chatbot\Domain\Model\Assistant\AssistantRepositoryInterface;
 use Chatbot\Application\Service\ChatGPT\AssistantApi;
+use Chatbot\Domain\Model\Assistant\Assistant;
 
 class UpdateAssistantFiles
 {
@@ -35,7 +36,12 @@ class UpdateAssistantFiles
         $allFileIds = $assistant->getFileIds();
 
         // Mettre à jour l'assistant dans OpenAI avec le nouveau vector store
-        $this->assistantApi->updateAssistantFile($assistant->getExternalAssistantId(), $allFileIds, $vectorId);
+        $this->assistantApi->updateAssistantFile(
+            $assistant->getExternalAssistantId(),
+            $assistant,
+            $allFileIds,
+            $vectorId
+        );
 
         $this->assistantRepository->add($assistant);
 

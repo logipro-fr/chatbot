@@ -25,7 +25,7 @@ class UpdateAssistantFilesRequestTest extends TestCase
         $fileIds = [];
         $vectorId = 'vs_123456';
 
-        $request = new UpdateAssistantFilesRequest($assistantId, $fileIds, $vectorId);
+        $request = new UpdateAssistantFilesRequest($assistantId, $fileIds);
 
         $this->assertEquals($assistantId, $request->assistantId);
         $this->assertEquals($fileIds, $request->fileIds);
