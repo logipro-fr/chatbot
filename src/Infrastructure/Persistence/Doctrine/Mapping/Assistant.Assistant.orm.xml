@@ -13,6 +13,7 @@
         <field name="instructions" type="text" column="instructions"/>
         <field name="externalAssistantId" type="string" column="external_assistant_id"/>
         <field name="fileIds" type="json" column="file_ids"/>
+        <field name="vectorId" type="string" column="vector_id" nullable="true"/>
         <field name="createdAt" type="datetime_immutable" column="created_at"/>
     </entity>
 </doctrine-mapping> 

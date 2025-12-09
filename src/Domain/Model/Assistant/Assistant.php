@@ -11,6 +11,7 @@ class Assistant
 {
     /** @var array<string> */
     private array $fileIds;
+    private ?string $vectorId = null;
 
     /**
      * @param array<string> $fileIds
@@ -81,5 +82,15 @@ class Assistant
     public function removeFileId(string $fileId): void
     {
         $this->fileIds = array_filter($this->fileIds, fn($id) => $id !== $fileId);
+    }
+
+    public function getVectorId(): ?string
+    {
+        return $this->vectorId;
+    }
+
+    public function setVectorId(string $vectorId): void
+    {
+        $this->vectorId = $vectorId;
     }
 }

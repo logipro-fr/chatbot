@@ -53,7 +53,11 @@ class UpdateAssistantFilesControllerTest extends TestCase
         $updateAssistantFilesService
             ->expects($this->once())
             ->method('getResponse')
-            ->willReturn(new UpdateAssistantFilesResponse(new AssistantId('test-assistant-id'), ['file-1', 'file-2']));
+            ->willReturn(new UpdateAssistantFilesResponse(
+                new AssistantId('test-assistant-id'),
+                ['file-1', 'file-2'],
+                'vs_123456'
+            ));
 
         $entityManager
             ->expects($this->once())
@@ -96,7 +100,8 @@ class UpdateAssistantFilesControllerTest extends TestCase
             ->willReturn(
                 new UpdateAssistantFilesResponse(
                     new AssistantId('test-assistant-id'),
-                    ['file-1', 'file-2', 'file-3']
+                    ['file-1', 'file-2', 'file-3'],
+                    'vs_123456'
                 )
             );
 
@@ -246,7 +251,11 @@ class UpdateAssistantFilesControllerTest extends TestCase
         $updateAssistantFilesService
             ->expects($this->once())
             ->method('getResponse')
-            ->willReturn(new UpdateAssistantFilesResponse(new AssistantId('test-assistant-id'), ['file-1']));
+            ->willReturn(new UpdateAssistantFilesResponse(
+                new AssistantId('test-assistant-id'),
+                ['file-1'],
+                'vs_123456'
+            ));
 
         $response = $controller->updateAssistantFiles($request, 'test-assistant-id');
 

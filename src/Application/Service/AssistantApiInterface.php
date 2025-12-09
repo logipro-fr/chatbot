@@ -2,6 +2,8 @@
 
 namespace Chatbot\Application\Service;
 
+use Chatbot\Domain\Model\Assistant\Assistant;
+
 interface AssistantApiInterface
 {
      /**
@@ -37,7 +39,7 @@ interface AssistantApiInterface
     /**
      * @param array<string> $fileIds
      */
-    public function createVectorStore(array $fileIds): string;
+    public function createVectorStore(array $fileIds, Assistant $assistant): string;
 
     /**
      * @return array<string, string|int|bool>
@@ -56,7 +58,12 @@ interface AssistantApiInterface
     /**
      * @param array<string> $fileIds
      */
-    public function updateAssistantFile(string $assistantId, ?array $fileIds = null): void;
+    public function updateAssistantFile(
+        string $ExternalAssistantId,
+        Assistant $assistant,
+        ?array $fileIds = null,
+        ?string $vectorStoreId = null
+    ): void;
 
     /**
      * @param array<string> $fileIds

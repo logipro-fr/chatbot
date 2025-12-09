@@ -26,6 +26,9 @@ Variable environemment
 * HOST_IP → Set an environment variable to access Swagger or the database
 * CHATBOT_KEY_API → Access key for the OpenAI API
 
+For test integration : UpdateAssistantFileControllerTest 
+* OPENAI_ASSISTANT_ID → Id to external_Assistant to OpenIA API
+
 MS Windows dev uwsing WSL must consitder to add:
 
 ```

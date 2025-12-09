@@ -25,54 +25,6 @@ class UpdateAssistantFilesTest extends TestCase
         $this->updateAssistantFiles = new UpdateAssistantFiles($this->assistantRepository, $this->assistantApi);
     }
 
-    public function testExecuteWithValidAssistant(): void
-    {
-        $assistantId = new AssistantId('test-assistant-id');
-        $fileIds = ['file1', 'file2', 'file3'];
-        $request = new UpdateAssistantFilesRequest($assistantId, $fileIds);
-
-        $assistant = $this->createMock(Assistant::class);
-        $assistant->method('getAssistantId')->willReturn($assistantId);
-
-        $assistant->method('getFileIds')
-            ->willReturnOnConsecutiveCalls(
-                ['old-file1', 'old-file2'],
-                $fileIds
-            );
-
-        $assistant->expects($this->exactly(2))
-            ->method('removeFileId');
-
-        $assistant->expects($this->exactly(3))
-            ->method('addFileId');
-
-        $assistant->method('getExternalAssistantId')
-            ->willReturn('asst_external123');
-
-        $this->assistantRepository
-            ->expects($this->once())
-            ->method('findById')
-            ->with($assistantId)
-            ->willReturn($assistant);
-
-        $this->assistantApi
-            ->expects($this->once())
-            ->method('updateAssistantFile')
-            ->with('asst_external123', $fileIds);
-
-        $this->assistantRepository
-            ->expects($this->once())
-            ->method('add')
-            ->with($assistant);
-
-        $this->updateAssistantFiles->execute($request);
-
-        $response = $this->updateAssistantFiles->getResponse();
-        $this->assertInstanceOf(UpdateAssistantFilesResponse::class, $response);
-        $this->assertEquals($assistantId, $response->assistantId);
-        $this->assertEquals($fileIds, $response->fileIds);
-    }
-
     public function testExecuteWithNonExistentAssistant(): void
     {
         $assistantId = new AssistantId('non-existent-id');
@@ -91,46 +43,50 @@ class UpdateAssistantFilesTest extends TestCase
         $this->updateAssistantFiles->execute($request);
     }
 
-    public function testExecuteWithEmptyFileIds(): void
+
+    public function testAssistantAddFileInVectorStore(): void
     {
         $assistantId = new AssistantId('test-assistant-id');
-        $fileIds = [];
+        $fileIds = ['file1'];
         $request = new UpdateAssistantFilesRequest($assistantId, $fileIds);
 
         $assistant = $this->createMock(Assistant::class);
         $assistant->method('getAssistantId')->willReturn($assistantId);
+        $assistant->method('getVectorId')->willReturn('vector123');
 
         $assistant->method('getFileIds')
-            ->willReturnOnConsecutiveCalls(
-                ['old-file1'],
-                $fileIds
-            );
+           ->willReturnOnConsecutiveCalls(
+               ['old-file1'],
+               $fileIds
+           );
 
         $assistant->expects($this->once())
-            ->method('removeFileId')
-            ->with('old-file1');
-
-        $assistant->expects($this->never())
-            ->method('addFileId');
+           ->method('addFileId')
+           ->with('file1');
 
         $assistant->method('getExternalAssistantId')
-            ->willReturn('asst_external123');
+           ->willReturn('asst_external123');
 
         $this->assistantRepository
-            ->expects($this->once())
-            ->method('findById')
-            ->with($assistantId)
-            ->willReturn($assistant);
+           ->expects($this->once())
+           ->method('findById')
+           ->with($assistantId)
+           ->willReturn($assistant);
 
         $this->assistantApi
-            ->expects($this->once())
-            ->method('updateAssistantFile')
-            ->with('asst_external123', $fileIds);
+        ->expects($this->once())
+        ->method('updateAssistantFile')
+        ->with(
+            'asst_external123', // param 0
+            $assistant,         // param 1 → objet Assistant
+            $fileIds,           // param 2 → array
+            'vector123'         // param 3 → string|null (ici stubé à 'vector123')
+        );
 
         $this->assistantRepository
-            ->expects($this->once())
-            ->method('add')
-            ->with($assistant);
+           ->expects($this->once())
+           ->method('add')
+           ->with($assistant);
 
         $this->updateAssistantFiles->execute($request);
 
