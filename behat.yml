@@ -15,6 +15,7 @@ default:
         - Features\ConversationContext
         - Features\FileUploadContext
         - Features\UpdateNameInstructionContext
+        - Features\DetachFileAssistantContext
 #  extensions:
 #    DVDoug\Behat\CodeCoverage\Extension:
 #      filter:
