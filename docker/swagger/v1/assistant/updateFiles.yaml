@@ -22,7 +22,7 @@ put:
               type: array
               items:
                 type: string
-              description: Array of external file IDs to replace all files for the assistant. Use empty array [] to remove all files.
+              description: Array of external file IDs to add file for the assistant. Use empty array [] to add a new file.
               example: ["fil-abc123", "fil-def456"]
           required:
             - file_ids
