@@ -34,6 +34,10 @@ class UpdateAssistantFileControllerTest extends WebTestCase
         //Mettre l'id d'un vrai assistant d'OpenIA pour faire le test
         $externalAssistantId = $_ENV['OPENAI_ASSISTANT_ID'];
 
+        if (!is_string($externalAssistantId)) {
+            self::fail('OPENAI_ASSISTANT_ID_TEST doit être une string dans .env.test.local');
+        }
+
         $this->assistantId = new AssistantId();
         $this->assistant = new Assistant(
             $this->assistantId,
@@ -52,20 +56,25 @@ class UpdateAssistantFileControllerTest extends WebTestCase
     {
         $assistantId = (string) $this->assistant->getAssistantId();
 
+        $payload = json_encode([
+            'file_ids' => ['file-xxxx', 'file-yyyy'],
+        ], JSON_THROW_ON_ERROR);
+
         $this->client->request(
             'PUT',
             "/api/v1/assistant/{$assistantId}/files",
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode([
-                'file_ids' => ['file-1', 'file-2'],
-            ])
+            $payload
         );
 
         $response = $this->client->getResponse();
         $content = $response->getContent();
-        $data = json_decode($content, true);
+        if ($content === false) {
+            self::fail('Le contenu de la réponse est false, ce qui ne devrait pas arriver.');
+        }
+        $data = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertSame(
             200,
@@ -73,6 +82,11 @@ class UpdateAssistantFileControllerTest extends WebTestCase
             "Réponse reçue : {$content}"
         );
 
-        $this->assertTrue($data['success']);
+        $this->assertIsArray($data, 'La réponse JSON doit être un array.');
+        $this->assertArrayHasKey('success', $data, 'La clé "success" doit être présente dans la réponse.');
+        $this->assertTrue($data['success'], 'Le champ "success" doit être à true en cas de succès.');
+
+        $this->assertArrayHasKey('data', $data, 'La clé "data" doit être présente dans la réponse.');
+        $this->assertIsArray($data['data'], 'Le champ "data" doit être un array.');
     }
 }
