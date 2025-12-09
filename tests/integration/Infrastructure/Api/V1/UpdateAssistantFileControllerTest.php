@@ -16,7 +16,6 @@ class UpdateAssistantFileControllerTest extends WebTestCase
 
     private KernelBrowser $client;
     private Assistant $assistant;
-    private AssistantId $assistantId;
 
     protected function setUp(): void
     {
@@ -38,9 +37,9 @@ class UpdateAssistantFileControllerTest extends WebTestCase
             self::fail('OPENAI_ASSISTANT_ID_TEST doit être une string dans .env.test.local');
         }
 
-        $this->assistantId = new AssistantId();
+
         $this->assistant = new Assistant(
-            $this->assistantId,
+            new AssistantId(),
             'Assistant Test',
             'Tu es un assistant utile',
             $externalAssistantId
@@ -71,9 +70,8 @@ class UpdateAssistantFileControllerTest extends WebTestCase
 
         $response = $this->client->getResponse();
         $content = $response->getContent();
-        if ($content === false) {
-            self::fail('Le contenu de la réponse est false, ce qui ne devrait pas arriver.');
-        }
+
+        $this->assertIsString($content);
         $data = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertSame(
@@ -82,11 +80,11 @@ class UpdateAssistantFileControllerTest extends WebTestCase
             "Réponse reçue : {$content}"
         );
 
-        $this->assertIsArray($data, 'La réponse JSON doit être un array.');
-        $this->assertArrayHasKey('success', $data, 'La clé "success" doit être présente dans la réponse.');
-        $this->assertTrue($data['success'], 'Le champ "success" doit être à true en cas de succès.');
+        $this->assertIsArray($data);
+        $this->assertArrayHasKey('success', $data);
+        $this->assertTrue($data['success']);
 
-        $this->assertArrayHasKey('data', $data, 'La clé "data" doit être présente dans la réponse.');
-        $this->assertIsArray($data['data'], 'Le champ "data" doit être un array.');
+        $this->assertArrayHasKey('data', $data);
+        $this->assertIsArray($data['data']);
     }
 }
