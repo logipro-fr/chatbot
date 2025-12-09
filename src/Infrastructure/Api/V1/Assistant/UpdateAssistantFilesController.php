@@ -58,6 +58,6 @@ class UpdateAssistantFilesController extends AbstractController
             throw new \InvalidArgumentException("L'ID de l'assistant est requis");
         }
 
-        return new UpdateAssistantFilesRequest(new AssistantId($assistantId), $fileIds,);
+        return new UpdateAssistantFilesRequest(new AssistantId($assistantId), $fileIds);
     }
 }

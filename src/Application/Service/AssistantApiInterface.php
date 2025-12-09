@@ -59,7 +59,7 @@ interface AssistantApiInterface
      * @param array<string> $fileIds
      */
     public function updateAssistantFile(
-        string $assistantId,
+        string $ExternalAssistantId,
         Assistant $assistant,
         ?array $fileIds = null,
         ?string $vectorStoreId = null

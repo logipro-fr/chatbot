@@ -292,7 +292,7 @@ class AssistantApi implements AssistantApiInterface
     {
         $requestData = [
         'name'  => 'Vector Store for Assistant',
-        'file_ids' => $fileIds,
+        'file_ids' => $fileIds
         ];
 
         try {
@@ -422,7 +422,7 @@ class AssistantApi implements AssistantApiInterface
      * @param array<string> $fileIds
      */
     public function updateAssistantFile(
-        string $assistantId,
+        string $ExternalAssistantId,
         Assistant $assistant,
         ?array $fileIds = null,
         ?string $vectorId = null
@@ -470,7 +470,7 @@ class AssistantApi implements AssistantApiInterface
         try {
             $response = $this->client->request(
                 'POST',
-                "https://api.openai.com/v1/assistants/{$assistantId}",
+                "https://api.openai.com/v1/assistants/{$ExternalAssistantId}",
                 $this->paramsHeader($requestData)
             );
 
