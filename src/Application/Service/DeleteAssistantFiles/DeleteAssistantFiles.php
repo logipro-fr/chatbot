@@ -38,7 +38,7 @@ class DeleteAssistantFiles
 
         $this->response = new DeleteAssistantFilesResponse(
             $assistant->getAssistantId(),
-            $assistant->getFileIds()
+            array_values($assistant->getFileIds())
         );
     }
 
