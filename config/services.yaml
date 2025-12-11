@@ -65,6 +65,9 @@ services:
   Chatbot\Application\Service\DeleteAssistant\DeleteAssistant:
     autowire: true
 
+  Chatbot\Application\Service\DeleteAssistantFiles\DeleteAssistantFiles:
+    autowire: true
+  
   Chatbot\Application\Service\GetAssistant\GetAssistant:
     autowire: true
 

@@ -1,0 +1,77 @@
+delete:
+  tags:
+    - Assistant
+  summary: Detach old files for an existing assistant
+  operationId: deleteAssistantFiles
+  parameters:
+    - name: ast_id
+      in: path
+      required: true
+      schema:
+        type: string
+      description: The ID of the assistant
+      example: "ast_abc123"
+    - name : file_id
+      in: path
+      required: true
+      schema:
+        type: string
+      description: The ID of the file
+      example: fil-123456
+  responses:
+    '200':
+      description: Files delete successfully 
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                description: Indicates if the files were updated
+                example: true
+              data:
+                type: object
+                properties:
+                  assistantId:
+                    type: string
+                    description: The assistant ID
+                    example: "ast_abc123"
+                  fileIds:
+                    type: array
+                    items:
+                      type: string
+                    description: All file IDs attached to the assistant
+                    example: ["fil-abc123", "fil-def456"]
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: InvalidArgumentException
+              error_message:
+                type: string
+                example: L'ID de l'assistant ou l'ID du fichier est requis
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: Exception
+              error_message:
+                type: string
+                example: API Error 
