@@ -54,7 +54,7 @@ paths:
     $ref: assistant/updateAssistant.yaml
   /assistant/{ast_id}/files:
     $ref: assistant/updateFiles.yaml
-  /assistant/{ast_id}/files/{fil_id}:
+  /assistant/{ast_id}/files/{file_id}:
     $ref: assistant/deleteAssistantFile.yaml
   /assistant/{ast_id}:
     $ref: assistant/get.yaml
