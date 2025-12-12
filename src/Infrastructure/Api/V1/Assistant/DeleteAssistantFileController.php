@@ -21,11 +21,11 @@ class DeleteAssistantFileController extends AbstractController
     ) {
     }
 
-    #[Route('/api/v1/assistant/{ast_id}/files/{fil_id}', 'deleteAssistantFile', methods:['DELETE'])]
-    public function deleteAssistantFile(string $ast_id, string $fil_id): Response
+    #[Route('/api/v1/assistant/{ast_id}/files/{file_id}', 'deleteAssistantFile', methods:['DELETE'])]
+    public function deleteAssistantFile(string $ast_id, string $file_id): Response
     {
         try {
-            $deleteAssistantFileRequest = $this->buildDeleteAssistantRequest($ast_id, $fil_id);
+            $deleteAssistantFileRequest = $this->buildDeleteAssistantRequest($ast_id, $file_id);
 
             $this->deleteAssistantFileService->execute($deleteAssistantFileRequest);
             $this->entityManager->flush();
