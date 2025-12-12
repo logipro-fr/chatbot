@@ -11,7 +11,7 @@ delete:
         type: string
       description: The ID of the assistant
       example: "ast_abc123"
-    - name : fil_id
+    - name : file_id
       in: path
       required: true
       schema:
