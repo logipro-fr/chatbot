@@ -446,13 +446,16 @@ class AssistantApiTest extends TestCase
         $fileId = 'file-123';
 
         $response = new MockResponse('', ['http_code' => 200]);
-        $client = new MockHttpClient($response, "https://api.openai.com/v1/vector_stores/{$vectorStoreId}/files/{$fileId}");
+        $client = new MockHttpClient(
+            $response,
+            "https://api.openai.com/v1/vector_stores/{$vectorStoreId}/files/{$fileId}"
+        );
 
         $assistantApi = new AssistantApi(($client));
 
         $assistantApi->deleteVectorStoreFile($vectorStoreId, $fileId);
 
-        $this->assertTrue(true);
+        $this->addToAssertionCount(1);
     }
 
     public function testGetAssistant(): void
