@@ -3,10 +3,18 @@
 namespace Chatbot\Tests\Unit\Application\Service\ChatGPT;
 
 use Chatbot\Application\Service\ChatGPT\AssistantApi;
+use Chatbot\Application\Service\Exception\BadRequestException;
+use Chatbot\Domain\Model\Assistant\Assistant;
+use Doctrine\ORM\Query\Expr\Func;
 use PHPUnit\Framework\TestCase;
+use SebastianBergmann\CodeCoverage\Test\TestStatus\Success;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
+use Symfony\Component\VarDumper\Cloner\Data;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+
+use function PHPUnit\Framework\stringContains;
 
 class AssistantApiTest extends TestCase
 {
@@ -74,16 +82,25 @@ class AssistantApiTest extends TestCase
         $this->assertEquals($expectedAssistantId, $result);
     }
 
-    public function testCreateVectorStore(): void
+    public function testCreateVectorStoreCallsSetVectorIdWhenAssistantProvided(): void
     {
         $fileIds = ['file-123', 'file-456'];
         $expectedVectorStoreId = 'vs-xyz789';
 
-        $response = new MockResponse((string) json_encode(['id' => $expectedVectorStoreId]), ['http_code' => 200]);
+        $response = new MockResponse(
+            (string) json_encode(['id' => $expectedVectorStoreId]),
+            ['http_code' => 200]
+        );
         $client = new MockHttpClient($response, 'https://api.openai.com/v1/vector_stores');
+
         $assistantApi = new AssistantApi($client);
 
-        $result = $assistantApi->createVectorStore($fileIds);
+        $assistant = $this->createMock(Assistant::class);
+        $assistant->expects($this->once())
+        ->method('setVectorId')
+        ->with($expectedVectorStoreId);
+
+        $result = $assistantApi->createVectorStore($fileIds, $assistant);
 
         $this->assertEquals($expectedVectorStoreId, $result);
     }
@@ -123,6 +140,45 @@ class AssistantApiTest extends TestCase
         $this->assertEquals($expectedData, $result);
     }
 
+    public function testCreateVectorStoreFile(): void
+    {
+        $vectorStoreId = 'vs-abc123';
+        $filesIds = ['file-123', 'file-456'];
+
+        $responses = [
+        new MockResponse((string)json_encode(['data' => $filesIds]), ['http_code' => 200]),
+        new MockResponse((string)json_encode(['data' => $filesIds]), ['http_code' => 200]),
+        ];
+        $client = new MockHttpClient($responses, "https://api.openai.com/v1/vector_stores/{$vectorStoreId}/files");
+
+        $assistantApi = new AssistantApi($client);
+        $assistantApi->createVectorStoreFile($vectorStoreId, $filesIds);
+
+        $this->addToAssertionCount(1);
+    }
+
+    public function testCreateVectorStoreFileWithMissingId(): void
+    {
+        $vectorStoreId = 'vs-abc123';
+        $filesIds = ['file-123', 'file-456'];
+
+        $responses = [
+        new MockResponse((string)json_encode(['data' => $filesIds]), ['http_code' => 400]),
+        new MockResponse((string)json_encode(['data' => $filesIds]), ['http_code' => 400]),
+        ];
+
+        $client = new MockHttpClient($responses, "https://api.openai.com/v1/vector_stores/{$vectorStoreId}/files");
+
+        $assistantApi = new AssistantApi($client);
+
+        $this->expectException(BadRequestException::class);
+        $this->expectExceptionMessage('OpenAI Vector Store File API Error:');
+
+
+        $assistantApi->createVectorStoreFile('', $filesIds);
+    }
+
+
     public function testDeleteVectorStore(): void
     {
         $vectorStoreId = 'vs-xyz789';
@@ -134,6 +190,269 @@ class AssistantApiTest extends TestCase
         $assistantApi->deleteVectorStore($vectorStoreId);
 
         $this->addToAssertionCount(1);
+    }
+
+    public function testAttachAssistantFileWhenFileIdsEmpty(): void
+    {
+        $externalAssistantId = 'asst-abc123';
+        $assistant = $this->createMock(Assistant::class);
+
+        /** @var list<array{method:string,url:string,options:array<string,mixed>}> $requests */
+        $requests = [];
+
+        $responses = [
+        new MockResponse(json_encode(['ok' => true], JSON_THROW_ON_ERROR), ['http_code' => 200]),
+        ];
+
+        $client = new MockHttpClient(function (
+            string $method,
+            string $url,
+            array $options
+        ) use (
+            &$requests,
+            &$responses
+        ): MockResponse {
+            $requests[] = ['method' => $method, 'url' => $url, 'options' => $options];
+
+            $response = array_shift($responses);
+            self::assertInstanceOf(MockResponse::class, $response);
+
+            return $response;
+        });
+
+        $assistantApi = new AssistantApi($client);
+
+        $assistantApi->updateAssistantFile($externalAssistantId, $assistant, [], null);
+
+        self::assertCount(1, $requests);
+
+        $req = $requests[0];
+        self::assertSame('POST', $req['method']);
+        self::assertSame("https://api.openai.com/v1/assistants/{$externalAssistantId}", $req['url']);
+
+        $options = $req['options'];
+
+        $payload = $options['json'] ?? null;
+        if (!is_array($payload)) {
+            $rawBody = $options['body'] ?? '{}';
+            self::assertIsString($rawBody);
+            /** @var mixed $decoded */
+            $decoded = json_decode($rawBody, true, 512, JSON_THROW_ON_ERROR);
+            $payload = $decoded;
+        }
+
+        self::assertIsArray($payload);
+        /** @var array<string, mixed> $payload */
+
+        self::assertSame([], $payload['tools'] ?? null);
+        self::assertSame([], $payload['tool_resources'] ?? null);
+    }
+
+    public function testAttachAssistantFileCreatesVectorStoreWhenVectorIdIsNull(): void
+    {
+        $externalAssistantId = 'asst-abc123';
+        $assistant = $this->createMock(Assistant::class);
+        $fileIds = ['file-123'];
+
+        $createdVectorStoreId = 'vs-created-999';
+
+        /** @var list<array{method:string,url:string,options:array<string,mixed>}> $requests */
+        $requests = [];
+
+        $responses = [
+        new MockResponse(json_encode(['id' => $createdVectorStoreId], JSON_THROW_ON_ERROR), ['http_code' => 200]),
+        new MockResponse(json_encode(['ok' => true], JSON_THROW_ON_ERROR), ['http_code' => 200]),
+        ];
+
+        $client = new MockHttpClient(function (string $method, string $url, array $options)
+ use (&$requests, &$responses): MockResponse {
+            $requests[] = ['method' => $method, 'url' => $url, 'options' => $options];
+
+            $response = array_shift($responses);
+            self::assertInstanceOf(MockResponse::class, $response);
+
+            return $response;
+        });
+
+        $assistantApi = new AssistantApi($client);
+
+        $assistantApi->updateAssistantFile($externalAssistantId, $assistant, $fileIds, null);
+
+        self::assertCount(2, $requests);
+
+        $createVsReq = $requests[0];
+        self::assertSame('POST', $createVsReq['method']);
+        self::assertStringContainsString('/v1/vector_stores', $createVsReq['url']);
+
+        $createVsOptions = $createVsReq['options'];
+        $createVsPayload = $createVsOptions['json'] ?? null;
+
+        if (!is_array($createVsPayload)) {
+            $rawBody = $createVsOptions['body'] ?? '{}';
+            self::assertIsString($rawBody);
+            $createVsPayload = json_decode($rawBody, true, 512, JSON_THROW_ON_ERROR);
+        }
+
+        self::assertIsArray($createVsPayload);
+        /** @var array<string, mixed> $createVsPayload */
+
+        self::assertSame($fileIds, $createVsPayload['file_ids'] ?? null);
+
+        $updateReq = $requests[1];
+        self::assertSame('POST', $updateReq['method']);
+        self::assertSame("https://api.openai.com/v1/assistants/{$externalAssistantId}", $updateReq['url']);
+
+        $updateOptions = $updateReq['options'];
+        $updatePayload = $updateOptions['json'] ?? null;
+
+        if (!is_array($updatePayload)) {
+            $rawBody = $updateOptions['body'] ?? '{}';
+            self::assertIsString($rawBody);
+            $updatePayload = json_decode($rawBody, true, 512, JSON_THROW_ON_ERROR);
+        }
+
+        self::assertIsArray($updatePayload);
+        /** @var array<string, mixed> $updatePayload */
+
+        $tools = $updatePayload['tools'] ?? null;
+        self::assertIsArray($tools);
+        /** @var array<int, array<string, mixed>> $tools */
+
+        self::assertSame('file_search', $tools[0]['type'] ?? null);
+
+        $toolResources = $updatePayload['tool_resources'] ?? null;
+        self::assertIsArray($toolResources);
+        /** @var array<string, mixed> $toolResources */
+
+        $fileSearch = $toolResources['file_search'] ?? null;
+        self::assertIsArray($fileSearch);
+        /** @var array<string, mixed> $fileSearch */
+
+        self::assertSame([$createdVectorStoreId], $fileSearch['vector_store_ids'] ?? null);
+    }
+
+    public function testAttachAssistantFileUsesExistingVectorStoreWhenVectorIdProvided(): void
+    {
+        $externalAssistantId = 'asst-abc123';
+        $assistant = $this->createMock(Assistant::class);
+        $fileIds = ['file-123'];
+        $vectorStoreId = 'vs-abc123';
+
+        /** @var list<array{method:string,url:string,options:array<string,mixed>}> $requests */
+        $requests = [];
+
+        $responses = [
+            new MockResponse(json_encode(['ok' => true], JSON_THROW_ON_ERROR), ['http_code' => 200]),
+            new MockResponse(json_encode(['ok' => true], JSON_THROW_ON_ERROR), ['http_code' => 200]),
+        ];
+
+        $client = new MockHttpClient(function (
+            string $method,
+            string $url,
+            array $options
+        ) use (
+            &$requests,
+            &$responses
+        ): MockResponse {
+            $requests[] = ['method' => $method, 'url' => $url, 'options' => $options];
+
+            $response = array_shift($responses);
+            self::assertInstanceOf(MockResponse::class, $response);
+
+            return $response;
+        });
+
+        $assistantApi = new AssistantApi($client);
+
+        $assistantApi->updateAssistantFile($externalAssistantId, $assistant, $fileIds, $vectorStoreId);
+
+        self::assertCount(2, $requests);
+
+        $firstReq = $requests[0];
+        self::assertSame('POST', $firstReq['method']);
+        self::assertStringContainsString(
+            "/v1/vector_stores/{$vectorStoreId}",
+            $firstReq['url']
+        );
+
+        $secondReq = $requests[1];
+        self::assertSame('POST', $secondReq['method']);
+        self::assertSame(
+            "https://api.openai.com/v1/assistants/{$externalAssistantId}",
+            $secondReq['url']
+        );
+
+        $options = $secondReq['options'];
+
+        $payload = $options['json'] ?? null;
+        if (!is_array($payload)) {
+            $rawBody = $options['body'] ?? '{}';
+            self::assertIsString($rawBody);
+            /** @var mixed $decoded */
+            $decoded = json_decode($rawBody, true, 512, JSON_THROW_ON_ERROR);
+            $payload = $decoded;
+        }
+
+        self::assertIsArray($payload);
+        /** @var array<string, mixed> $payload */
+
+        $toolResources = $payload['tool_resources'] ?? null;
+        self::assertIsArray($toolResources);
+        /** @var array<string, mixed> $toolResources */
+
+        $fileSearch = $toolResources['file_search'] ?? null;
+        self::assertIsArray($fileSearch);
+        /** @var array<string, mixed> $fileSearch */
+
+        self::assertSame([$vectorStoreId], $fileSearch['vector_store_ids'] ?? null);
+    }
+
+    public function testAttachAssistantException(): void
+    {
+        $externalAssistantId = 'asst-abc123';
+        $assistant = $this->createMock(Assistant::class);
+        $fileIds = ['file-123'];
+        $vectorStoreId = 'vs-abc123';
+
+        $responses = [
+            new MockResponse(
+                json_encode(['ok' => true], JSON_THROW_ON_ERROR),
+                ['http_code' => 200]
+            ),
+
+            new MockResponse(
+                json_encode(['ok' => false], JSON_THROW_ON_ERROR),
+                ['http_code' => 400]
+            ),
+        ];
+
+        $client = new MockHttpClient(static function () use (&$responses): MockResponse {
+            $response = array_shift($responses);
+            self::assertInstanceOf(MockResponse::class, $response);
+            return $response;
+        });
+
+        $assistantApi = new AssistantApi($client);
+
+        $this->expectException(BadRequestException::class);
+        $this->expectExceptionMessage('OpenAI API Error:');
+
+        $assistantApi->updateAssistantFile($externalAssistantId, $assistant, $fileIds, $vectorStoreId);
+    }
+
+    public function testDetachAssistantFile(): void
+    {
+        $vectorStoreId = 'vs-abc123';
+        $fileId = 'file-123';
+
+        $response = new MockResponse('', ['http_code' => 200]);
+        $client = new MockHttpClient($response, "https://api.openai.com/v1/vector_stores/{$vectorStoreId}/files/{$fileId}");
+
+        $assistantApi = new AssistantApi(($client));
+
+        $assistantApi->deleteVectorStoreFile($vectorStoreId, $fileId);
+
+        $this->assertTrue(true);
     }
 
     public function testGetAssistant(): void
@@ -200,6 +519,37 @@ class AssistantApiTest extends TestCase
         $this->assertEquals($expectedResponse['instructions'], $result['instructions']);
     }
 
+    public function testUpdateAssistantWithMissingId(): void
+    {
+        $assistantId = 'asst_abc123';
+        $name = 'Update Assistant Name';
+        $instructions = 'Update instruction';
+
+        $expectedResponse = [
+            'id' => null,
+            'name' => $name,
+            'instruction' => $instructions
+        ];
+
+        $response = new MockResponse(
+            (string) json_encode($expectedResponse),
+            ['http_code' => 400]
+        );
+
+        $client = new MockHttpClient(
+            $response,
+            "https://api.openia.com/v1/assistants/{$assistantId}"
+        );
+
+
+        $assistantApi = new AssistantApi($client);
+
+        $this->expectException(BadRequestException::class);
+        $this->expectExceptionMessage('OpenAI API Error');
+
+
+        $assistantApi->updateAssistant($assistantId, $name, $instructions);
+    }
 
     public function testBadRequest(): void
     {
