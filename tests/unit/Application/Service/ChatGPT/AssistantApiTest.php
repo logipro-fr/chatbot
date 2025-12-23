@@ -215,7 +215,7 @@ class AssistantApiTest extends TestCase
             $requests[] = ['method' => $method, 'url' => $url, 'options' => $options];
 
             $response = array_shift($responses);
-            self::assertInstanceOf(MockResponse::class, $response);
+            $this->assertInstanceOf(MockResponse::class, $response);
 
             return $response;
         });
@@ -224,28 +224,29 @@ class AssistantApiTest extends TestCase
 
         $assistantApi->updateAssistantFile($externalAssistantId, $assistant, [], null);
 
-        self::assertCount(1, $requests);
+        $this->assertCount(1, $requests);
 
         $req = $requests[0];
-        self::assertSame('POST', $req['method']);
-        self::assertSame("https://api.openai.com/v1/assistants/{$externalAssistantId}", $req['url']);
+        $this->assertSame('POST', $req['method']);
+        $this->assertSame("https://api.openai.com/v1/assistants/{$externalAssistantId}", $req['url']);
 
         $options = $req['options'];
 
-        $payload = $options['json'] ?? null;
-        if (!is_array($payload)) {
-            $rawBody = $options['body'] ?? '{}';
-            self::assertIsString($rawBody);
-            /** @var mixed $decoded */
-            $decoded = json_decode($rawBody, true, 512, JSON_THROW_ON_ERROR);
-            $payload = $decoded;
-        }
+        $payload = $options['json']
+        ?? json_decode(
+            is_string($options['body'] ?? null)
+            ? $options['body']
+            : '{}',
+            true,
+            512,
+            JSON_THROW_ON_ERROR
+        );
 
-        self::assertIsArray($payload);
-        /** @var array<string, mixed> $payload */
-
-        self::assertSame([], $payload['tools'] ?? null);
-        self::assertSame([], $payload['tool_resources'] ?? null);
+        $this->assertIsArray($payload);
+        $this->assertArrayHasKey('tools', $payload);
+        $this->assertSame([], $payload['tools']);
+        $this->assertArrayHasKey('tool_resources', $payload);
+        $this->assertSame([], $payload['tool_resources'] ?? null);
     }
 
     public function testAttachAssistantFileCreatesVectorStoreWhenVectorIdIsNull(): void
@@ -269,7 +270,7 @@ class AssistantApiTest extends TestCase
             $requests[] = ['method' => $method, 'url' => $url, 'options' => $options];
 
             $response = array_shift($responses);
-            self::assertInstanceOf(MockResponse::class, $response);
+            $this->assertInstanceOf(MockResponse::class, $response);
 
             return $response;
         });
@@ -278,57 +279,59 @@ class AssistantApiTest extends TestCase
 
         $assistantApi->updateAssistantFile($externalAssistantId, $assistant, $fileIds, null);
 
-        self::assertCount(2, $requests);
+        $this->assertCount(2, $requests);
 
         $createVsReq = $requests[0];
-        self::assertSame('POST', $createVsReq['method']);
-        self::assertStringContainsString('/v1/vector_stores', $createVsReq['url']);
+        $this->assertSame('POST', $createVsReq['method']);
+        $this->assertStringContainsString('/v1/vector_stores', $createVsReq['url']);
 
         $createVsOptions = $createVsReq['options'];
-        $createVsPayload = $createVsOptions['json'] ?? null;
+        $createVsPayload = $createVsOptions['json']
+        ?? json_decode(
+            is_string($createVsOptions['body'] ?? null)
+            ? $createVsOptions['body']
+            : '{}',
+            true,
+            512,
+            JSON_THROW_ON_ERROR
+        );
+        $this->assertIsArray($createVsPayload);
 
-        if (!is_array($createVsPayload)) {
-            $rawBody = $createVsOptions['body'] ?? '{}';
-            self::assertIsString($rawBody);
-            $createVsPayload = json_decode($rawBody, true, 512, JSON_THROW_ON_ERROR);
-        }
-
-        self::assertIsArray($createVsPayload);
-        /** @var array<string, mixed> $createVsPayload */
-
-        self::assertSame($fileIds, $createVsPayload['file_ids'] ?? null);
+        $this->assertSame($fileIds, $createVsPayload['file_ids'] ?? null);
 
         $updateReq = $requests[1];
-        self::assertSame('POST', $updateReq['method']);
-        self::assertSame("https://api.openai.com/v1/assistants/{$externalAssistantId}", $updateReq['url']);
+        $this->assertSame('POST', $updateReq['method']);
+        $this->assertSame("https://api.openai.com/v1/assistants/{$externalAssistantId}", $updateReq['url']);
 
         $updateOptions = $updateReq['options'];
-        $updatePayload = $updateOptions['json'] ?? null;
+        $updatePayload = $updateOptions['json']
+        ?? json_decode(
+            is_string($updateOptions['body'] ?? null)
+            ? $updateOptions['body']
+            : '{}',
+            true,
+            512,
+            JSON_THROW_ON_ERROR
+        );
 
-        if (!is_array($updatePayload)) {
-            $rawBody = $updateOptions['body'] ?? '{}';
-            self::assertIsString($rawBody);
-            $updatePayload = json_decode($rawBody, true, 512, JSON_THROW_ON_ERROR);
-        }
 
-        self::assertIsArray($updatePayload);
-        /** @var array<string, mixed> $updatePayload */
+        $this->assertIsArray($updatePayload);
 
-        $tools = $updatePayload['tools'] ?? null;
-        self::assertIsArray($tools);
+        $this->assertArrayHasKey('tools', $updatePayload);
         /** @var array<int, array<string, mixed>> $tools */
+        $tools = $updatePayload['tools'];
 
-        self::assertSame('file_search', $tools[0]['type'] ?? null);
+        $this->assertSame('file_search', $tools[0]['type'] ?? null);
 
-        $toolResources = $updatePayload['tool_resources'] ?? null;
-        self::assertIsArray($toolResources);
+        $this->assertArrayHasKey('tool_resources', $updatePayload);
         /** @var array<string, mixed> $toolResources */
+        $toolResources = $updatePayload['tool_resources'];
 
-        $fileSearch = $toolResources['file_search'] ?? null;
-        self::assertIsArray($fileSearch);
+        $this->assertArrayHasKey('file_search', $toolResources);
         /** @var array<string, mixed> $fileSearch */
+        $fileSearch = $toolResources['file_search'];
 
-        self::assertSame([$createdVectorStoreId], $fileSearch['vector_store_ids'] ?? null);
+        $this->assertSame([$createdVectorStoreId], $fileSearch['vector_store_ids'] ?? null);
     }
 
     public function testAttachAssistantFileUsesExistingVectorStoreWhenVectorIdProvided(): void
@@ -357,7 +360,7 @@ class AssistantApiTest extends TestCase
             $requests[] = ['method' => $method, 'url' => $url, 'options' => $options];
 
             $response = array_shift($responses);
-            self::assertInstanceOf(MockResponse::class, $response);
+            $this->assertInstanceOf(MockResponse::class, $response);
 
             return $response;
         });
@@ -366,45 +369,40 @@ class AssistantApiTest extends TestCase
 
         $assistantApi->updateAssistantFile($externalAssistantId, $assistant, $fileIds, $vectorStoreId);
 
-        self::assertCount(2, $requests);
+        $this->assertCount(2, $requests);
 
         $firstReq = $requests[0];
-        self::assertSame('POST', $firstReq['method']);
-        self::assertStringContainsString(
+        $this->assertSame('POST', $firstReq['method']);
+        $this->assertStringContainsString(
             "/v1/vector_stores/{$vectorStoreId}",
             $firstReq['url']
         );
 
         $secondReq = $requests[1];
-        self::assertSame('POST', $secondReq['method']);
-        self::assertSame(
+        $this->assertSame('POST', $secondReq['method']);
+        $this->assertSame(
             "https://api.openai.com/v1/assistants/{$externalAssistantId}",
             $secondReq['url']
         );
 
         $options = $secondReq['options'];
 
-        $payload = $options['json'] ?? null;
-        if (!is_array($payload)) {
-            $rawBody = $options['body'] ?? '{}';
-            self::assertIsString($rawBody);
-            /** @var mixed $decoded */
-            $decoded = json_decode($rawBody, true, 512, JSON_THROW_ON_ERROR);
-            $payload = $decoded;
-        }
+        $rawBody = is_string($options['body'] ?? null) ? $options['body'] : '{}';
+        $payload = $options['json'] ?? json_decode($rawBody, true, 512, JSON_THROW_ON_ERROR);
 
-        self::assertIsArray($payload);
+
+        $this->assertIsArray($payload);
         /** @var array<string, mixed> $payload */
 
         $toolResources = $payload['tool_resources'] ?? null;
-        self::assertIsArray($toolResources);
+        $this->assertIsArray($toolResources);
         /** @var array<string, mixed> $toolResources */
 
         $fileSearch = $toolResources['file_search'] ?? null;
-        self::assertIsArray($fileSearch);
+        $this->assertIsArray($fileSearch);
         /** @var array<string, mixed> $fileSearch */
 
-        self::assertSame([$vectorStoreId], $fileSearch['vector_store_ids'] ?? null);
+        $this->assertSame([$vectorStoreId], $fileSearch['vector_store_ids'] ?? null);
     }
 
     public function testAttachAssistantException(): void
@@ -427,10 +425,10 @@ class AssistantApiTest extends TestCase
         ];
 
         $client = new MockHttpClient(static function () use (&$responses): MockResponse {
-            $response = array_shift($responses);
-            self::assertInstanceOf(MockResponse::class, $response);
-            return $response;
+            return array_shift($responses)
+            ?? new MockResponse('{"ok":false}', ['http_code' => 500]);
         });
+
 
         $assistantApi = new AssistantApi($client);
 

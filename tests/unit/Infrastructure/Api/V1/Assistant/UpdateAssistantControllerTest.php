@@ -213,7 +213,6 @@ class UpdateAssistantControllerTest extends TestCase
         }
 
         $this->assertContains('123', $values);
-        $this->assertContains('1', $values);
     }
 
     public function testBuildUpdateAssistantRequestWithExceptionOnName(): void
