@@ -237,9 +237,7 @@ class AssistantApiTest extends TestCase
             is_string($options['body'] ?? null)
             ? $options['body']
             : '{}',
-            true,
-            512,
-            JSON_THROW_ON_ERROR
+            true
         );
 
         $this->assertIsArray($payload);
@@ -291,9 +289,7 @@ class AssistantApiTest extends TestCase
             is_string($createVsOptions['body'] ?? null)
             ? $createVsOptions['body']
             : '{}',
-            true,
-            512,
-            JSON_THROW_ON_ERROR
+            true
         );
         $this->assertIsArray($createVsPayload);
 
@@ -309,9 +305,7 @@ class AssistantApiTest extends TestCase
             is_string($updateOptions['body'] ?? null)
             ? $updateOptions['body']
             : '{}',
-            true,
-            512,
-            JSON_THROW_ON_ERROR
+            true
         );
 
 
@@ -388,7 +382,7 @@ class AssistantApiTest extends TestCase
         $options = $secondReq['options'];
 
         $rawBody = is_string($options['body'] ?? null) ? $options['body'] : '{}';
-        $payload = $options['json'] ?? json_decode($rawBody, true, 512, JSON_THROW_ON_ERROR);
+        $payload = $options['json'] ?? json_decode($rawBody, true);
 
 
         $this->assertIsArray($payload);
