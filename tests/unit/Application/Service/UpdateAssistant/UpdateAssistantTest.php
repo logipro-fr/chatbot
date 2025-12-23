@@ -58,4 +58,23 @@ class UpdateAssistantTest extends TestCase
         $this->assertEquals($newName, $response->newName);
         $this->assertEquals($newInstructions, $response->newInstructions);
     }
+
+    public function testException(): void
+    {
+        $assistantId = new AssistantId('non-existent-id');
+        $newName = 'Updated Assistant Name';
+        $newInstructions = 'Updated instructions for the assistant.';
+        $request = new UpdateAssistantRequest($assistantId, $newName, $newInstructions);
+
+        $this->assistantRepository
+            ->expects($this->once())
+            ->method('findById')
+            ->with($assistantId)
+            ->willReturn(null);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Assistant not found: ' . $assistantId->getId());
+
+        $this->updateAssistant->execute($request);
+    }
 }
