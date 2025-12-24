@@ -1,10 +1,10 @@
 <?php
 
-namespace Chatbot\Application\Service\UpdateAssistantFiles;
+namespace Chatbot\Application\Service\AttachAssistantFiles;
 
 use Chatbot\Domain\Model\Assistant\AssistantId;
 
-class UpdateAssistantFilesResponse
+class AttachAssistantFilesRequest
 {
     /**
      * @param AssistantId $assistantId
@@ -12,8 +12,7 @@ class UpdateAssistantFilesResponse
      */
     public function __construct(
         public AssistantId $assistantId,
-        public array $fileIds,
-        public ?string $vectorId
+        public array $fileIds
     ) {
     }
 }

@@ -1,11 +1,11 @@
 <?php
 
-namespace tests\unit\Application\Service\DeleteAssistantFiles;
+namespace tests\unit\Application\Service\DetachAssistantFiles;
 
 use Chatbot\Application\Service\ChatGPT\AssistantApi;
-use Chatbot\Application\Service\DeleteAssistantFiles\DeleteAssistantFiles;
-use Chatbot\Application\Service\DeleteAssistantFiles\DeleteAssistantFilesRequest;
-use Chatbot\Application\Service\DeleteAssistantFiles\DeleteAssistantFilesResponse;
+use Chatbot\Application\Service\DetachAssistantFiles\DetachAssistantFiles;
+use Chatbot\Application\Service\DetachAssistantFiles\DetachAssistantFilesRequest;
+use Chatbot\Application\Service\DetachAssistantFiles\DetachAssistantFilesResponse;
 use Chatbot\Domain\Model\Assistant\Assistant;
 use Chatbot\Domain\Model\Assistant\AssistantId;
 use Chatbot\Domain\Model\Assistant\AssistantRepositoryInterface;
@@ -13,17 +13,17 @@ use Chatbot\Domain\Model\File\FileId;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
-class DeleteAssistantFilesTest extends TestCase
+class DetachAssistantFilesTest extends TestCase
 {
     private AssistantRepositoryInterface&MockObject $assistantRepository;
     private AssistantApi&MockObject $assistantApi;
-    private DeleteAssistantFiles $deleteAssistantFiles;
+    private DetachAssistantFiles $detachAssistantFiles;
 
     public function setUp(): void
     {
         $this->assistantRepository = $this->createMock(AssistantRepositoryInterface::class);
         $this->assistantApi = $this->createMock(AssistantApi::class);
-        $this->deleteAssistantFiles = new DeleteAssistantFiles($this->assistantRepository, $this->assistantApi);
+        $this->detachAssistantFiles = new DetachAssistantFiles($this->assistantRepository, $this->assistantApi);
     }
 
     public function testExecute(): void
@@ -33,7 +33,7 @@ class DeleteAssistantFilesTest extends TestCase
         $file_id = new FileId('fil_1');             // fichier à supprimer
         $expectedRemainingFileIds = ['fil_2'];      // après suppression
         $vectorId = 'vs_123456';
-        $request = new DeleteAssistantFilesRequest($assistantId, $file_id);
+        $request = new DetachAssistantFilesRequest($assistantId, $file_id);
 
         $assistant = $this->createMock(Assistant::class);
 
@@ -75,11 +75,11 @@ class DeleteAssistantFilesTest extends TestCase
         ->method('add')
         ->with($assistant);
 
-        $this->deleteAssistantFiles->execute($request);
+        $this->detachAssistantFiles->execute($request);
 
-        $response = $this->deleteAssistantFiles->getResponse();
+        $response = $this->detachAssistantFiles->getResponse();
 
-        $this->assertInstanceOf(DeleteAssistantFilesResponse::class, $response);
+        $this->assertInstanceOf(DetachAssistantFilesResponse::class, $response);
         $this->assertEquals($expectedRemainingFileIds, $response->fileIds);
         $this->assertContains('fil_2', $response->fileIds);
         $this->assertNotContains('fil_1', $response->fileIds);
@@ -90,7 +90,7 @@ class DeleteAssistantFilesTest extends TestCase
     {
         $assistantId = new AssistantId('ast_123');
         $file_id = new FileId('fil_1');             // fichier à supprimer
-        $request = new DeleteAssistantFilesRequest($assistantId, $file_id);
+        $request = new DetachAssistantFilesRequest($assistantId, $file_id);
 
         $this->assistantRepository
         ->expects($this->once())
@@ -101,6 +101,6 @@ class DeleteAssistantFilesTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Assistant not found: ' . $assistantId->getId());
 
-        $this->deleteAssistantFiles->execute($request);
+        $this->detachAssistantFiles->execute($request);
     }
 }

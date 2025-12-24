@@ -2,8 +2,8 @@
 
 namespace Chatbot\Infrastructure\Api\V1\Assistant;
 
-use Chatbot\Application\Service\DeleteAssistantFiles\DeleteAssistantFiles;
-use Chatbot\Application\Service\DeleteAssistantFiles\DeleteAssistantFilesRequest;
+use Chatbot\Application\Service\DetachAssistantFiles\DetachAssistantFiles;
+use Chatbot\Application\Service\DetachAssistantFiles\DetachAssistantFilesRequest;
 use Chatbot\Domain\Model\Assistant\AssistantId;
 use Chatbot\Domain\Model\File\FileId;
 use Chatbot\Infrastructure\Api\V1\AbstractController;
@@ -13,11 +13,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 
-class DeleteAssistantFileController extends AbstractController
+class DetachAssistantFileController extends AbstractController
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private DeleteAssistantFiles $deleteAssistantFileService
+        private DetachAssistantFiles $detachAssistantFileService
     ) {
     }
 
@@ -25,24 +25,24 @@ class DeleteAssistantFileController extends AbstractController
     public function deleteAssistantFile(string $ast_id, string $file_id): Response
     {
         try {
-            $deleteAssistantFileRequest = $this->buildDeleteAssistantRequest($ast_id, $file_id);
+            $detachAssistantFilesRequest = $this->buildDetachAssistantRequest($ast_id, $file_id);
 
-            $this->deleteAssistantFileService->execute($deleteAssistantFileRequest);
+            $this->detachAssistantFileService->execute($detachAssistantFilesRequest);
             $this->entityManager->flush();
 
-            $response = $this->deleteAssistantFileService->getResponse();
+            $response = $this->detachAssistantFileService->getResponse();
             return $this->writeSuccessfulResponse($response);
         } catch (\Exception $e) {
             return $this->writeUnsuccessfulResponse($e);
         }
     }
 
-    public function buildDeleteAssistantRequest(string $assistantId, string $fileId): DeleteAssistantFilesRequest
+    public function buildDetachAssistantRequest(string $assistantId, string $fileId): DetachAssistantFilesRequest
     {
         if (empty($assistantId)) {
             throw new \InvalidArgumentException("L'ID de l'assistant est requis");
         }
 
-        return new DeleteAssistantFilesRequest(new AssistantId($assistantId), new FileId($fileId));
+        return new DetachAssistantFilesRequest(new AssistantId($assistantId), new FileId($fileId));
     }
 }

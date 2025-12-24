@@ -2,8 +2,8 @@
 
 namespace Chatbot\Infrastructure\Api\V1\Assistant;
 
-use Chatbot\Application\Service\UpdateAssistantFiles\UpdateAssistantFiles;
-use Chatbot\Application\Service\UpdateAssistantFiles\UpdateAssistantFilesRequest;
+use Chatbot\Application\Service\AttachAssistantFiles\AttachAssistantFiles;
+use Chatbot\Application\Service\AttachAssistantFiles\AttachAssistantFilesRequest;
 use Chatbot\Domain\Model\Assistant\AssistantId;
 use Chatbot\Infrastructure\Api\V1\AbstractController;
 use Doctrine\ORM\EntityManagerInterface;
@@ -13,31 +13,31 @@ use Symfony\Component\Routing\Annotation\Route;
 
 use function Safe\json_decode;
 
-class UpdateAssistantFilesController extends AbstractController
+class AttachAssistantFilesController extends AbstractController
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private UpdateAssistantFiles $updateAssistantFilesService
+        private AttachAssistantFiles $attachAssistantFilesService
     ) {
     }
 
-    #[Route('api/v1/assistant/{ast_id}/files', 'updateAssistantFiles', methods: ['PUT'])]
-    public function updateAssistantFiles(Request $request, string $ast_id): Response
+    #[Route('api/v1/assistant/{ast_id}/files', 'attachAssistantFiles', methods: ['PUT'])]
+    public function attachAssistantFiles(Request $request, string $ast_id): Response
     {
         try {
-            $updateFilesRequest = $this->buildUpdateFilesRequest($request, $ast_id);
+            $attachFilesRequest = $this->buildAttachFilesRequest($request, $ast_id);
 
-            $this->updateAssistantFilesService->execute($updateFilesRequest);
+            $this->attachAssistantFilesService->execute($attachFilesRequest);
             $this->entityManager->flush();
 
-            $response = $this->updateAssistantFilesService->getResponse();
+            $response = $this->attachAssistantFilesService->getResponse();
             return $this->writeSuccessfulResponse($response);
         } catch (\Exception $e) {
             return $this->writeUnsuccessfulResponse($e);
         }
     }
 
-    private function buildUpdateFilesRequest(Request $request, string $assistantId): UpdateAssistantFilesRequest
+    private function buildAttachFilesRequest(Request $request, string $assistantId): AttachAssistantFilesRequest
     {
         $content = $request->getContent();
         /** @var array<string, mixed> $data */
@@ -58,6 +58,6 @@ class UpdateAssistantFilesController extends AbstractController
             throw new \InvalidArgumentException("L'ID de l'assistant est requis");
         }
 
-        return new UpdateAssistantFilesRequest(new AssistantId($assistantId), $fileIds);
+        return new AttachAssistantFilesRequest(new AssistantId($assistantId), $fileIds);
     }
 }

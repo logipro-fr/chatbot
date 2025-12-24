@@ -1,10 +1,10 @@
 <?php
 
-namespace Chatbot\Application\Service\DeleteAssistantFiles;
+namespace Chatbot\Application\Service\DetachAssistantFiles;
 
 use Chatbot\Domain\Model\Assistant\AssistantId;
 
-class DeleteAssistantFilesResponse
+class DetachAssistantFilesResponse
 {
     /**
      * @param AssistantId $assistant_id
