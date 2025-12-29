@@ -21,7 +21,7 @@ class AttachAssistantFilesController extends AbstractController
     ) {
     }
 
-    #[Route('api/v1/assistant/{ast_id}/files', 'attachAssistantFiles', methods: ['PUT'])]
+    #[Route('api/v1/assistant/{ast_id}/attach/files', 'attachAssistantFiles', methods: ['PUT'])]
     public function attachAssistantFiles(Request $request, string $ast_id): Response
     {
         try {

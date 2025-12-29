@@ -21,8 +21,8 @@ class DetachAssistantFileController extends AbstractController
     ) {
     }
 
-    #[Route('/api/v1/assistant/{ast_id}/files/{file_id}', 'deleteAssistantFile', methods:['DELETE'])]
-    public function deleteAssistantFile(string $ast_id, string $file_id): Response
+    #[Route('/api/v1/assistant/{ast_id}/detach/file/{file_id}', 'detachAssistantFile', methods:['DELETE'])]
+    public function detachAssistantFile(string $ast_id, string $file_id): Response
     {
         try {
             $detachAssistantFilesRequest = $this->buildDetachAssistantRequest($ast_id, $file_id);
