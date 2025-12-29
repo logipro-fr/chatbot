@@ -43,7 +43,7 @@ class DetachAssistantFileControllerTest extends TestCase
            ->expects($this->once())
            ->method('flush');
 
-        $response = $controller->deleteAssistantFile('test_assistant_id', 'fil_123475869');
+        $response = $controller->detachAssistantFile('test_assistant_id', 'fil_123475869');
 
         $this->assertEquals(200, $response->getStatusCode());
 
@@ -62,7 +62,7 @@ class DetachAssistantFileControllerTest extends TestCase
         $detachAssistantFileService->expects($this->once())->method('execute');
         $entityManager->expects($this->once())->method('flush');
 
-        $response = $controller->deleteAssistantFile('test_assistant_id', 'fil_123475869');
+        $response = $controller->detachAssistantFile('test_assistant_id', 'fil_123475869');
 
         $this->assertInstanceOf(Response::class, $response);
         $this->assertSame(200, $response->getStatusCode());
@@ -78,7 +78,7 @@ class DetachAssistantFileControllerTest extends TestCase
         $detachAssistantFileService->expects($this->never())->method('execute');
         $entityManager->expects($this->never())->method('flush');
 
-        $response = $controller->deleteAssistantFile('', 'fil_123475869');
+        $response = $controller->detachAssistantFile('', 'fil_123475869');
 
         $this->assertInstanceOf(Response::class, $response);
         $this->assertSame(500, $response->getStatusCode());
