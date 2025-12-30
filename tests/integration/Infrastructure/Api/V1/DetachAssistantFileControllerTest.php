@@ -7,11 +7,10 @@ use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Chatbot\Domain\Model\Assistant\AssistantId;
-use Chatbot\Domain\Model\File\FileMetadata;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Dotenv\Dotenv;
 
-class DeleteAssistantFileControllerTest extends WebTestCase
+class DetachAssistantFileControllerTest extends WebTestCase
 {
     use DoctrineRepositoryTesterTrait;
 

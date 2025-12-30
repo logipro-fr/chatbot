@@ -6,8 +6,8 @@ use Behat\Step\Given;
 use Behat\Step\When;
 use Behat\Step\Then;
 use Behat\Behat\Context\Context as BehatContext;
-use Chatbot\Application\Service\UpdateAssistantFiles\UpdateAssistantFiles;
-use Chatbot\Application\Service\UpdateAssistantFiles\UpdateAssistantFilesRequest;
+use Chatbot\Application\Service\AttachAssistantFiles\AttachAssistantFiles;
+use Chatbot\Application\Service\AttachAssistantFiles\AttachAssistantFilesRequest;
 use Chatbot\Domain\Model\Assistant\Assistant;
 use Chatbot\Domain\Model\Assistant\AssistantId;
 use Chatbot\Domain\Model\File\FileId;
@@ -20,8 +20,8 @@ use Symfony\Component\HttpClient\Response\MockResponse;
 class FileUploadContext implements BehatContext
 {
     private AssistantId $assistantId;
-    private UpdateAssistantFilesRequest $request;
-    private UpdateAssistantFiles $service;
+    private AttachAssistantFilesRequest $request;
+    private AttachAssistantFiles $service;
     private FileId $filesId;
     private AssistantRepositoryInMemory $assitantRepository;
     private Assistant $assistant;
@@ -50,7 +50,7 @@ class FileUploadContext implements BehatContext
     #[When('the file is uploaded')]
     public function theFileIsUploaded(): void
     {
-        $this->request = new UpdateAssistantFilesRequest(
+        $this->request = new AttachAssistantFilesRequest(
             $this->assistantId,
             [$this->filesId]
         );
@@ -62,7 +62,7 @@ class FileUploadContext implements BehatContext
         $mockResponse = new MockResponse($body);
         $client = new MockHttpClient([$mockResponse, $mockResponse]);
         $assistantApi = new AssistantApi($client);
-        $this->service = new UpdateAssistantFiles($this->assitantRepository, $assistantApi);
+        $this->service = new AttachAssistantFiles($this->assitantRepository, $assistantApi);
         $this->service->execute($this->request);
     }
 
@@ -84,7 +84,7 @@ class FileUploadContext implements BehatContext
     {
          $this->assistantId = new AssistantId();
 
-         $this->request = new UpdateAssistantFilesRequest(
+         $this->request = new AttachAssistantFilesRequest(
              $this->assistantId,
              [$this->filesId]
          );
@@ -100,7 +100,7 @@ class FileUploadContext implements BehatContext
         $mockResponse = new MockResponse($body);
         $client = new MockHttpClient([$mockResponse, $mockResponse]);
         $assistantApi = new AssistantApi($client);
-        $this->service = new UpdateAssistantFiles($this->assitantRepository, $assistantApi);
+        $this->service = new AttachAssistantFiles($this->assitantRepository, $assistantApi);
 
         try {
             $this->service->execute($this->request);

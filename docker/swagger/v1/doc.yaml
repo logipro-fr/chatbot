@@ -52,10 +52,10 @@ paths:
     $ref: assistant/create.yaml
   /assistant/{ast_id}/update:
     $ref: assistant/updateAssistant.yaml
-  /assistant/{ast_id}/files:
-    $ref: assistant/updateFiles.yaml
-  /assistant/{ast_id}/files/{file_id}:
-    $ref: assistant/deleteAssistantFile.yaml
+  /assistant/{ast_id}/attach/files:
+    $ref: assistant/attachAssistantFiles.yaml
+  /assistant/{ast_id}/detach/file/{file_id}:
+    $ref: assistant/detachAssistantFile.yaml
   /assistant/{ast_id}:
     $ref: assistant/get.yaml
   /assistant/{ast_id}/delete:

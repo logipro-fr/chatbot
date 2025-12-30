@@ -65,13 +65,13 @@ services:
   Chatbot\Application\Service\DeleteAssistant\DeleteAssistant:
     autowire: true
 
-  Chatbot\Application\Service\DeleteAssistantFiles\DeleteAssistantFiles:
+  Chatbot\Application\Service\DetachAssistantFiles\DetachAssistantFiles:
     autowire: true
   
   Chatbot\Application\Service\GetAssistant\GetAssistant:
     autowire: true
 
-  Chatbot\Application\Service\UpdateAssistantFiles\UpdateAssistantFiles:
+  Chatbot\Application\Service\AttachAssistantFiles\AttachAssistantFiles:
     autowire: true
 
   Chatbot\Application\Service\UpdateAssistant\UpdateAssistant:

@@ -1,13 +1,13 @@
 <?php
 
-namespace Chatbot\Application\Service\DeleteAssistantFiles;
+namespace Chatbot\Application\Service\DetachAssistantFiles;
 
 use Chatbot\Application\Service\ChatGPT\AssistantApi;
 use Chatbot\Domain\Model\Assistant\AssistantRepositoryInterface;
 
-class DeleteAssistantFiles
+class DetachAssistantFiles
 {
-    private DeleteAssistantFilesResponse $response;
+    private DetachAssistantFilesResponse $response;
 
     public function __construct(
         private AssistantRepositoryInterface $assistant_repository,
@@ -15,7 +15,7 @@ class DeleteAssistantFiles
     ) {
     }
 
-    public function execute(DeleteAssistantFilesRequest $request): void
+    public function execute(DetachAssistantFilesRequest $request): void
     {
         $assistant = $this->assistant_repository->findById($request->assistant_id);
         if ($assistant === null) {
@@ -36,13 +36,13 @@ class DeleteAssistantFiles
         $this->assistant_repository->add($assistant);
 
 
-        $this->response = new DeleteAssistantFilesResponse(
+        $this->response = new DetachAssistantFilesResponse(
             $assistant->getAssistantId(),
             array_values($assistant->getFileIds())
         );
     }
 
-    public function getResponse(): DeleteAssistantFilesResponse
+    public function getResponse(): DetachAssistantFilesResponse
     {
         return $this->response;
     }

@@ -2,48 +2,48 @@
 
 namespace Chatbot\Tests\Infrastructure\Api\V1\Assistant;
 
-use Chatbot\Application\Service\DeleteAssistantFiles\DeleteAssistantFiles;
-use Chatbot\Application\Service\DeleteAssistantFiles\DeleteAssistantFilesRequest;
-use Chatbot\Infrastructure\Api\V1\Assistant\DeleteAssistantFileController;
+use Chatbot\Application\Service\DetachAssistantFiles\DetachAssistantFiles;
+use Chatbot\Application\Service\DetachAssistantFiles\DetachAssistantFilesRequest;
+use Chatbot\Infrastructure\Api\V1\Assistant\DetachAssistantFileController;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Response;
 
-class DeleteAssistantFileControllerTest extends TestCase
+class DetachAssistantFileControllerTest extends TestCase
 {
     public function testConstructor(): void
     {
         $entityManager = $this->createMock(EntityManagerInterface::class);
-        $updateAssistantFilesService = $this->createMock(DeleteAssistantFiles::class);
+        $detachAssistantFileService = $this->createMock(DetachAssistantFiles::class);
 
-        $controller = new DeleteAssistantFileController(
+        $controller = new DetachAssistantFileController(
             $entityManager,
-            $updateAssistantFilesService
+            $detachAssistantFileService
         );
 
-        $this->assertInstanceOf(DeleteAssistantFileController::class, $controller);
+        $this->assertInstanceOf(DetachAssistantFileController::class, $controller);
     }
 
     public function testDetachAssistantFilesControllerExecute(): void
     {
         $entityManager = $this->createMock(EntityManagerInterface::class);
-        $deleteAssistantFileService = $this->createMock(DeleteAssistantFiles::class);
+        $detachAssistantFilesService = $this->createMock(DetachAssistantFiles::class);
 
-        $controller = new DeleteAssistantFileController(
+        $controller = new DetachAssistantFileController(
             $entityManager,
-            $deleteAssistantFileService
+            $detachAssistantFilesService
         );
 
-        $deleteAssistantFileService
+        $detachAssistantFilesService
            ->expects($this->once())
            ->method('execute')
-           ->with($this->isInstanceOf(DeleteAssistantFilesRequest::class));
+           ->with($this->isInstanceOf(DetachAssistantFilesRequest::class));
 
         $entityManager
            ->expects($this->once())
            ->method('flush');
 
-        $response = $controller->deleteAssistantFile('test_assistant_id', 'fil_123475869');
+        $response = $controller->detachAssistantFile('test_assistant_id', 'fil_123475869');
 
         $this->assertEquals(200, $response->getStatusCode());
 
@@ -55,14 +55,14 @@ class DeleteAssistantFileControllerTest extends TestCase
     public function testBuildDetachAssistantRequest(): void
     {
         $entityManager = $this->createMock(EntityManagerInterface::class);
-        $detachAssistantFileService = $this->createMock(DeleteAssistantFiles::class);
+        $detachAssistantFileService = $this->createMock(DetachAssistantFiles::class);
 
-        $controller = new DeleteAssistantFileController($entityManager, $detachAssistantFileService);
+        $controller = new DetachAssistantFileController($entityManager, $detachAssistantFileService);
 
         $detachAssistantFileService->expects($this->once())->method('execute');
         $entityManager->expects($this->once())->method('flush');
 
-        $response = $controller->deleteAssistantFile('test_assistant_id', 'fil_123475869');
+        $response = $controller->detachAssistantFile('test_assistant_id', 'fil_123475869');
 
         $this->assertInstanceOf(Response::class, $response);
         $this->assertSame(200, $response->getStatusCode());
@@ -71,14 +71,14 @@ class DeleteAssistantFileControllerTest extends TestCase
     public function testBuildDetachAssistantRequestWithNoAssistantId(): void
     {
         $entityManager = $this->createMock(EntityManagerInterface::class);
-        $detachAssistantFileService = $this->createMock(DeleteAssistantFiles::class);
+        $detachAssistantFileService = $this->createMock(DetachAssistantFiles::class);
 
-        $controller = new DeleteAssistantFileController($entityManager, $detachAssistantFileService);
+        $controller = new DetachAssistantFileController($entityManager, $detachAssistantFileService);
 
         $detachAssistantFileService->expects($this->never())->method('execute');
         $entityManager->expects($this->never())->method('flush');
 
-        $response = $controller->deleteAssistantFile('', 'fil_123475869');
+        $response = $controller->detachAssistantFile('', 'fil_123475869');
 
         $this->assertInstanceOf(Response::class, $response);
         $this->assertSame(500, $response->getStatusCode());

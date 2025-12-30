@@ -1,14 +1,14 @@
 <?php
 
-namespace Chatbot\Application\Service\UpdateAssistantFiles;
+namespace Chatbot\Application\Service\AttachAssistantFiles;
 
 use Chatbot\Domain\Model\Assistant\AssistantRepositoryInterface;
 use Chatbot\Application\Service\ChatGPT\AssistantApi;
 use Chatbot\Domain\Model\Assistant\Assistant;
 
-class UpdateAssistantFiles
+class AttachAssistantFiles
 {
-    private UpdateAssistantFilesResponse $response;
+    private AttachAssistantFilesResponse $response;
 
     public function __construct(
         private AssistantRepositoryInterface $assistantRepository,
@@ -16,7 +16,7 @@ class UpdateAssistantFiles
     ) {
     }
 
-    public function execute(UpdateAssistantFilesRequest $request): void
+    public function execute(AttachAssistantFilesRequest $request): void
     {
         $assistant = $this->assistantRepository->findById($request->assistantId);
         if ($assistant === null) {
@@ -45,14 +45,14 @@ class UpdateAssistantFiles
 
         $this->assistantRepository->add($assistant);
 
-        $this->response = new UpdateAssistantFilesResponse(
+        $this->response = new AttachAssistantFilesResponse(
             $assistant->getAssistantId(),
             $allFileIds,
             $vectorId
         );
     }
 
-    public function getResponse(): UpdateAssistantFilesResponse
+    public function getResponse(): AttachAssistantFilesResponse
     {
         return $this->response;
     }

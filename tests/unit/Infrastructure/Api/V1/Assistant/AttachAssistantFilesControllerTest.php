@@ -2,40 +2,40 @@
 
 namespace Chatbot\Tests\Unit\Infrastructure\Api\V1\Assistant;
 
-use Chatbot\Application\Service\UpdateAssistantFiles\UpdateAssistantFiles;
-use Chatbot\Application\Service\UpdateAssistantFiles\UpdateAssistantFilesRequest;
-use Chatbot\Application\Service\UpdateAssistantFiles\UpdateAssistantFilesResponse;
+use Chatbot\Application\Service\AttachAssistantFiles\AttachAssistantFiles;
+use Chatbot\Application\Service\AttachAssistantFiles\AttachAssistantFilesRequest;
+use Chatbot\Application\Service\AttachAssistantFiles\AttachAssistantFilesResponse;
 use Chatbot\Domain\Model\Assistant\AssistantId;
-use Chatbot\Infrastructure\Api\V1\Assistant\UpdateAssistantFilesController;
+use Chatbot\Infrastructure\Api\V1\Assistant\AttachAssistantFilesController;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class UpdateAssistantFilesControllerTest extends TestCase
+class AttachAssistantFilesControllerTest extends TestCase
 {
     public function testConstructor(): void
     {
         $entityManager = $this->createMock(EntityManagerInterface::class);
-        $updateAssistantFilesService = $this->createMock(UpdateAssistantFiles::class);
+        $attachAssistantFilesService = $this->createMock(AttachAssistantFiles::class);
 
-        $controller = new UpdateAssistantFilesController(
+        $controller = new AttachAssistantFilesController(
             $entityManager,
-            $updateAssistantFilesService
+            $attachAssistantFilesService
         );
 
-        $this->assertInstanceOf(UpdateAssistantFilesController::class, $controller);
+        $this->assertInstanceOf(AttachAssistantFilesController::class, $controller);
     }
 
     public function testUpdateAssistantFilesControllerExecute(): void
     {
         $entityManager = $this->createMock(EntityManagerInterface::class);
-        $updateAssistantFilesService = $this->createMock(UpdateAssistantFiles::class);
+        $attachAssistantFilesService = $this->createMock(AttachAssistantFiles::class);
 
-        $controller = new UpdateAssistantFilesController(
+        $controller = new AttachAssistantFilesController(
             $entityManager,
-            $updateAssistantFilesService
+            $attachAssistantFilesService
         );
 
         $request = new Request();
@@ -45,15 +45,15 @@ class UpdateAssistantFilesControllerTest extends TestCase
         assert($jsonContent !== false);
         $request->initialize([], [], [], [], [], [], $jsonContent);
 
-        $updateAssistantFilesService
+        $attachAssistantFilesService
             ->expects($this->once())
             ->method('execute')
-            ->with($this->isInstanceOf(UpdateAssistantFilesRequest::class));
+            ->with($this->isInstanceOf(AttachAssistantFilesRequest::class));
 
-        $updateAssistantFilesService
+        $attachAssistantFilesService
             ->expects($this->once())
             ->method('getResponse')
-            ->willReturn(new UpdateAssistantFilesResponse(
+            ->willReturn(new AttachAssistantFilesResponse(
                 new AssistantId('test-assistant-id'),
                 ['file-1', 'file-2'],
                 'vs_123456'
@@ -63,7 +63,7 @@ class UpdateAssistantFilesControllerTest extends TestCase
             ->expects($this->once())
             ->method('flush');
 
-        $response = $controller->updateAssistantFiles($request, 'test-assistant-id');
+        $response = $controller->attachAssistantFiles($request, 'test-assistant-id');
 
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
@@ -76,11 +76,11 @@ class UpdateAssistantFilesControllerTest extends TestCase
     public function testUpdateAssistantFilesWithValidRequest(): void
     {
         $entityManager = $this->createMock(EntityManagerInterface::class);
-        $updateAssistantFilesService = $this->createMock(UpdateAssistantFiles::class);
+        $attachAssistantFilesService = $this->createMock(AttachAssistantFiles::class);
 
-        $controller = new UpdateAssistantFilesController(
+        $controller = new AttachAssistantFilesController(
             $entityManager,
-            $updateAssistantFilesService
+            $attachAssistantFilesService
         );
 
         $request = new Request();
@@ -90,15 +90,15 @@ class UpdateAssistantFilesControllerTest extends TestCase
         assert($jsonContent !== false);
         $request->initialize([], [], [], [], [], [], $jsonContent);
 
-        $updateAssistantFilesService
+        $attachAssistantFilesService
             ->expects($this->once())
             ->method('execute');
 
-        $updateAssistantFilesService
+        $attachAssistantFilesService
             ->expects($this->once())
             ->method('getResponse')
             ->willReturn(
-                new UpdateAssistantFilesResponse(
+                new AttachAssistantFilesResponse(
                     new AssistantId('test-assistant-id'),
                     ['file-1', 'file-2', 'file-3'],
                     'vs_123456'
@@ -109,7 +109,7 @@ class UpdateAssistantFilesControllerTest extends TestCase
             ->expects($this->once())
             ->method('flush');
 
-        $response = $controller->updateAssistantFiles($request, 'test-assistant-id');
+        $response = $controller->attachAssistantFiles($request, 'test-assistant-id');
 
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
@@ -118,11 +118,11 @@ class UpdateAssistantFilesControllerTest extends TestCase
     public function testUpdateAssistantFilesWithException(): void
     {
         $entityManager = $this->createMock(EntityManagerInterface::class);
-        $updateAssistantFilesService = $this->createMock(UpdateAssistantFiles::class);
+        $attachAssistantFilesService = $this->createMock(AttachAssistantFiles::class);
 
-        $controller = new UpdateAssistantFilesController(
+        $controller = new AttachAssistantFilesController(
             $entityManager,
-            $updateAssistantFilesService
+            $attachAssistantFilesService
         );
 
         $request = new Request();
@@ -132,12 +132,12 @@ class UpdateAssistantFilesControllerTest extends TestCase
         assert($jsonContent !== false);
         $request->initialize([], [], [], [], [], [], $jsonContent);
 
-        $updateAssistantFilesService
+        $attachAssistantFilesService
             ->expects($this->once())
             ->method('execute')
             ->willThrowException(new \Exception('Test exception'));
 
-        $response = $controller->updateAssistantFiles($request, 'test-assistant-id');
+        $response = $controller->attachAssistantFiles($request, 'test-assistant-id');
 
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(500, $response->getStatusCode());
@@ -146,11 +146,11 @@ class UpdateAssistantFilesControllerTest extends TestCase
     public function testBuildUpdateFilesRequestWithValidData(): void
     {
         $entityManager = $this->createMock(EntityManagerInterface::class);
-        $updateAssistantFilesService = $this->createMock(UpdateAssistantFiles::class);
+        $attachAssistantFilesService = $this->createMock(AttachAssistantFiles::class);
 
-        $controller = new UpdateAssistantFilesController(
+        $controller = new AttachAssistantFilesController(
             $entityManager,
-            $updateAssistantFilesService
+            $attachAssistantFilesService
         );
 
         $request = new Request();
@@ -161,22 +161,22 @@ class UpdateAssistantFilesControllerTest extends TestCase
         $request->initialize([], [], [], [], [], [], $jsonContent);
 
         $reflection = new ReflectionClass($controller);
-        $method = $reflection->getMethod('buildUpdateFilesRequest');
+        $method = $reflection->getMethod('buildAttachFilesRequest');
         $method->setAccessible(true);
 
         $result = $method->invoke($controller, $request, 'test-assistant-id');
 
-        $this->assertInstanceOf(UpdateAssistantFilesRequest::class, $result);
+        $this->assertInstanceOf(AttachAssistantFilesRequest::class, $result);
     }
 
     public function testBuildUpdateFilesRequestWithEmptyAssistantId(): void
     {
         $entityManager = $this->createMock(EntityManagerInterface::class);
-        $updateAssistantFilesService = $this->createMock(UpdateAssistantFiles::class);
+        $attachAssistantFilesService = $this->createMock(AttachAssistantFiles::class);
 
-        $controller = new UpdateAssistantFilesController(
+        $controller = new AttachAssistantFilesController(
             $entityManager,
-            $updateAssistantFilesService
+            $attachAssistantFilesService
         );
 
         $request = new Request();
@@ -187,7 +187,7 @@ class UpdateAssistantFilesControllerTest extends TestCase
         $request->initialize([], [], [], [], [], [], $jsonContent);
 
         $reflection = new ReflectionClass($controller);
-        $method = $reflection->getMethod('buildUpdateFilesRequest');
+        $method = $reflection->getMethod('buildAttachFilesRequest');
         $method->setAccessible(true);
 
         $this->expectException(\InvalidArgumentException::class);
@@ -199,11 +199,11 @@ class UpdateAssistantFilesControllerTest extends TestCase
     public function testBuildUpdateFilesRequestWithMixedFileIds(): void
     {
         $entityManager = $this->createMock(EntityManagerInterface::class);
-        $updateAssistantFilesService = $this->createMock(UpdateAssistantFiles::class);
+        $attachAssistantFilesService = $this->createMock(AttachAssistantFiles::class);
 
-        $controller = new UpdateAssistantFilesController(
+        $controller = new AttachAssistantFilesController(
             $entityManager,
-            $updateAssistantFilesService
+            $attachAssistantFilesService
         );
 
         $request = new Request();
@@ -214,22 +214,22 @@ class UpdateAssistantFilesControllerTest extends TestCase
         $request->initialize([], [], [], [], [], [], $jsonContent);
 
         $reflection = new ReflectionClass($controller);
-        $method = $reflection->getMethod('buildUpdateFilesRequest');
+        $method = $reflection->getMethod('buildAttachFilesRequest');
         $method->setAccessible(true);
 
         $result = $method->invoke($controller, $request, 'test-assistant-id');
 
-        $this->assertInstanceOf(UpdateAssistantFilesRequest::class, $result);
+        $this->assertInstanceOf(AttachAssistantFilesRequest::class, $result);
     }
 
     public function testUpdateAssistantFilesServiceExecutionAndFlush(): void
     {
         $entityManager = $this->createMock(EntityManagerInterface::class);
-        $updateAssistantFilesService = $this->createMock(UpdateAssistantFiles::class);
+        $attachAssistantFilesService = $this->createMock(AttachAssistantFiles::class);
 
-        $controller = new UpdateAssistantFilesController(
+        $controller = new AttachAssistantFilesController(
             $entityManager,
-            $updateAssistantFilesService
+            $attachAssistantFilesService
         );
 
         $request = new Request();
@@ -239,25 +239,25 @@ class UpdateAssistantFilesControllerTest extends TestCase
         assert($jsonContent !== false);
         $request->initialize([], [], [], [], [], [], $jsonContent);
 
-        $updateAssistantFilesService
+        $attachAssistantFilesService
             ->expects($this->once())
             ->method('execute')
-            ->with($this->isInstanceOf(UpdateAssistantFilesRequest::class));
+            ->with($this->isInstanceOf(AttachAssistantFilesRequest::class));
 
         $entityManager
             ->expects($this->once())
             ->method('flush');
 
-        $updateAssistantFilesService
+        $attachAssistantFilesService
             ->expects($this->once())
             ->method('getResponse')
-            ->willReturn(new UpdateAssistantFilesResponse(
+            ->willReturn(new AttachAssistantFilesResponse(
                 new AssistantId('test-assistant-id'),
                 ['file-1'],
                 'vs_123456'
             ));
 
-        $response = $controller->updateAssistantFiles($request, 'test-assistant-id');
+        $response = $controller->attachAssistantFiles($request, 'test-assistant-id');
 
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(200, $response->getStatusCode());

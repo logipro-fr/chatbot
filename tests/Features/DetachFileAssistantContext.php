@@ -7,8 +7,8 @@ use Behat\Step\Given;
 use Behat\Step\When;
 use Behat\Step\Then;
 use Chatbot\Application\Service\ChatGPT\AssistantApi;
-use Chatbot\Application\Service\DeleteAssistantFiles\DeleteAssistantFiles;
-use Chatbot\Application\Service\DeleteAssistantFiles\DeleteAssistantFilesRequest;
+use Chatbot\Application\Service\DetachAssistantFiles\DetachAssistantFiles;
+use Chatbot\Application\Service\DetachAssistantFiles\DetachAssistantFilesRequest;
 use Chatbot\Domain\Model\Assistant\Assistant;
 use Chatbot\Domain\Model\Assistant\AssistantId;
 use Chatbot\Domain\Model\File\FileId;
@@ -22,8 +22,8 @@ class DetachFileAssistantContext implements Context
     private AssistantRepositoryInMemory $assitantRepository;
     private Assistant $assistant;
     private AssistantId $assistant_id;
-    private DeleteAssistantFiles $service;
-    private DeleteAssistantFilesRequest $request;
+    private DetachAssistantFiles $service;
+    private DetachAssistantFilesRequest $request;
 
     #[Given('un assistant avec l\'id :assistantId est attaché au fichier :nameFile')]
     public function unAssistantAvecLidEstAttacheAuFichier(string $assistantId, string $nameFile): void
@@ -54,7 +54,7 @@ class DetachFileAssistantContext implements Context
     {
         $deletefileId = new FileId($deleteFile);
 
-        $this->request = new DeleteAssistantFilesRequest(
+        $this->request = new DetachAssistantFilesRequest(
             $this->assistant_id,
             $deletefileId
         );
@@ -68,7 +68,7 @@ class DetachFileAssistantContext implements Context
         $client = new MockHttpClient([$mockResponse]);
 
         $assistantApi = new AssistantApi($client);
-        $this->service = new DeleteAssistantFiles($this->assitantRepository, $assistantApi);
+        $this->service = new DetachAssistantFiles($this->assitantRepository, $assistantApi);
 
         $this->service->execute($this->request);
     }
