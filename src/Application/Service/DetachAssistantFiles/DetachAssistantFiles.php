@@ -10,14 +10,14 @@ class DetachAssistantFiles
     private DetachAssistantFilesResponse $response;
 
     public function __construct(
-        private AssistantRepositoryInterface $assistant_repository,
+        private AssistantRepositoryInterface $assistantRepository,
         private AssistantApi $assistantApi
     ) {
     }
 
     public function execute(DetachAssistantFilesRequest $request): void
     {
-        $assistant = $this->assistant_repository->findById($request->assistant_id);
+        $assistant = $this->assistantRepository->findById($request->assistant_id);
         if ($assistant === null) {
             throw new \InvalidArgumentException("Assistant not found: " . $request->assistant_id->getId());
         }
@@ -33,12 +33,12 @@ class DetachAssistantFiles
             $assistant->removeFileId($fileIdToRemove);
         }
 
-        $this->assistant_repository->add($assistant);
+        $this->assistantRepository->add($assistant);
 
 
         $this->response = new DetachAssistantFilesResponse(
             $assistant->getAssistantId(),
-            array_values($assistant->getFileIds())
+            $assistant->getFileIds()
         );
     }
 
